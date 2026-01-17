@@ -43,4 +43,20 @@ public class PostService {
                                                 post.getAuthor().getUsername(),
                                                 post.getCreatedAt()));
         }
+
+        public Page<PostResponse> getPersonalFeed(String username, int page, int size) {
+
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                Pageable pageable = PageRequest.of(page, size);
+
+                return postRepository.findPersonalFeed(user.getId(), pageable)
+                                .map(post -> new PostResponse(
+                                                post.getId(),
+                                                post.getContent(),
+                                                post.getAuthor().getUsername(),
+                                                post.getCreatedAt()));
+        }
+
 }

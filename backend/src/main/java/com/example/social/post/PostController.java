@@ -27,4 +27,13 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size) {
         return postService.getFeed(page, size);
     }
+
+    @GetMapping("/feed/personal")
+    public Page<PostResponse> getPersonalFeed(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication) {
+        return postService.getPersonalFeed(authentication.getName(), page, size);
+    }
+
 }
