@@ -27,4 +27,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 ORDER BY p.createdAt DESC
             """)
     Page<Post> findPersonalFeed(@Param("userId") Long userId, Pageable pageable);
+
+    long countByAuthorId(Long authorId);
 }

@@ -32,6 +32,9 @@ C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\j
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\security\RestAuthenticationEntryPoint.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\security\SecurityConfig.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\SocialMediaApplication.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\dto\ProfileResponse.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\ProfileController.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\ProfileService.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\User.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\UserController.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\UserRepository.java
