@@ -9,6 +9,7 @@ com\example\social\post\PostService.class
 com\example\social\like\PostLike$PostLikeBuilder.class
 com\example\social\like\PostLikeController.class
 com\example\social\auth\dto\LoginRequest.class
+META-INF\spring-configuration-metadata.json
 com\example\social\auth\AuthService.class
 com\example\social\security\JwtService.class
 com\example\social\auth\dto\AuthResponse.class
@@ -38,5 +39,6 @@ com\example\social\comment\CommentController.class
 com\example\social\comment\dto\CreateCommentRequest.class
 com\example\social\post\PostRepository.class
 com\example\social\post\dto\CreatePostRequest.class
+com\example\social\security\JwtProperties.class
 com\example\social\follow\Follow.class
 com\example\social\security\CustomUserDetailsService.class
