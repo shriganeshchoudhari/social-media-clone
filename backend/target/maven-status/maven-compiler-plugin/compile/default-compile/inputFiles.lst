@@ -14,6 +14,7 @@ C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\j
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\User.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\UserController.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\auth\dto\AuthResponse.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\FollowController.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\security\JwtAuthenticationFilter.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\comment\Comment.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\post\dto\PostResponse.java
@@ -28,6 +29,9 @@ C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\j
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\comment\dto\CommentResponse.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\post\dto\CreatePostRequest.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\like\PostLikeRepository.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\FollowRepository.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\FollowService.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\post\PostController.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\user\UserRepository.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\Follow.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\SocialMediaApplication.java
