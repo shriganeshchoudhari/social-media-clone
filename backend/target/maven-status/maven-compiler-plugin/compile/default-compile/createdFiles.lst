@@ -4,10 +4,13 @@ com\example\social\post\PostController.class
 com\example\social\user\UserRepository.class
 com\example\social\user\User$UserBuilder.class
 com\example\social\post\PostService.class
+com\example\social\like\PostLike$PostLikeBuilder.class
+com\example\social\like\PostLikeController.class
 com\example\social\auth\dto\LoginRequest.class
 com\example\social\auth\AuthService.class
 com\example\social\security\JwtService.class
 com\example\social\auth\dto\AuthResponse.class
+com\example\social\like\PostLike.class
 com\example\social\user\UserService.class
 com\example\social\user\User.class
 com\example\social\user\UserController.class
@@ -19,6 +22,8 @@ com\example\social\post\Post$PostBuilder.class
 com\example\social\security\RestAccessDeniedHandler.class
 com\example\social\security\RestAuthenticationEntryPoint.class
 com\example\social\auth\dto\RegisterRequest.class
+com\example\social\like\PostLikeService.class
+com\example\social\like\PostLikeRepository.class
 com\example\social\security\JwtAuthenticationFilter.class
 com\example\social\post\PostRepository.class
 com\example\social\post\dto\CreatePostRequest.class
