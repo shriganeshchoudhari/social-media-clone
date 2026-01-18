@@ -13,8 +13,10 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{username}")
-    public ProfileResponse getProfile(@PathVariable String username) {
-        return profileService.getProfile(username);
+    public ProfileResponse getProfile(
+            @PathVariable String username,
+            Authentication authentication) {
+        return profileService.getProfile(username, authentication.getName());
     }
 
     @PutMapping("/me")

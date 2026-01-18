@@ -15,14 +15,18 @@ public class ProfileService {
     private final PostRepository postRepository;
     private final FollowRepository followRepository;
 
-    public ProfileResponse getProfile(String username) {
+    public ProfileResponse getProfile(String username, String currentUsername) {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        User currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("Current user not found"));
+
         long postCount = postRepository.countByAuthorId(user.getId());
         long followerCount = followRepository.countByFollowing(user);
         long followingCount = followRepository.countByFollower(user);
+        boolean following = followRepository.existsByFollowerAndFollowing(currentUser, user);
 
         return new ProfileResponse(
                 user.getUsername(),
@@ -30,7 +34,8 @@ public class ProfileService {
                 user.getProfileImageUrl(),
                 postCount,
                 followerCount,
-                followingCount);
+                followingCount,
+                following);
     }
 
     @Transactional
