@@ -21,6 +21,8 @@ public class SecurityConfig {
 
                 http
                                 .csrf(csrf -> csrf.disable())
+                                .headers(headers -> headers.cacheControl(cache -> {
+                                }))
                                 .formLogin(form -> form.disable())
                                 .httpBasic(basic -> basic.disable())
 
