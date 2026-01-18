@@ -5,13 +5,12 @@ export default function Feed() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        api.get("/posts/feed/personal")
+        api.get("/posts/feed/personal?page=0&size=10")
             .then(res => setPosts(res.data.content));
     }, []);
 
     return (
         <div>
-            <h2>My Feed</h2>
             {posts.map(p => (
                 <div key={p.id}>
                     <b>{p.authorUsername}</b>

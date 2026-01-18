@@ -16,9 +16,7 @@ api.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Kill browser cache completely
     config.headers["If-Modified-Since"] = "0";
-
     return config;
 });
 

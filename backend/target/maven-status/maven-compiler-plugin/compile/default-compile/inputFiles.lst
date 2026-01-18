@@ -9,6 +9,7 @@ C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\j
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\comment\CommentService.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\comment\dto\CommentResponse.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\comment\dto\CreateCommentRequest.java
+C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\config\CorsConfig.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\Follow.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\FollowController.java
 C:\Users\shrig\.gemini\antigravity\scratch\social-media-clone\backend\src\main\java\com\example\social\follow\FollowRepository.java
