@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-import api from "../api/axios";
+import { getFeed } from "../api/postService";
+import CreatePost from "../components/CreatePost";
 
 export default function Feed() {
     const [posts, setPosts] = useState([]);
 
+    const loadFeed = () => {
+        getFeed().then(res => setPosts(res.data.content));
+    };
+
     useEffect(() => {
-        api.get("/posts/feed/personal?page=0&size=10")
-            .then(res => setPosts(res.data.content));
+        loadFeed();
     }, []);
 
     return (
         <div>
+            <CreatePost onPost={loadFeed} />
+
             {posts.map(p => (
                 <div key={p.id}>
                     <b>{p.authorUsername}</b>
