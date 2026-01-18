@@ -1,6 +1,8 @@
+import CommentList from "../components/CommentList";
 import { useEffect, useState } from "react";
 import { getFeed } from "../api/postService";
 import CreatePost from "../components/CreatePost";
+import LikeButton from "../components/LikeButton";
 
 export default function Feed() {
     const [posts, setPosts] = useState([]);
@@ -21,8 +23,12 @@ export default function Feed() {
                 <div key={p.id}>
                     <b>{p.authorUsername}</b>
                     <p>{p.content}</p>
+
+                    <LikeButton post={p} onToggle={loadFeed} />
+                    <CommentList postId={p.id} />
                 </div>
             ))}
+
         </div>
     );
 }

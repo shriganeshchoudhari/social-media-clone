@@ -14,7 +14,9 @@ spring:
       hibernate:
         "[format_sql]": true
     open-in-view: false
-
+logging:
+  level:
+    "[org.springframework.security]": DEBUG
 jwt:
   secret: 12345678901234567890123456789012
   expiration: 86400000
