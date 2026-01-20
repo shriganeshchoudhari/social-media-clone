@@ -3,22 +3,47 @@ import Login from "./auth/Login";
 import Feed from "./pages/Feed";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
+import Navbar from "./components/Navbar";
+import Search from "./pages/Search";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/feed"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <Feed />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <Search />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/login" element={<Login />} />
-        <Route path="/feed" element={
-          <ProtectedRoute>
-            <Feed />
-          </ProtectedRoute>
-        } />
+
         <Route
           path="/profile/:username"
           element={
             <ProtectedRoute>
-              <Profile />
+              <>
+                <Navbar />
+                <Profile />
+              </>
             </ProtectedRoute>
           }
         />
