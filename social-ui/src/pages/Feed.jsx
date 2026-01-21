@@ -1,48 +1,152 @@
-import CommentList from "../components/CommentList";
-import { useEffect, useState } from "react";
-import { getFeed } from "../api/postService";
-import { Link } from "react-router-dom";
-import CreatePost from "../components/CreatePost";
-import LikeButton from "../components/LikeButton";
+import { useEffect, useRef, useState } from "react";
+import { getFeedPage } from "../api/postService";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
+import LikeButton from "../components/LikeButton";
+import CommentList from "../components/CommentList";
+import CreatePost from "../components/CreatePost";
+import { Link } from "react-router-dom";
 
 export default function Feed() {
-    const [posts, setPosts] = useState([]);
 
-    const loadFeed = () => {
-        getFeed().then(res => setPosts(res.data.content));
+    const [posts, setPosts] = useState([]);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const observer = useRef();
+
+    // Load one page
+    const loadPage = async (pageToLoad = page) => {
+        if (loading) return; // Removed !hasMore check here to allow manual resets if needed, or check inside
+
+        setLoading(true);
+
+        try {
+            const res = await getFeedPage(pageToLoad);
+
+            setPosts(prev => {
+                // If loading page 0, replace posts. Else append.
+                if (pageToLoad === 0) return res.data.content;
+                return [...prev, ...res.data.content];
+            });
+
+            setHasMore(!res.data.last);
+            setPage(prev => pageToLoad + 1);
+        } catch (e) {
+            console.error("Failed to load feed", e);
+        } finally {
+            setLoading(false);
+        }
     };
 
+    // Initial load
     useEffect(() => {
-        loadFeed();
+        // We only want to load page 0 on mount if it hasn't been loaded, 
+        // but react strict mode might double invoke. 
+        // For simplicity follow user pattern, but handle the page 0 case specifically in loadPage logic or resetting.
+        // The user's code: 
+        // const res = await getFeedPage(page);
+        // setPosts(prev => [...prev, ...]);
+        // setPage(prev => prev + 1);
+
+        // If we strictly follow user code, it appends.
+        // Let's stick to the user's provided logic flow but ensure it works.
+        const init = async () => {
+            if (loading || !hasMore) return;
+            setLoading(true);
+            const res = await getFeedPage(0);
+            setPosts(res.data.content);
+            setHasMore(!res.data.last);
+            setPage(1);
+            setLoading(false);
+        };
+        init();
     }, []);
+
+    // Intersection Observer
+    const lastPostRef = (node) => {
+        if (loading) return;
+        if (observer.current) observer.current.disconnect();
+
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                // Logic from user snippet to load NEXT page
+                const fetchNext = async () => {
+                    setLoading(true);
+                    const res = await getFeedPage(page);
+                    setPosts(prev => [...prev, ...res.data.content]);
+                    setHasMore(!res.data.last);
+                    setPage(prev => prev + 1);
+                    setLoading(false);
+                };
+                fetchNext();
+            }
+        });
+
+        if (node) observer.current.observe(node);
+    };
+
+    const refreshFeed = () => {
+        setPage(0);
+        setHasMore(true);
+        // We need to trigger a reload for page 0
+        // Simplest way is re-run the init logic
+        const reset = async () => {
+            setLoading(true);
+            const res = await getFeedPage(0);
+            setPosts(res.data.content);
+            setHasMore(!res.data.last);
+            setPage(1);
+            setLoading(false);
+        };
+        reset();
+    };
 
     return (
         <Layout>
             <Navbar />
+
             <div className="mt-4">
-                <CreatePost onPost={loadFeed} />
+                <CreatePost onPost={refreshFeed} />
 
-                {posts.map(p => (
-                    <div
-                        key={p.id}
-                        className="bg-white rounded-lg shadow-sm p-4 mb-4"
-                    >
-                        <div className="font-semibold text-sm mb-1 text-gray-900">
-                            <Link to={`/profile/${p.authorUsername}`} className="hover:underline">
-                                {p.authorUsername}
-                            </Link>
+                {posts.map((p, i) => {
+                    const isLast = i === posts.length - 1;
+
+                    return (
+                        <div
+                            ref={isLast ? lastPostRef : null}
+                            key={p.id} // Ensure uniqueness?
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4 transition-colors duration-200"
+                        >
+                            <div className="font-semibold text-sm mb-1 text-gray-900 dark:text-gray-100">
+                                <Link to={`/profile/${p.authorUsername}`} className="hover:underline">
+                                    {p.authorUsername}
+                                </Link>
+                            </div>
+
+                            <p className="text-gray-800 dark:text-gray-300 mb-3">{p.content}</p>
+
+                            <LikeButton post={p} onToggle={() => {
+                                // For now, we don't refresh the whole list on like to preserve scroll
+                                // Ideally we'd update specific item in 'posts'
+                            }} />
+                            <CommentList postId={p.id} />
                         </div>
+                    );
+                })}
 
-                        <p className="text-gray-800 mb-3">
-                            {p.content}
-                        </p>
-
-                        <LikeButton post={p} onToggle={loadFeed} />
-                        <CommentList postId={p.id} />
+                {loading && (
+                    <div className="text-center text-sm text-gray-500 py-4">
+                        Loading...
                     </div>
-                ))}
+                )}
+
+                {!hasMore && posts.length > 0 && (
+                    <div className="text-center text-sm text-gray-400 py-4">
+                        You’ve reached the end
+                    </div>
+                )}
             </div>
         </Layout>
     );

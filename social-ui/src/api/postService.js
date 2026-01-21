@@ -5,3 +5,6 @@ export const createPost = (content) =>
 
 export const getFeed = () =>
     api.get("/posts/feed/personal?page=0&size=20");
+
+export const getFeedPage = (page, size = 10) =>
+    api.get(`/posts/feed/personal?page=${page}&size=${size}`);

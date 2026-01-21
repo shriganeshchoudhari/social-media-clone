@@ -24,10 +24,10 @@ export default function CreatePost({ onPost }) {
     return (
         <form
             onSubmit={submit}
-            className="bg-white rounded-lg shadow-sm p-4 mb-6"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6 transition-colors duration-200"
         >
             <textarea
-                className="w-full border rounded p-2 text-sm mb-2 resize-none outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
+                className="w-full border rounded p-2 text-sm mb-2 resize-none outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                 rows="3"
                 placeholder="What's on your mind?"
                 value={content}

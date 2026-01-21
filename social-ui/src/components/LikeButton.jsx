@@ -19,7 +19,7 @@ export default function LikeButton({ post, onToggle }) {
         <button
             onClick={click}
             disabled={busy}
-            className="text-sm hover:opacity-80 disabled:opacity-50 transition-opacity"
+            className="text-sm hover:opacity-80 disabled:opacity-50 transition-opacity text-gray-600 dark:text-gray-300"
         >
             {post.likedByMe ? "❤️" : "🤍"} {post.likeCount}
         </button>

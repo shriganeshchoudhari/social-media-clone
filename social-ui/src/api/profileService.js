@@ -5,3 +5,6 @@ export const getProfile = (username) =>
 
 export const toggleFollow = (username) =>
     api.post(`/users/${username}/follow`);
+
+export const updateProfile = (bio, imageUrl) =>
+    api.put(`/users/me`, null, { params: { bio, imageUrl } });
