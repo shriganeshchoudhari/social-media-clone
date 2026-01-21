@@ -24,15 +24,17 @@ export default function CommentList({ postId }) {
     };
 
     return (
-        <div>
+        <div className="mt-3 border-t pt-2">
             {comments.map(c => (
-                <div key={c.id}>
-                    <b>{c.authorUsername}</b> {c.content}
+                <div key={c.id} className="text-sm mb-1">
+                    <span className="font-medium">{c.authorUsername}</span>{" "}
+                    <span className="text-gray-700">{c.content}</span>
                 </div>
             ))}
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="mt-2">
                 <input
+                    className="w-full border rounded p-1 text-sm outline-none focus:ring-1 focus:ring-blue-300"
                     placeholder="Write a comment..."
                     value={text}
                     onChange={e => setText(e.target.value)}

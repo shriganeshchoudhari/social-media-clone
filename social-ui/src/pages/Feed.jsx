@@ -4,6 +4,8 @@ import { getFeed } from "../api/postService";
 import { Link } from "react-router-dom";
 import CreatePost from "../components/CreatePost";
 import LikeButton from "../components/LikeButton";
+import Layout from "../components/Layout";
+import Navbar from "../components/Navbar";
 
 export default function Feed() {
     const [posts, setPosts] = useState([]);
@@ -17,21 +19,31 @@ export default function Feed() {
     }, []);
 
     return (
-        <div>
-            <CreatePost onPost={loadFeed} />
+        <Layout>
+            <Navbar />
+            <div className="mt-4">
+                <CreatePost onPost={loadFeed} />
 
-            {posts.map(p => (
-                <div key={p.id}>
-                    <Link to={`/profile/${p.authorUsername}`}>
-                        <b>{p.authorUsername}</b>
-                    </Link>
-                    <p>{p.content}</p>
+                {posts.map(p => (
+                    <div
+                        key={p.id}
+                        className="bg-white rounded-lg shadow-sm p-4 mb-4"
+                    >
+                        <div className="font-semibold text-sm mb-1 text-gray-900">
+                            <Link to={`/profile/${p.authorUsername}`} className="hover:underline">
+                                {p.authorUsername}
+                            </Link>
+                        </div>
 
-                    <LikeButton post={p} onToggle={loadFeed} />
-                    <CommentList postId={p.id} />
-                </div>
-            ))}
+                        <p className="text-gray-800 mb-3">
+                            {p.content}
+                        </p>
 
-        </div>
+                        <LikeButton post={p} onToggle={loadFeed} />
+                        <CommentList postId={p.id} />
+                    </div>
+                ))}
+            </div>
+        </Layout>
     );
 }

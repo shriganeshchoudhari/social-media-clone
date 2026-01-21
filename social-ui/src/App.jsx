@@ -14,10 +14,7 @@ export default function App() {
           path="/feed"
           element={
             <ProtectedRoute>
-              <>
-                <Navbar />
-                <Feed />
-              </>
+              <Feed />
             </ProtectedRoute>
           }
         />
@@ -26,10 +23,7 @@ export default function App() {
           path="/search"
           element={
             <ProtectedRoute>
-              <>
-                <Navbar />
-                <Search />
-              </>
+              <Search />
             </ProtectedRoute>
           }
         />
@@ -40,10 +34,7 @@ export default function App() {
           path="/profile/:username"
           element={
             <ProtectedRoute>
-              <>
-                <Navbar />
-                <Profile />
-              </>
+              <Profile />
             </ProtectedRoute>
           }
         />
