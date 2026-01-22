@@ -1,14 +1,17 @@
 server:
   port: 8081
+  error:
+    include-message: always
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/social_media
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: true
     properties:
       hibernate:

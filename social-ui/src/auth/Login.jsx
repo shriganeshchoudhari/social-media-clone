@@ -24,7 +24,13 @@ export default function Login() {
             nav("/feed");
         } catch (err) {
             console.error(err);
-            setError("Invalid credentials. Please try again.");
+            if (err.response && err.response.data) {
+                // Try to get the specific message from backend
+                const msg = err.response.data.message || "Invalid credentials. Please try again.";
+                setError(msg);
+            } else {
+                setError("Network error. Please check your connection.");
+            }
         } finally {
             setLoading(false);
         }
