@@ -60,6 +60,19 @@ public class SecurityConfig {
         }
 
         @Bean
+        public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+                org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+                configuration.addAllowedOriginPattern("*"); // Allow all origins (adapt for prod)
+                configuration.addAllowedMethod("*"); // Allow all methods (GET, POST, etc.)
+                configuration.addAllowedHeader("*"); // Allow all headers
+                configuration.setAllowCredentials(true); // Allow credentials
+
+                org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
+
+        @Bean
         public FilterRegistrationBean<Filter> rateLimitFilter() {
                 Filter filter = new RateLimitFilter();
                 FilterRegistrationBean<Filter> reg = new FilterRegistrationBean<>();
