@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useTheme from "../hooks/useTheme";
+import { useWebSocket } from "../context/WebSocketContext";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function Navbar() {
     const navigate = useNavigate();
     const { theme, setTheme } = useTheme();
+    const { notifications } = useWebSocket();
+    const [showNotifications, setShowNotifications] = useState(false);
     const [q, setQ] = useState("");
     const [username] = useState(() => {
         const token = localStorage.getItem("token");
@@ -63,6 +67,24 @@ export default function Navbar() {
                     >
                         Search
                     </button>
+
+                    <div className="relative">
+                        <div
+                            className="cursor-pointer hover:text-blue-600 transition-colors relative"
+                            title="Notifications"
+                            onClick={() => setShowNotifications(!showNotifications)}
+                        >
+                            <span className="text-xl">🔔</span>
+                            {notifications && notifications.length > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center border-2 border-white dark:border-gray-800">
+                                    {notifications.length}
+                                </span>
+                            )}
+                        </div>
+                        {showNotifications && (
+                            <NotificationDropdown onClose={() => setShowNotifications(false)} />
+                        )}
+                    </div>
 
                     {username && (
                         <button

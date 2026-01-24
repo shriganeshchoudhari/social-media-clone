@@ -14,6 +14,7 @@ public class PostService {
         private final PostRepository postRepository;
         private final UserRepository userRepository;
         private final PostLikeRepository postLikeRepository;
+        private final com.example.social.notification.NotificationService notificationService;
 
         public PostResponse createPost(String username, CreatePostRequest request) {
 
@@ -26,6 +27,8 @@ public class PostService {
                                 .build();
 
                 Post saved = postRepository.save(post);
+
+                notificationService.broadcast("New post from " + username + ": " + saved.getContent());
 
                 return new PostResponse(
                                 saved.getId(),
