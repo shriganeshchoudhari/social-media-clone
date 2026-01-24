@@ -87,5 +87,40 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./social-ui
-          push: false # Change to true after configuring secrets
+          push: true # Change to true after configuring secrets
           tags: ${{ secrets.DOCKER_USER }}/social-ui:latest
+
+  deploy:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: ✅ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚚 Copy Docker Compose to AWS EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/home/${{ secrets.VPS_USER }}/social-app"
+
+      - name: 🚀 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /home/${{ secrets.VPS_USER }}/social-app
+            export DOCKER_USER=${{ secrets.DOCKER_USER }}
+            
+            # Login to Docker Hub (optional but recommended for private)
+            # echo "${{ secrets.DOCKER_PASS }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
+
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            docker image prune -f

@@ -10,7 +10,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   backend:
-    image: yourname/social-backend:latest
+    image: ${DOCKER_USER}/social-backend:latest
     ports:
       - "8081:8081"
     depends_on:
@@ -22,7 +22,7 @@ services:
       JWT_SECRET: super_long_secret_key_min_32_chars
 
   frontend:
-    image: yourname/social-ui:latest
+    image: ${DOCKER_USER}/social-ui:latest
     ports:
       - "80:5173"
     depends_on:
