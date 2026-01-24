@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getComments, addComment } from "../api/commentService";
 
 export default function CommentList({ postId }) {
@@ -6,13 +6,13 @@ export default function CommentList({ postId }) {
     const [comments, setComments] = useState([]);
     const [text, setText] = useState("");
 
-    const load = () => {
+    const load = useCallback(() => {
         getComments(postId).then(res => setComments(res.data.content));
-    };
+    }, [postId]);
 
     useEffect(() => {
         load();
-    }, [postId]);
+    }, [load]);
 
     const submit = async (e) => {
         e.preventDefault();
@@ -35,7 +35,7 @@ export default function CommentList({ postId }) {
             setComments(prev =>
                 prev.map(c => c.id === tempComment.id ? res.data : c)
             );
-        } catch (e) {
+        } catch {
             // rollback
             setComments(prev =>
                 prev.filter(c => c.id !== tempComment.id)

@@ -24,29 +24,7 @@ export default function Feed() {
         );
     };
 
-    // Load one page
-    const loadPage = async (pageToLoad = page) => {
-        if (loading) return;
 
-        setLoading(true);
-
-        try {
-            const res = await getFeedPage(pageToLoad);
-
-            setPosts(prev => {
-                // If loading page 0, replace posts. Else append.
-                if (pageToLoad === 0) return res.data.content;
-                return [...prev, ...res.data.content];
-            });
-
-            setHasMore(!res.data.last);
-            setPage(prev => pageToLoad + 1);
-        } catch (e) {
-            console.error("Failed to load feed", e);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Initial load
     useEffect(() => {
@@ -60,7 +38,7 @@ export default function Feed() {
             setLoading(false);
         };
         init();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Intersection Observer
     const lastPostRef = (node) => {
@@ -136,7 +114,7 @@ export default function Feed() {
 
                                     try {
                                         await toggleLike(p.id);
-                                    } catch (e) {
+                                    } catch {
                                         // rollback on failure
                                         updatePost(p.id, post => ({
                                             ...post,

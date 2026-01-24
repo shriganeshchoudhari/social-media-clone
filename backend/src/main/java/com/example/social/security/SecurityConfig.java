@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.Filter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -24,8 +26,11 @@ public class SecurityConfig {
                 http
                                 .cors(withDefaults())
                                 .csrf(csrf -> csrf.disable())
-                                .headers(headers -> headers.cacheControl(cache -> {
-                                }))
+                                .headers(headers -> headers
+                                                .contentSecurityPolicy(
+                                                                csp -> csp.policyDirectives("default-src 'self'"))
+                                                .frameOptions(frame -> frame.deny())
+                                                .xssProtection(xss -> xss.disable()))
                                 .formLogin(form -> form.disable())
                                 .httpBasic(basic -> basic.disable())
 
@@ -52,5 +57,14 @@ public class SecurityConfig {
                                                 UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
+        }
+
+        @Bean
+        public FilterRegistrationBean<Filter> rateLimitFilter() {
+                Filter filter = new RateLimitFilter();
+                FilterRegistrationBean<Filter> reg = new FilterRegistrationBean<>();
+                reg.setFilter(filter);
+                reg.addUrlPatterns("/api/auth/login");
+                return reg;
         }
 }

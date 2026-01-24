@@ -14,11 +14,12 @@ export default function Search() {
 
     useEffect(() => {
         if (query) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLoading(true);
             setError(null);
             searchUsers(query)
                 .then(res => setResults(res.data.content))
-                .catch(err => setError("Failed to search users."))
+                .catch(() => setError("Failed to search users."))
                 .finally(() => setLoading(false));
         } else {
             setResults([]);

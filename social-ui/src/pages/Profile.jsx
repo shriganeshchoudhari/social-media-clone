@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { getProfile, toggleFollow, updateProfile } from "../api/profileService";
 import Layout from "../components/Layout";
@@ -7,34 +7,34 @@ import Navbar from "../components/Navbar";
 export default function Profile() {
     const { username } = useParams();
     const [profile, setProfile] = useState(null);
-    const [currentUser, setCurrentUser] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [editBio, setEditBio] = useState("");
-
-    // Get current user on mount
-    useEffect(() => {
+    // Get current user on mount (lazy init)
+    const [currentUser] = useState(() => {
         const token = localStorage.getItem("token");
         if (token) {
             try {
                 const payload = JSON.parse(atob(token.split(".")[1]));
-                setCurrentUser(payload.sub);
+                return payload.sub;
             } catch (e) {
                 console.error("Failed to decode token", e);
             }
         }
-    }, []);
+        return "";
+    });
 
-    const load = () => {
+    const load = useCallback(() => {
         getProfile(username).then(res => {
             setProfile(res.data);
             setEditBio(res.data.bio || "");
         });
-    };
+    }, [username]);
 
     useEffect(() => {
         load();
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsEditing(false); // Reset edit mode on profile change
-    }, [username]);
+    }, [load]);
 
     const handleSave = async () => {
         try {
@@ -116,8 +116,8 @@ export default function Profile() {
                     <button
                         onClick={() => toggleFollow(profile.username).then(load)}
                         className={`px-6 py-2 rounded font-medium transition-colors ${profile.following
-                                ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
+                            ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
                             }`}
                     >
                         {profile.following ? "Unfollow" : "Follow"}

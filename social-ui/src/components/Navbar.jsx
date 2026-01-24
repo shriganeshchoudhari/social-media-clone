@@ -1,24 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useTheme from "../hooks/useTheme";
 
 export default function Navbar() {
     const navigate = useNavigate();
     const { theme, setTheme } = useTheme();
     const [q, setQ] = useState("");
-    const [username, setUsername] = useState("");
-
-    useEffect(() => {
+    const [username] = useState(() => {
         const token = localStorage.getItem("token");
         if (token) {
             try {
                 const payload = JSON.parse(atob(token.split(".")[1]));
-                setUsername(payload.sub);
+                return payload.sub;
             } catch (e) {
                 console.error("Failed to decode token", e);
             }
         }
-    }, []);
+        return "";
+    });
 
     const logout = () => {
         localStorage.removeItem("token");

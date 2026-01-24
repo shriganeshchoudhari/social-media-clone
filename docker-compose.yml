@@ -6,11 +6,11 @@ services:
     image: postgres:15
     container_name: social-db
     environment:
-      POSTGRES_DB: socialdb
-      POSTGRES_USER: social
-      POSTGRES_PASSWORD: social
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -18,21 +18,23 @@ services:
     build: ./backend
     container_name: social-backend
     ports:
-      - "8081:8081"
+      - "${BACKEND_PORT}:8081"
     depends_on:
       - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/socialdb
-      SPRING_DATASOURCE_USERNAME: social
-      SPRING_DATASOURCE_PASSWORD: social
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
     restart: unless-stopped
 
   frontend:
     build: ./social-ui
     container_name: social-ui
     ports:
-      - "5173:5173"
+      - "${FRONTEND_PORT}:5173"
     depends_on:
       - backend
 
@@ -40,10 +42,10 @@ services:
     image: dpage/pgadmin4
     container_name: social-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT}:80"
     depends_on:
       - postgres
 

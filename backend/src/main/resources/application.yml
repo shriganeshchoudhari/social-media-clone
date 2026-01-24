@@ -1,25 +1,39 @@
 server:
-  port: 8081
+  port: ${PORT:8081}
   error:
     include-message: always
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/socialdb}
+    username: ${DB_USER:social}
+    password: ${DB_PASS:social}
 
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:validate}
+    show-sql: false
     properties:
       hibernate:
         "[format_sql]": true
     open-in-view: false
+
 logging:
   level:
-    "[org.springframework.security]": DEBUG
+    root: INFO
+    "[org.springframework.security]": WARN
+    "[org.hibernate.SQL]": OFF
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
 jwt:
-  secret: 12345678901234567890123456789012
-  expiration: 86400000
+  secret: ${JWT_SECRET:12345678901234567890123456789012}
+  expiration: ${JWT_EXPIRATION:86400000}
