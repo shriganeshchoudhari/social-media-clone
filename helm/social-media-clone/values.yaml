@@ -20,7 +20,7 @@ postgres:
 backend:
   image:
     repository: social-backend
-    tag: latest
+    tag: dev-ws
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -34,7 +34,7 @@ backend:
 frontend:
   image:
     repository: social-ui
-    tag: latest
+    tag: dev-ws
     pullPolicy: IfNotPresent
   service:
     type: NodePort
