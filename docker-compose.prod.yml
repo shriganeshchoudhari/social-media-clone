@@ -1,0 +1,32 @@
+services:
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: socialdb
+      POSTGRES_USER: social
+      POSTGRES_PASSWORD: social
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    image: yourname/social-backend:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/socialdb
+      DB_USER: social
+      DB_PASS: social
+      JWT_SECRET: super_long_secret_key_min_32_chars
+
+  frontend:
+    image: yourname/social-ui:latest
+    ports:
+      - "80:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

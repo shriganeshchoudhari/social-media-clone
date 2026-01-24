@@ -12,6 +12,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+    baseline-on-migrate: true
     show-sql: false
     properties:
       hibernate:
