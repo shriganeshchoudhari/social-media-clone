@@ -43,7 +43,7 @@ frontend:
   replicaCount: 1
 
 pgadmin:
-  enabled: false
+  enabled: true
   image:
     repository: dpage/pgadmin4
     tag: latest
