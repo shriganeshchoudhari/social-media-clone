@@ -1,0 +1,14 @@
+{{- if .Values.grafana.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-grafana
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.grafana.service.port }}
+      targetPort: 3000
+      nodePort: {{ .Values.grafana.service.nodePort }}
+  selector:
+    app: grafana
+{{- end }}

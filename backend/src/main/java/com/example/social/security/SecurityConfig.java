@@ -43,6 +43,7 @@ public class SecurityConfig {
 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/**").permitAll()
+                                                .requestMatchers("/actuator/**").permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                                                 .permitAll()
                                                 // Explicit protected APIs

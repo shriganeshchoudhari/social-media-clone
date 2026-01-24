@@ -52,3 +52,23 @@ pgadmin:
   auth:
     email: admin@admin.com
     password: admin
+
+prometheus:
+  enabled: true
+  image:
+    repository: prom/prometheus
+    tag: latest
+  service:
+    port: 9090
+
+grafana:
+  enabled: true
+  image:
+    repository: grafana/grafana
+    tag: latest
+  service:
+    port: 3000
+    nodePort: 32000
+  auth:
+    username: admin
+    password: admin

@@ -1,0 +1,73 @@
+{{- if .Values.grafana.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-springboot-dashboard
+data:
+  springboot.json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "title": "Uptime",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+          "targets": [
+            { "expr": "process_uptime_seconds", "legendFormat": "Uptime" }
+          ]
+        },
+        {
+          "title": "CPU Usage",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "targets": [
+            { "expr": "system_cpu_usage", "legendFormat": "System CPU" },
+            { "expr": "process_cpu_usage", "legendFormat": "Process CPU" }
+          ]
+        },
+        {
+          "title": "JVM Memory Used",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "targets": [
+            { "expr": "jvm_memory_used_bytes{area='heap'}", "legendFormat": "Heap Used" },
+            { "expr": "jvm_memory_used_bytes{area='nonheap'}", "legendFormat": "Non-Heap Used" }
+          ]
+        },
+        {
+          "title": "HTTP Requests / Second",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+          "targets": [
+            { "expr": "rate(http_server_requests_seconds_count[1m])", "legendFormat": "{{`{{method}} {{uri}}`}}" }
+          ]
+        },
+        {
+          "title": "Log Events (Errors)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+          "targets": [
+            { "expr": "sum(rate(logback_events_total{level='error'}[1m]))", "legendFormat": "Errors/sec" }
+          ]
+        }
+      ],
+      "schemaVersion": 21,
+      "style": "dark",
+      "tags": ["springboot"],
+      "templating": { "list": [] },
+      "time": { "from": "now-15m", "to": "now" },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Spring Boot Overview",
+      "uid": "springboot-overview",
+      "version": 1,
+      "weekStart": ""
+    }
+{{- end }}
