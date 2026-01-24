@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+  labels:
+    app: backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.backend.env.springProfilesActive | quote }}
+            - name: DB_URL
+              value: "jdbc:postgresql://{{ .Release.Name }}-postgres:5432/{{ .Values.postgres.auth.database }}"
+            - name: DB_USER
+              value: {{ .Values.postgres.auth.username | quote }}
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: postgres-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: jwt-secret
+            - name: JWT_EXPIRATION
+              value: {{ .Values.backend.env.jwtExpiration | quote }}
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"

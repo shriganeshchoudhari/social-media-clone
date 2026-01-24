@@ -1,0 +1,54 @@
+global:
+  environment: dev
+
+postgres:
+  image:
+    repository: postgres
+    tag: "15"
+  existingSecret: ""
+  auth:
+    username: social
+    password: social
+    database: socialdb
+  service:
+    port: 5432
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+
+backend:
+  image:
+    repository: social-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8081
+  replicaCount: 1
+  env:
+    springProfilesActive: dev
+    jwtSecret: "12345678901234567890123456789012"
+    jwtExpiration: "86400000"
+
+frontend:
+  image:
+    repository: social-ui
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 5173
+    nodePort: 30000
+  replicaCount: 1
+
+pgadmin:
+  enabled: false
+  image:
+    repository: dpage/pgadmin4
+    tag: latest
+  service:
+    port: 80
+  auth:
+    email: admin@admin.com
+    password: admin

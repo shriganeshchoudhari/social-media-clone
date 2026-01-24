@@ -1,0 +1,24 @@
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.frontend.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ .Release.Name }}-frontend)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.frontend.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get svc -w {{ .Release.Name }}-frontend'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ .Release.Name }}-frontend --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.frontend.service.port }}
+{{- else if contains "ClusterIP" .Values.frontend.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app=frontend" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 5173:5173
+  echo "Visit http://127.0.0.1:5173 to use your application"
+{{- end }}
+
+2. IMPORTANT: Establish connectivity to the Backend
+   The frontend is configured effectively to talk to http://localhost:8081/api
+   You MUST forward the backend port locally if you are running locally:
+   
+   export BACKEND_POD=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app=backend" -o jsonpath="{.items[0].metadata.name}")
+   kubectl --namespace {{ .Release.Namespace }} port-forward $BACKEND_POD 8081:8081
+
+   Now you can access the app at http://localhost:5173 (if forwarded) or http://localhost:30000 (if NodePort)
