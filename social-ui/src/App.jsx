@@ -6,6 +6,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Search from "./pages/Search";
+import Notifications from "./pages/Notifications";
+import PostPage from "./pages/PostPage";
 
 export default function App() {
   return (
@@ -38,6 +40,25 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/post/:id"
+          element={
+            <ProtectedRoute>
+              <PostPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <Notifications />
             </ProtectedRoute>
           }
         />

@@ -28,7 +28,7 @@ public class PostService {
 
                 Post saved = postRepository.save(post);
 
-                notificationService.broadcast("New post from " + username + ": " + saved.getContent());
+                // Post created successfully. No notification broadcast for now.
 
                 return new PostResponse(
                                 saved.getId(),
@@ -49,6 +49,16 @@ public class PostService {
                                                 post.getCreatedAt(),
                                                 postLikeRepository.countByPost(post),
                                                 false));
+        }
+
+        public PostResponse getPostById(Long postId, String username) {
+                User currentUser = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                Post post = postRepository.findPostByIdWithAuthor(postId)
+                                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+                return mapToResponse(post, currentUser);
         }
 
         public Page<PostResponse> getPersonalFeed(String username, int page, int size) {

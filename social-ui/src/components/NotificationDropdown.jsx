@@ -7,18 +7,7 @@ export default function NotificationDropdown({ onClose }) {
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
 
-    // Close on click outside
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                onClose();
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [onClose]);
+
 
     // Format timestamp
     const formatTime = (timestamp) => {
@@ -36,7 +25,7 @@ export default function NotificationDropdown({ onClose }) {
     return (
         <div
             ref={dropdownRef}
-            className="absolute right-0 top-10 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+            className="absolute right-0 top-10 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
         >
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100">Notifications</h3>

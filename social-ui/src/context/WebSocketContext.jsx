@@ -8,6 +8,28 @@ export const WebSocketProvider = ({ children }) => {
     const [client, setClient] = useState(null);
 
     useEffect(() => {
+        // Fetch specific user notifications on mount
+        const fetchInitialNotifications = async () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8081/api'}/notifications`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setNotifications(data);
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch initial notifications", e);
+                }
+            }
+        };
+        fetchInitialNotifications();
+
+        // WS Setup
         // Derive WS URL from API URL or hardcode for now
         // VITE_API_URL is like http://localhost:8081/api
         // We need ws://localhost:8081/ws
@@ -25,15 +47,26 @@ export const WebSocketProvider = ({ children }) => {
                 // Subscribe to public notifications
                 stompClient.subscribe('/topic/public', (message) => {
                     const notification = JSON.parse(message.body);
-                    console.log('Received notification:', notification);
                     setNotifications(prev => [notification, ...prev]);
-
-                    // Show a native toast/alert if possible, or just store in state
-                    // Basic browser notification (optional):
-                    // if (Notification.permission === 'granted') {
-                    //     new Notification(notification.message);
-                    // }
                 });
+
+                // Subscribe to private user notifications if logged in
+                const token = localStorage.getItem("token");
+                if (token) {
+                    try {
+                        const payload = JSON.parse(atob(token.split(".")[1]));
+                        const userId = payload.userId; // Matches the claim "userId" added in JwtService
+
+                        if (userId) {
+                            stompClient.subscribe(`/topic/user/${userId}`, (message) => {
+                                const notification = JSON.parse(message.body);
+                                setNotifications(prev => [notification, ...prev]);
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse token for WS subscription", e);
+                    }
+                }
             },
             onStompError: (frame) => {
                 console.error('Broker reported error: ' + frame.headers['message']);

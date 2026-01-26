@@ -14,43 +14,55 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
+        private final CommentRepository commentRepository;
+        private final UserRepository userRepository;
+        private final PostRepository postRepository;
 
-    @Transactional
-    public CommentResponse addComment(String username, Long postId, CreateCommentRequest request) {
+        private final com.example.social.notification.NotificationService notificationService;
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        @Transactional
+        public CommentResponse addComment(String username, Long postId, CreateCommentRequest request) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Comment comment = Comment.builder()
-                .content(request.content())
-                .author(user)
-                .post(post)
-                .build();
+                Post post = postRepository.findById(postId)
+                                .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        Comment saved = commentRepository.save(comment);
+                Comment comment = Comment.builder()
+                                .content(request.content())
+                                .author(user)
+                                .post(post)
+                                .build();
 
-        return new CommentResponse(
-                saved.getId(),
-                saved.getContent(),
-                user.getUsername(),
-                saved.getCreatedAt());
-    }
+                Comment saved = commentRepository.save(comment);
 
-    public Page<CommentResponse> getComments(Long postId, int page, int size) {
+                // Send notification to post author if not self-comment
+                if (!post.getAuthor().getId().equals(user.getId())) {
+                        notificationService.create(
+                                        post.getAuthor(),
+                                        com.example.social.notification.NotificationType.COMMENT,
+                                        post.getId(),
+                                        user.getUsername(),
+                                        user.getUsername() + " commented on your post");
+                }
 
-        Pageable pageable = PageRequest.of(page, size);
+                return new CommentResponse(
+                                saved.getId(),
+                                saved.getContent(),
+                                user.getUsername(),
+                                saved.getCreatedAt());
+        }
 
-        return commentRepository.findByPostId(postId, pageable)
-                .map(c -> new CommentResponse(
-                        c.getId(),
-                        c.getContent(),
-                        c.getAuthor().getUsername(),
-                        c.getCreatedAt()));
-    }
+        public Page<CommentResponse> getComments(Long postId, int page, int size) {
+
+                Pageable pageable = PageRequest.of(page, size);
+
+                return commentRepository.findByPostId(postId, pageable)
+                                .map(c -> new CommentResponse(
+                                                c.getId(),
+                                                c.getContent(),
+                                                c.getAuthor().getUsername(),
+                                                c.getCreatedAt()));
+        }
 }

@@ -29,4 +29,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findPersonalFeed(@Param("userId") Long userId, Pageable pageable);
 
     long countByAuthorId(Long authorId);
+
+    @Query("""
+                SELECT p FROM Post p
+                JOIN FETCH p.author
+                WHERE p.id = :id
+            """)
+    java.util.Optional<Post> findPostByIdWithAuthor(@Param("id") Long id);
 }

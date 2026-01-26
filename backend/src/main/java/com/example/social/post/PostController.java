@@ -36,4 +36,11 @@ public class PostController {
         return postService.getPersonalFeed(authentication.getName(), page, size);
     }
 
+    @GetMapping("/{id}")
+    public PostResponse getOnePost(
+            @PathVariable Long id,
+            Authentication auth) {
+        return postService.getPostById(id, auth.getName());
+    }
+
 }

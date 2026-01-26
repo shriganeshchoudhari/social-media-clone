@@ -16,6 +16,8 @@ public class PostLikeService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    private final com.example.social.notification.NotificationService notificationService;
+
     @Transactional
     public long toggleLike(String username, Long postId) {
 
@@ -33,6 +35,16 @@ public class PostLikeService {
                     .post(post)
                     .build();
             likeRepository.save(like);
+
+            // Send notification to post author if it's not the liker themselves
+            if (!post.getAuthor().getId().equals(user.getId())) {
+                notificationService.create(
+                        post.getAuthor(),
+                        com.example.social.notification.NotificationType.LIKE,
+                        post.getId(),
+                        user.getUsername(),
+                        user.getUsername() + " liked your post");
+            }
         }
 
         return likeRepository.countByPost(post);

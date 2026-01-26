@@ -1,15 +1,56 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useTheme from "../hooks/useTheme";
 import { useWebSocket } from "../context/WebSocketContext";
 import NotificationDropdown from "./NotificationDropdown";
+import { getUnreadCount } from "../api/notificationService";
+import useNotificationSocket from "../hooks/useNotificationSocket";
 
 export default function Navbar() {
     const navigate = useNavigate();
     const { theme, setTheme } = useTheme();
-    const { notifications } = useWebSocket();
+    const { notifications } = useWebSocket(); // Keeping this if other parts use it, but moving to simpler hook approach as requested
     const [showNotifications, setShowNotifications] = useState(false);
+    const notificationRef = React.useRef(null);
     const [q, setQ] = useState("");
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    // Get userId from token for WS subscription
+    const getUserId = () => {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.userId;
+        } catch (e) { return null; }
+    };
+    const userId = getUserId();
+
+    // Live update via socket
+    useNotificationSocket(userId, (notification) => {
+        // Increment badge count
+        setUnreadCount(prev => prev + 1);
+        // Optionally show a toast/alert here
+        // alert(notification.message); 
+    });
+
+    // Update badge from API
+    useEffect(() => {
+        getUnreadCount().then(res => setUnreadCount(res.data));
+    }, []);
+
+    // Close notifications when clicking outside
+    React.useEffect(() => {
+        function handleClickOutside(event) {
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setShowNotifications(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
     const [username] = useState(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -35,7 +76,7 @@ export default function Navbar() {
     };
 
     return (
-        <div className="flex items-center justify-between mb-6 px-4 py-3 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100 dark:border-gray-700 rounded-lg transition-colors duration-200">
+        <div className="relative z-50 flex items-center justify-between mb-6 px-4 py-3 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100 dark:border-gray-700 rounded-lg transition-colors duration-200">
             <h1
                 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent cursor-pointer"
                 onClick={() => navigate("/feed")}
@@ -68,7 +109,19 @@ export default function Navbar() {
                         Search
                     </button>
 
-                    <div className="relative">
+                    <button
+                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative"
+                        onClick={() => navigate("/notifications")}
+                    >
+                        Notifications
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                                {unreadCount}
+                            </span>
+                        )}
+                    </button>
+
+                    <div className="relative" ref={notificationRef}>
                         <div
                             className="cursor-pointer hover:text-blue-600 transition-colors relative"
                             title="Notifications"
