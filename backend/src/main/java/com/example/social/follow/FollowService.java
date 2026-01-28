@@ -14,6 +14,7 @@ public class FollowService {
 
         private final FollowRepository followRepository;
         private final UserRepository userRepository;
+        private final com.example.social.user.BlockRepository blockRepository;
 
         private final com.example.social.notification.NotificationService notificationService;
 
@@ -29,6 +30,13 @@ public class FollowService {
 
                 User following = userRepository.findByUsername(followingUsername)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+                if (blockRepository.existsByBlockerAndBlocked(following, follower)) {
+                        throw new RuntimeException("Cannot follow: You are blocked");
+                }
+                if (blockRepository.existsByBlockerAndBlocked(follower, following)) {
+                        throw new RuntimeException("Cannot follow: You have blocked this user");
+                }
 
                 if (followRepository.existsByFollowerAndFollowing(follower, following)) {
                         followRepository.deleteByFollowerAndFollowing(follower, following);

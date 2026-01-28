@@ -27,3 +27,9 @@ export const getCurrentUser = () =>
 
 export const getUserProfile = (username) =>
     api.get(`/users/${username}`);
+
+export const togglePrivacy = () =>
+    api.post("/users/me/privacy");
+
+export const deleteAccount = () =>
+    api.delete("/users/me");

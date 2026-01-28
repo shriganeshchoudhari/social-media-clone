@@ -4,8 +4,9 @@ public record ProfileResponse(
                 String username,
                 String bio,
                 String profileImageUrl,
-                long postCount,
-                long followerCount,
+                long followersCount,
                 long followingCount,
+                long postCount,
+                boolean isPrivate,
                 boolean following) {
 }

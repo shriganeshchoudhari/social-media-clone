@@ -151,28 +151,42 @@ export default function Feed() {
                                     </Link>
                                 </div>
 
-                                {/* Three-dot menu for own posts */}
-                                {isMyPost && (
-                                    <div className="relative group">
-                                        <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1">
-                                            ⋮
-                                        </button>
-                                        <div className="absolute right-0 mt-1 bg-white dark:bg-gray-700 rounded shadow-lg border dark:border-gray-600 hidden group-hover:block z-10">
+                                {/* Three-dot menu */}
+                                <div className="relative group">
+                                    <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1">
+                                        ⋮
+                                    </button>
+                                    <div className="absolute right-0 mt-1 bg-white dark:bg-gray-700 rounded shadow-lg border dark:border-gray-600 hidden group-hover:block z-10 min-w-[100px]">
+                                        {isMyPost ? (
+                                            <>
+                                                <button
+                                                    onClick={() => startEdit(p)}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(p.id)}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </>
+                                        ) : (
                                             <button
-                                                onClick={() => startEdit(p)}
-                                                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                onClick={() => {
+                                                    fetch(`http://localhost:8081/api/moderation/posts/${p.id}/report?reason=Spam`, {
+                                                        method: 'POST',
+                                                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                                                    }).then(() => alert('Post Reported'));
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-gray-100 dark:hover:bg-gray-600"
                                             >
-                                                Edit
+                                                Report
                                             </button>
-                                            <button
-                                                onClick={() => handleDelete(p.id)}
-                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
                             </div>
 
                             {/* Edit mode */}

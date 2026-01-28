@@ -1,6 +1,7 @@
 package com.example.social.user;
 
 import com.example.social.user.dto.PasswordChangeRequest;
+import com.example.social.user.dto.ProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,27 @@ public class UserController {
                 auth.getName(),
                 request.oldPassword(),
                 request.newPassword());
+    }
+
+    @GetMapping("/{username}")
+    public ProfileResponse getProfile(
+            @PathVariable String username,
+            Authentication auth) {
+        return userService.getProfile(auth.getName(), username);
+    }
+
+    @PostMapping("/me/privacy")
+    public void togglePrivacy(Authentication auth) {
+        userService.togglePrivacy(auth.getName());
+    }
+
+    @DeleteMapping("/me")
+    public void deleteAccount(Authentication auth) {
+        userService.deleteAccount(auth.getName());
+    }
+
+    @PostMapping("/{username}/block")
+    public void block(@PathVariable String username, Authentication auth) {
+        userService.toggleBlock(auth.getName(), username);
     }
 }

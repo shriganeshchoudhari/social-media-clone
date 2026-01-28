@@ -27,4 +27,8 @@ export const editPost = (postId, content) => {
     const formData = new FormData();
     formData.append("content", content);
     return api.put(`/posts/${postId}`, formData);
+    return api.put(`/posts/${postId}`, formData);
 };
+
+export const getPostsByUser = (username, page = 0, size = 10) =>
+    api.get(`/posts/user/${username}?page=${page}&size=${size}`);

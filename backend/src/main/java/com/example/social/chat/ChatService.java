@@ -16,11 +16,19 @@ public class ChatService {
         private final UserRepository userRepository;
         private final com.example.social.notification.NotificationService notificationService;
         private final com.example.social.file.FileStorageService fileStorageService;
+        private final com.example.social.user.BlockRepository blockRepository;
 
         public void sendMessage(String senderUsername, String receiverUsername, String content) {
 
                 User sender = userRepository.findByUsername(senderUsername).orElseThrow();
                 User receiver = userRepository.findByUsername(receiverUsername).orElseThrow();
+
+                if (blockRepository.existsByBlockerAndBlocked(receiver, sender)) {
+                        throw new RuntimeException("You are blocked");
+                }
+                if (blockRepository.existsByBlockerAndBlocked(sender, receiver)) {
+                        throw new RuntimeException("You have blocked this user");
+                }
 
                 Message message = Message.builder()
                                 .sender(sender)

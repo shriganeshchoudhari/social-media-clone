@@ -58,4 +58,11 @@ public class PostController {
         return postService.editPost(id, content, auth.getName());
     }
 
+    @GetMapping("/user/{username}")
+    public java.util.List<PostResponse> getPostsByUser(
+            @PathVariable String username,
+            Authentication auth) {
+        return postService.getPostsByUser(username, auth.getName());
+    }
+
 }

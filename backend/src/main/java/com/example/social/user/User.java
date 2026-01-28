@@ -34,6 +34,12 @@ public class User {
 
     private LocalDateTime createdAt;
 
+    @Builder.Default
+    private boolean isPrivate = false;
+
+    @Builder.Default
+    private int tokenVersion = 0;
+
     @PrePersist
     void onCreate() {
         this.createdAt = LocalDateTime.now();

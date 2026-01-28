@@ -1,5 +1,6 @@
 package com.example.social.post;
 
+import com.example.social.follow.FollowRepository;
 import com.example.social.like.PostLikeRepository;
 import com.example.social.post.dto.*;
 import com.example.social.user.*;
@@ -15,6 +16,7 @@ public class PostService {
         private final UserRepository userRepository;
         private final PostLikeRepository postLikeRepository;
         private final com.example.social.file.FileStorageService fileStorageService;
+        private final FollowRepository followRepository;
 
         public PostResponse createPost(String username, String content,
                         java.util.List<org.springframework.web.multipart.MultipartFile> images) {
@@ -87,6 +89,42 @@ public class PostService {
                 return postRepository
                                 .findPersonalFeed(currentUser.getId(), pageable)
                                 .map(post -> mapToResponse(post, currentUser));
+        }
+
+        public Page<PostResponse> getPostsByUser(String viewerUsername, String targetUsername, int page, int size) {
+                User viewer = userRepository.findByUsername(viewerUsername).orElseThrow();
+                User target = userRepository.findByUsername(targetUsername)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                boolean isOwner = viewer.getId().equals(target.getId());
+                boolean isFollowing = followRepository.existsByFollowerAndFollowing(viewer, target);
+
+                if (!isOwner && target.isPrivate() && !isFollowing) {
+                        throw new RuntimeException("This account is private");
+                }
+
+                Pageable pageable = PageRequest.of(page, size);
+                return postRepository.findByAuthor(target, pageable)
+                                .map(post -> mapToResponse(post, viewer));
+        }
+
+        public java.util.List<PostResponse> getPostsByUser(String targetUsername, String viewerUsername) {
+                User target = userRepository.findByUsername(targetUsername)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+                User viewer = userRepository.findByUsername(viewerUsername)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                boolean isOwner = viewer.getId().equals(target.getId());
+                boolean isFollowing = followRepository.existsByFollowerAndFollowing(viewer, target);
+
+                if (!isOwner && target.isPrivate() && !isFollowing) {
+                        return java.util.Collections.emptyList();
+                }
+
+                return postRepository.findByAuthorUsernameOrderByCreatedAtDesc(targetUsername)
+                                .stream()
+                                .map(post -> mapToResponse(post, viewer))
+                                .toList();
         }
 
         private PostResponse mapToResponse(Post post, User currentUser) {

@@ -1,56 +1,26 @@
-import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
 import useTheme from "../hooks/useTheme";
-import { useWebSocket } from "../context/WebSocketContext";
-import NotificationDropdown from "./NotificationDropdown";
 import { getUnreadCount } from "../api/notificationService";
 import useNotificationSocket from "../hooks/useNotificationSocket";
+import NotificationDropdown from "./NotificationDropdown";
+import UserMenu from "./UserMenu";
+import { Home, MessageCircle, Bell, Search, Sun, Moon } from "lucide-react";
 
 export default function Navbar() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { theme, setTheme } = useTheme();
-    const { notifications } = useWebSocket(); // Keeping this if other parts use it, but moving to simpler hook approach as requested
+
+    // Notification Logic
     const [showNotifications, setShowNotifications] = useState(false);
-    const notificationRef = React.useRef(null);
-    const [q, setQ] = useState("");
+    const notificationRef = useRef(null);
     const [unreadCount, setUnreadCount] = useState(0);
 
-    // Get userId from token for WS subscription
-    const getUserId = () => {
-        const token = localStorage.getItem("token");
-        if (!token) return null;
-        try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            return payload.userId;
-        } catch (e) { return null; }
-    };
-    const userId = getUserId();
+    // Search Logic
+    const [q, setQ] = useState("");
 
-    // Live update via socket
-    useNotificationSocket(userId, (notification) => {
-        // Increment badge count
-        setUnreadCount(prev => prev + 1);
-        // Optionally show a toast/alert here
-        // alert(notification.message); 
-    });
-
-    // Update badge from API
-    useEffect(() => {
-        getUnreadCount().then(res => setUnreadCount(res.data));
-    }, []);
-
-    // Close notifications when clicking outside
-    React.useEffect(() => {
-        function handleClickOutside(event) {
-            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-                setShowNotifications(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+    // User Logic
     const [username] = useState(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -64,120 +34,147 @@ export default function Navbar() {
         return "";
     });
 
+    const getUserId = () => {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.userId;
+        } catch (e) { return null; }
+    };
+    const userId = getUserId();
+
+    // Socket Subscription
+    useNotificationSocket(userId, () => {
+        setUnreadCount(prev => prev + 1);
+    });
+
+    // Initial Badge Fetch
+    useEffect(() => {
+        getUnreadCount().then(res => setUnreadCount(res.data));
+    }, []);
+
+    // Click Outside Handler for Notifications
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setShowNotifications(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     const logout = () => {
         localStorage.removeItem("token");
         navigate("/login");
     };
 
-    const submit = (e) => {
+    const submitSearch = (e) => {
         e.preventDefault();
         if (!q.trim()) return;
         navigate(`/search?q=${encodeURIComponent(q)}`);
     };
 
-    return (
-        <div className="relative z-50 flex items-center justify-between mb-6 px-4 py-3 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100 dark:border-gray-700 rounded-lg transition-colors duration-200">
-            <h1
-                className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent cursor-pointer"
-                onClick={() => navigate("/feed")}
-            >
-                Social
-            </h1>
+    const isActive = (path) => location.pathname === path;
 
-            <div className="flex gap-4 items-center">
-                <form onSubmit={submit} className="relative hidden sm:block">
+    return (
+        <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
+
+                    {/* LEFT: Logo */}
+                    <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/feed")}>
+                        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent transform hover:scale-105 transition-transform">
+                            Social
+                        </h1>
+                    </div>
+
+                    {/* CENTER: Search & Navigation (Desktop) */}
+                    <div className="hidden md:flex flex-1 justify-center items-center px-8 gap-8">
+
+                        {/* Search Bar */}
+                        <form onSubmit={submitSearch} className="relative w-full max-w-xs group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                            <input
+                                className="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500/50 transition-all dark:text-white placeholder-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 focus:bg-white dark:focus:bg-gray-800"
+                                placeholder="Search users..."
+                                value={q}
+                                onChange={e => setQ(e.target.value)}
+                            />
+                        </form>
+
+                        {/* Nav Icons */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => navigate("/feed")}
+                                className={`p-2 rounded-xl transition-all relative group ${isActive('/feed') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title="Feed"
+                            >
+                                <Home size={24} strokeWidth={isActive('/feed') ? 2.5 : 2} />
+                                {isActive('/feed') && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full mb-1"></span>}
+                            </button>
+
+                            <button
+                                onClick={() => navigate("/inbox")}
+                                className={`p-2 rounded-xl transition-all relative group ${isActive('/inbox') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title="Inbox"
+                            >
+                                <MessageCircle size={24} strokeWidth={isActive('/inbox') ? 2.5 : 2} />
+                            </button>
+
+                            {/* Notifications */}
+                            <div className="relative" ref={notificationRef}>
+                                <button
+                                    onClick={() => setShowNotifications(!showNotifications)}
+                                    className={`p-2 rounded-xl transition-all relative group ${showNotifications ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                    title="Notifications"
+                                >
+                                    <Bell size={24} strokeWidth={showNotifications ? 2.5 : 2} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                                        </span>
+                                    )}
+                                </button>
+                                {showNotifications && (
+                                    <NotificationDropdown onClose={() => setShowNotifications(false)} />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* RIGHT: Actions */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                            className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            title="Toggle Theme"
+                        >
+                            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+                        </button>
+
+                        <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+                        <UserMenu username={username} logout={logout} />
+                    </div>
+
+                </div>
+            </div>
+
+            {/* Mobile Navigation (Bottom Bar ideally, but ensuring basic usability here if searching) */}
+            <div className="md:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                <form onSubmit={submitSearch} className="relative w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                     <input
-                        className="border border-gray-300 dark:border-gray-600 rounded-full py-1 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 w-48 transition-all bg-gray-50 dark:bg-gray-700 dark:text-gray-100 placeholder-gray-400"
-                        placeholder="Search users..."
+                        className="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-full py-1.5 pl-9 pr-4 text-sm focus:outline-none dark:text-white placeholder-gray-400"
+                        placeholder="Search..."
                         value={q}
                         onChange={e => setQ(e.target.value)}
                     />
                 </form>
-
-                <div className="flex gap-4 text-sm font-medium text-gray-600 dark:text-gray-300 items-center">
-                    <button
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        onClick={() => navigate("/feed")}
-                    >
-                        Feed
-                    </button>
-
-                    <button
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        onClick={() => navigate("/inbox")}
-                    >
-                        Inbox
-                    </button>
-
-                    <button
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors sm:hidden"
-                        onClick={() => navigate("/search")}
-                    >
-                        Search
-                    </button>
-
-                    <button
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative"
-                        onClick={() => navigate("/notifications")}
-                    >
-                        Notifications
-                        {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
-                                {unreadCount}
-                            </span>
-                        )}
-                    </button>
-
-                    <div className="relative" ref={notificationRef}>
-                        <div
-                            className="cursor-pointer hover:text-blue-600 transition-colors relative"
-                            title="Notifications"
-                            onClick={() => setShowNotifications(!showNotifications)}
-                        >
-                            <span className="text-xl">🔔</span>
-                            {notifications && notifications.length > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center border-2 border-white dark:border-gray-800">
-                                    {notifications.length}
-                                </span>
-                            )}
-                        </div>
-                        {showNotifications && (
-                            <NotificationDropdown onClose={() => setShowNotifications(false)} />
-                        )}
-                    </div>
-
-                    {username && (
-                        <button
-                            onClick={() => navigate(`/profile/${username}`)}
-                            className="text-gray-900 dark:text-gray-100 font-semibold hover:underline hidden md:inline"
-                        >
-                            {username}
-                        </button>
-                    )}
-
-                    <button
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        onClick={() => navigate("/settings")}
-                    >
-                        Settings
-                    </button>
-
-                    <button
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-lg leading-none"
-                        title="Toggle Theme"
-                    >
-                        {theme === "dark" ? "☀️" : "🌙"}
-                    </button>
-
-                    <button
-                        className="hover:text-red-500 transition-colors"
-                        onClick={logout}
-                    >
-                        Logout
-                    </button>
-                </div>
             </div>
-        </div>
+        </nav>
     );
 }

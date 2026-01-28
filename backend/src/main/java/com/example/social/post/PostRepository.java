@@ -1,5 +1,7 @@
 package com.example.social.post;
 
+import java.util.List;
+
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -30,10 +32,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     long countByAuthorId(Long authorId);
 
+    List<Post> findAllByAuthor(com.example.social.user.User author);
+
+    Page<Post> findByAuthor(com.example.social.user.User author, Pageable pageable);
+
     @Query("""
                 SELECT p FROM Post p
                 JOIN FETCH p.author
                 WHERE p.id = :id
             """)
     java.util.Optional<Post> findPostByIdWithAuthor(@Param("id") Long id);
+
+    List<Post> findByAuthorUsernameOrderByCreatedAtDesc(String username);
 }
