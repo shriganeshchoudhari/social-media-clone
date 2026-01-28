@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getProfile, toggleFollow, updateProfile } from "../api/profileService";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 
 export default function Profile() {
+    const navigate = useNavigate();
     const { username } = useParams();
     const [profile, setProfile] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -113,15 +114,23 @@ export default function Profile() {
                         </button>
                     )
                 ) : (
-                    <button
-                        onClick={() => toggleFollow(profile.username).then(load)}
-                        className={`px-6 py-2 rounded font-medium transition-colors ${profile.following
-                            ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
-                            }`}
-                    >
-                        {profile.following ? "Unfollow" : "Follow"}
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => toggleFollow(profile.username).then(load)}
+                            className={`px-6 py-2 rounded font-medium transition-colors ${profile.following
+                                ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+                                : "bg-blue-600 text-white hover:bg-blue-700"
+                                }`}
+                        >
+                            {profile.following ? "Unfollow" : "Follow"}
+                        </button>
+                        <button
+                            onClick={() => navigate(`/chat/${profile.username}`)}
+                            className="px-6 py-2 rounded font-medium transition-colors bg-green-600 text-white hover:bg-green-700"
+                        >
+                            Message
+                        </button>
+                    </div>
                 )}
             </div>
         </Layout>

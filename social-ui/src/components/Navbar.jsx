@@ -103,6 +103,13 @@ export default function Navbar() {
                     </button>
 
                     <button
+                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        onClick={() => navigate("/inbox")}
+                    >
+                        Inbox
+                    </button>
+
+                    <button
                         className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors sm:hidden"
                         onClick={() => navigate("/search")}
                     >
@@ -147,6 +154,13 @@ export default function Navbar() {
                             {username}
                         </button>
                     )}
+
+                    <button
+                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        onClick={() => navigate("/settings")}
+                    >
+                        Settings
+                    </button>
 
                     <button
                         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

@@ -16,11 +16,16 @@ spring:
     locations: classpath:db/migration
     enabled: true
     baseline-on-migrate: true
+    clean-disabled: false
     show-sql: false
     properties:
       hibernate:
         "[format_sql]": true
     open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 logging:
   level:
@@ -37,6 +42,9 @@ management:
     health:
       probes:
         enabled: true
+
+app:
+  upload-dir: uploads
 
 jwt:
   secret: ${JWT_SECRET:12345678901234567890123456789012}

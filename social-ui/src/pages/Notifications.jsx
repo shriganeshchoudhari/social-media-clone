@@ -70,6 +70,8 @@ export default function Notifications() {
                                     navigate(`/post/${n.referenceId}`);
                                 } else if (n.type === "FOLLOW") {
                                     navigate(`/profile/${n.actorUsername}`);
+                                } else if (n.type === "MESSAGE") {
+                                    navigate(`/chat/${n.actorUsername}`);
                                 }
                             }}
                             className={`p-4 rounded-lg shadow-sm border flex gap-4 cursor-pointer transition-colors

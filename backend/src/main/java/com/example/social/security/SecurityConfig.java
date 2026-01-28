@@ -43,7 +43,10 @@ public class SecurityConfig {
 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/**").permitAll()
-                                                .requestMatchers("/ws/**").permitAll()
+                                                .requestMatchers("/ws/**").permitAll() // WebSocket Handshake
+                                                .requestMatchers("/ws").permitAll()
+                                                .requestMatchers("/uploads/**").permitAll() // Allow serving static
+                                                                                            // files
                                                 .requestMatchers("/actuator/**").permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                                                 .permitAll()
@@ -53,6 +56,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/comments/**").hasRole("USER")
                                                 .requestMatchers("/api/follows/**").hasRole("USER")
                                                 .requestMatchers("/api/users/**").hasRole("USER")
+                                                .requestMatchers("/api/chat/**").hasRole("USER")
                                                 .anyRequest().authenticated()) // -> .anyRequest().authenticated()
                                 .addFilterBefore(
                                                 jwtAuthenticationFilter,

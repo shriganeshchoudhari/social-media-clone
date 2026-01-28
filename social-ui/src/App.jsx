@@ -8,6 +8,9 @@ import Navbar from "./components/Navbar";
 import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
 import PostPage from "./pages/PostPage";
+import ChatPage from "./pages/ChatPage";
+import Inbox from "./pages/Inbox";
+import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -54,11 +57,38 @@ export default function App() {
         />
 
         <Route
+          path="/chat/:username"
+          element={
+            <ProtectedRoute>
+              <ChatPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/inbox"
+          element={
+            <ProtectedRoute>
+              <Inbox />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/notifications"
           element={
             <ProtectedRoute>
               <Navbar />
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

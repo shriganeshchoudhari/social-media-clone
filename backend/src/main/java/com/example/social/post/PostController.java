@@ -1,7 +1,6 @@
 package com.example.social.post;
 
-import com.example.social.post.dto.*;
-import jakarta.validation.Valid;
+import com.example.social.post.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
@@ -14,11 +13,12 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public PostResponse createPost(
-            @Valid @RequestBody CreatePostRequest request,
+            @RequestParam("content") String content,
+            @RequestParam(value = "images", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> images,
             Authentication authentication) {
-        return postService.createPost(authentication.getName(), request);
+        return postService.createPost(authentication.getName(), content, images);
     }
 
     @GetMapping("/feed")
@@ -41,6 +41,21 @@ public class PostController {
             @PathVariable Long id,
             Authentication auth) {
         return postService.getPostById(id, auth.getName());
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePost(
+            @PathVariable Long id,
+            Authentication auth) {
+        postService.deletePost(id, auth.getName());
+    }
+
+    @PutMapping("/{id}")
+    public PostResponse editPost(
+            @PathVariable Long id,
+            @RequestParam String content,
+            Authentication auth) {
+        return postService.editPost(id, content, auth.getName());
     }
 
 }
