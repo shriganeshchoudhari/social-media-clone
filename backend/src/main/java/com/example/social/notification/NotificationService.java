@@ -3,7 +3,7 @@ package com.example.social.notification;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -10,6 +10,7 @@ spring:
     password: ${DB_PASS:social}
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: validate
   flyway:
@@ -17,11 +18,7 @@ spring:
     enabled: true
     baseline-on-migrate: true
     clean-disabled: false
-    show-sql: false
-    properties:
-      hibernate:
-        "[format_sql]": true
-    open-in-view: false
+
   servlet:
     multipart:
       max-file-size: 10MB

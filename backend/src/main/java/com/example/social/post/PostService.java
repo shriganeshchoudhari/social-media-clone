@@ -15,7 +15,6 @@ public class PostService {
         private final UserRepository userRepository;
         private final PostLikeRepository postLikeRepository;
         private final com.example.social.file.FileStorageService fileStorageService;
-        private final com.example.social.notification.NotificationService notificationService;
 
         public PostResponse createPost(String username, String content,
                         java.util.List<org.springframework.web.multipart.MultipartFile> images) {

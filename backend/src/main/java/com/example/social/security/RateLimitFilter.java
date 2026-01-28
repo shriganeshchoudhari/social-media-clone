@@ -2,7 +2,6 @@ package com.example.social.security;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -15,7 +14,10 @@ public class RateLimitFilter implements Filter {
 
     public RateLimitFilter() {
         // Allow 5 requests per minute for login/auth endpoints as a default
-        Bandwidth limit = Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1)));
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(5)
+                .refillGreedy(5, Duration.ofMinutes(1))
+                .build();
         this.bucket = Bucket.builder().addLimit(limit).build();
     }
 

@@ -1,6 +1,5 @@
 package com.example.social.file;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,8 +12,8 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
 
-    public FileStorageService(@Value("${app.upload-dir}") String uploadDir) {
-        this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+    public FileStorageService(com.example.social.config.AppProperties appProperties) {
+        this.fileStorageLocation = Paths.get(appProperties.getUploadDir()).toAbsolutePath().normalize();
 
         try {
             Files.createDirectories(this.fileStorageLocation);
