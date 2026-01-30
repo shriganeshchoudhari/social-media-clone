@@ -1,0 +1,3 @@
+ALTER TABLE users
+ADD COLUMN warning_count INT DEFAULT 0,
+ADD COLUMN banned_until TIMESTAMP NULL;

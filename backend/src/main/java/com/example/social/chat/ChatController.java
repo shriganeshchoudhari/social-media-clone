@@ -27,7 +27,13 @@ public class ChatController {
     public List<MessageResponse> conversation(
             @PathVariable String username,
             Authentication auth) {
-        return chatService.getConversation(auth.getName(), username);
+        System.out.println("ChatController: Fetching conversation with " + username);
+        try {
+            return chatService.getConversation(auth.getName(), username);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping("/inbox")

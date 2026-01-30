@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
@@ -14,8 +14,8 @@ export default function PostPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const load = () => {
-        setLoading(true);
+    const load = useCallback(() => {
+        // setLoading(true); // Initial state is true, and we accept stale data on id change for now
         getPostById(id)
             .then(res => {
                 setPost(res.data);
@@ -26,11 +26,11 @@ export default function PostPage() {
                 setError("Post not found or unavailable.");
                 setLoading(false);
             });
-    };
+    }, [id]);
 
     useEffect(() => {
         load();
-    }, [id]);
+    }, [load]);
 
     if (loading) {
         return (

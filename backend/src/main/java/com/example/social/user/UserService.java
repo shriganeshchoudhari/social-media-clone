@@ -1,8 +1,6 @@
 package com.example.social.user;
 
-import com.example.social.follow.FollowRepository;
 import com.example.social.post.Post;
-import com.example.social.post.PostRepository;
 import com.example.social.post.PostImage;
 import com.example.social.user.dto.ProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +23,7 @@ public class UserService {
     private final com.example.social.comment.CommentRepository commentRepository;
     private final com.example.social.follow.FollowRepository followRepository;
     private final BlockRepository blockRepository;
+    private final UserInterestRepository userInterestRepository;
 
     public void toggleBlock(String me, String targetUsername) {
         User blocker = getUserByUsername(me);
@@ -88,7 +87,8 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User updateProfile(String username, String bio, MultipartFile avatar) {
+    @Transactional
+    public User updateProfile(String username, String bio, MultipartFile avatar, List<String> interests) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         // Update bio
@@ -100,6 +100,22 @@ public class UserService {
         if (avatar != null && !avatar.isEmpty()) {
             String url = fileStorageService.storeFile(avatar);
             user.setProfileImageUrl(url);
+        }
+
+        // Update interests
+        if (interests != null) {
+            // Delete existing interests
+            userInterestRepository.deleteByUser(user);
+
+            // Add new interests
+            for (String tag : interests) {
+                if (tag != null && !tag.trim().isEmpty()) {
+                    UserInterest interest = new UserInterest();
+                    interest.setUser(user);
+                    interest.setTag(tag.trim());
+                    userInterestRepository.save(interest);
+                }
+            }
         }
 
         return userRepository.save(user);
@@ -129,10 +145,10 @@ public class UserService {
                 following);
     }
 
-    public void togglePrivacy(String username) {
+    public User togglePrivacy(String username) {
         User user = getUserByUsername(username);
         user.setPrivate(!user.isPrivate());
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) {
@@ -151,6 +167,24 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setTokenVersion(user.getTokenVersion() + 1); // Invalidate
                                                           // tokens
+        userRepository.save(user);
+    }
+
+    public void warn(String username) {
+        User user = getUserByUsername(username);
+        user.setWarningCount(user.getWarningCount() + 1);
+        userRepository.save(user);
+    }
+
+    public void suspend(String username, int days) {
+        User user = getUserByUsername(username);
+        user.setBannedUntil(java.time.LocalDateTime.now().plusDays(days));
+        userRepository.save(user);
+    }
+
+    public void unsuspend(String username) {
+        User user = getUserByUsername(username);
+        user.setBannedUntil(null);
         userRepository.save(user);
     }
 }

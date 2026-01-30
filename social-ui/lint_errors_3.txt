@@ -1,0 +1,73 @@
+
+> social-ui@0.0.0 lint
+> eslint .
+
+
+F:\DEVOPS\social-media-clone\social-ui\cypress.config.js
+  6:25  warning  'on' is defined but never used      no-unused-vars
+  6:29  warning  'config' is defined but never used  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\__tests__\Navbar.test.jsx
+  1:26  warning  'fireEvent' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\api\postService.js
+  30:5  error  Unreachable code  no-unreachable
+
+F:\DEVOPS\social-media-clone\social-ui\src\components\Navbar.jsx
+  43:18  warning  'e' is defined but never used  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\components\NotificationDropdown.jsx
+  1:25  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u          no-unused-vars
+  8:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\context\WebSocketContext.jsx
+  94:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+F:\DEVOPS\social-media-clone\social-ui\src\hooks\useChatSocket.js
+  47:34  warning  'e' is defined but never used  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\hooks\useNotificationSocket.js
+  25:34  warning  'e' is defined but never used                                                                                                                                                                                                      no-unused-vars
+  40:8   warning  React Hook useEffect has a missing dependency: 'onMessage'. Either include it or remove the dependency array. If 'onMessage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+F:\DEVOPS\social-media-clone\social-ui\src\pages\ChatPage.jsx
+   24:18  warning  'e' is defined but never used      no-unused-vars
+  138:42  warning  'index' is defined but never used  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\pages\Feed.jsx
+  29:18  warning  'e' is defined but never used  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\pages\Notifications.jsx
+  13:13  warning  'clearNotifications' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\src\pages\PostPage.jsx
+  32:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  30 |
+  31 |     useEffect(() => {
+> 32 |         load();
+     |         ^^^^ Avoid calling setState() directly within an effect
+  33 |     }, [load]);
+  34 |
+  35 |     if (loading) {  react-hooks/set-state-in-effect
+
+F:\DEVOPS\social-media-clone\social-ui\tests\advanced-moderation.spec.js
+  106:18  warning  'e' is defined but never used  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\tests\production-pack.spec.js
+  153:13  warning  'testPost' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\tests\settings.spec.js
+  2:8  warning  'path' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+F:\DEVOPS\social-media-clone\social-ui\tests\social-platform.spec.js
+  324:19  warning  'dropdown' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+??? 20 problems (3 errors, 17 warnings)
+

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -17,6 +19,8 @@ public class PostService {
         private final PostLikeRepository postLikeRepository;
         private final com.example.social.file.FileStorageService fileStorageService;
         private final FollowRepository followRepository;
+        private final BlockRepository blockRepository;
+        private final UserInterestRepository userInterestRepository;
 
         public PostResponse createPost(String username, String content,
                         java.util.List<org.springframework.web.multipart.MultipartFile> images) {
@@ -83,7 +87,8 @@ public class PostService {
 
         public Page<PostResponse> getPersonalFeed(String username, int page, int size) {
 
-                User currentUser = userRepository.findByUsername(username).orElseThrow();
+                User currentUser = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
                 Pageable pageable = PageRequest.of(page, size);
 
                 return postRepository
@@ -125,6 +130,45 @@ public class PostService {
                                 .stream()
                                 .map(post -> mapToResponse(post, viewer))
                                 .toList();
+        }
+
+        public Page<PostResponse> explore(int page, int size, String username) {
+                User currentUser = userRepository.findByUsername(username).orElseThrow();
+                Pageable pageable = PageRequest.of(page, size);
+
+                // Try personalized explore first
+                return explorePersonalized(page, size, username);
+        }
+
+        public Page<PostResponse> explorePersonalized(int page, int size, String username) {
+                User currentUser = userRepository.findByUsername(username).orElseThrow();
+                Pageable pageable = PageRequest.of(page, size);
+
+                // Check for user interests
+                String tag = userInterestRepository.findTopByUser(currentUser)
+                                .map(UserInterest::getTag)
+                                .orElse(null);
+
+                Page<Post> posts;
+                if (tag != null) {
+                        posts = postRepository.exploreByInterest(tag, pageable);
+                } else {
+                        // Fallback to trending
+                        posts = postRepository.trending(pageable);
+                }
+
+                // Filter out posts from blocked users
+                List<Post> filtered = posts.getContent().stream()
+                                .filter(post -> !blockRepository.existsByBlockerAndBlocked(currentUser,
+                                                post.getAuthor())
+                                                && !blockRepository.existsByBlockerAndBlocked(post.getAuthor(),
+                                                                currentUser))
+                                .toList();
+
+                return new PageImpl<>(
+                                filtered.stream().map(post -> mapToResponse(post, currentUser)).toList(),
+                                pageable,
+                                posts.getTotalElements());
         }
 
         private PostResponse mapToResponse(Post post, User currentUser) {
@@ -178,5 +222,16 @@ public class PostService {
                 Post saved = postRepository.save(post);
 
                 return mapToResponse(saved, post.getAuthor());
+        }
+
+        public void deleteAdminPost(Long postId) {
+                Post post = postRepository.findById(postId)
+                                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+                // Delete all associated images from filesystem
+                for (PostImage img : post.getImages()) {
+                        fileStorageService.deleteFile(img.getUrl());
+                }
+                postRepository.delete(post);
         }
 }

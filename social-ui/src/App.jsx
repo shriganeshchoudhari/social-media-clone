@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import Feed from "./pages/Feed";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
@@ -11,6 +13,8 @@ import PostPage from "./pages/PostPage";
 import ChatPage from "./pages/ChatPage";
 import Inbox from "./pages/Inbox";
 import Settings from "./pages/Settings";
+import Explore from "./pages/Explore";
+import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (
@@ -36,6 +40,8 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<Login />} />
 
         <Route
@@ -89,6 +95,24 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/explore"
+          element={
+            <ProtectedRoute>
+              <Explore />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />

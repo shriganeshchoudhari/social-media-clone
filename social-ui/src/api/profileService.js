@@ -8,3 +8,6 @@ export const toggleFollow = (username) =>
 
 export const updateProfile = (bio, imageUrl) =>
     api.put(`/users/me`, null, { params: { bio, imageUrl } });
+
+export const toggleBlock = (username) =>
+    api.post(`/users/${username}/block`);

@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    List<Message> findBySenderAndReceiverOrReceiverAndSenderOrderByCreatedAtAsc(
-            User sender1, User receiver1,
-            User sender2, User receiver2);
+    @org.springframework.data.jpa.repository.Query("SELECT m FROM Message m WHERE (m.sender = :user1 AND m.receiver = :user2) OR (m.sender = :user2 AND m.receiver = :user1) ORDER BY m.createdAt ASC")
+    List<Message> findConversation(@org.springframework.data.repository.query.Param("user1") User user1,
+            @org.springframework.data.repository.query.Param("user2") User user2);
 
     @org.springframework.data.jpa.repository.Query("""
                 SELECT m FROM Message m

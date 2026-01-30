@@ -50,6 +50,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/actuator/**").permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                                                 .permitAll()
+
+                                                // Admin-only endpoints
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
                                                 // Explicit protected APIs
                                                 .requestMatchers("/api/posts/**").hasRole("USER")
                                                 .requestMatchers("/api/likes/**").hasRole("USER")

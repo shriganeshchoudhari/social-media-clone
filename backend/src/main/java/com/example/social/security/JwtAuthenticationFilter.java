@@ -51,6 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+            // Block banned users even with valid tokens
+            if (userDetails instanceof CustomUserDetails) {
+                if (((CustomUserDetails) userDetails).isBanned()) {
+                    response.setStatus(403);
+                    return;
+                }
+            }
+
             if (jwtService.isTokenValid(token, userDetails)) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

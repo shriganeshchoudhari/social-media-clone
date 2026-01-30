@@ -17,7 +17,9 @@ public class ChatService {
         private final com.example.social.notification.NotificationService notificationService;
         private final com.example.social.file.FileStorageService fileStorageService;
         private final com.example.social.user.BlockRepository blockRepository;
+        private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
 
+        @org.springframework.transaction.annotation.Transactional
         public void sendMessage(String senderUsername, String receiverUsername, String content) {
 
                 User sender = userRepository.findByUsername(senderUsername).orElseThrow();
@@ -38,6 +40,29 @@ public class ChatService {
 
                 messageRepository.save(message);
 
+                // Send real-time message to receiver
+                MessageResponse response = new MessageResponse(
+                                message.getId(),
+                                sender.getUsername(),
+                                receiver.getUsername(),
+                                message.getContent(),
+                                message.getImageUrl(),
+                                message.isRead(),
+                                message.getCreatedAt());
+
+                messagingTemplate.convertAndSendToUser(
+                                receiverUsername,
+                                "/queue/messages",
+                                response);
+
+                // Also send back to sender (for confirmation/synced across devices)
+                /*
+                 * messagingTemplate.convertAndSendToUser(
+                 * senderUsername,
+                 * "/queue/messages",
+                 * response);
+                 */
+
                 // Send notification to receiver
                 notificationService.create(
                                 receiver,
@@ -47,6 +72,7 @@ public class ChatService {
                                 sender.getUsername() + " sent you a message");
         }
 
+        @org.springframework.transaction.annotation.Transactional
         public List<MessageResponse> getConversation(String me, String other) {
 
                 User user1 = userRepository.findByUsername(me).orElseThrow();
@@ -56,9 +82,7 @@ public class ChatService {
                 messageRepository.markRead(user1, user2);
 
                 return messageRepository
-                                .findBySenderAndReceiverOrReceiverAndSenderOrderByCreatedAtAsc(
-                                                user1, user2,
-                                                user1, user2)
+                                .findConversation(user1, user2)
                                 .stream()
                                 .map(m -> new MessageResponse(
                                                 m.getId(),
@@ -71,24 +95,29 @@ public class ChatService {
                                 .toList();
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public List<com.example.social.chat.dto.ConversationResponse> inbox(String username) {
-
+                System.out.println("Fetching inbox for: " + username);
                 User me = userRepository.findByUsername(username).orElseThrow();
 
                 List<Message> messages = messageRepository.findRecentMessages(me);
+                System.out.println("Total messages found: " + messages.size());
 
                 java.util.Map<String, Message> latestMap = new java.util.LinkedHashMap<>();
 
                 for (Message m : messages) {
-
-                        String other = m.getSender().equals(me)
+                        String other = m.getSender().getUsername().equals(me.getUsername())
                                         ? m.getReceiver().getUsername()
                                         : m.getSender().getUsername();
+
+                        // System.out.println("Processing message with: " + other);
 
                         if (!latestMap.containsKey(other)) {
                                 latestMap.put(other, m);
                         }
                 }
+
+                System.out.println("Unique conversations: " + latestMap.size());
 
                 return latestMap.entrySet().stream()
                                 .map(e -> new com.example.social.chat.dto.ConversationResponse(
@@ -117,6 +146,21 @@ public class ChatService {
                                 .build();
 
                 messageRepository.save(message);
+
+                // Send real-time message to receiver
+                MessageResponse response = new MessageResponse(
+                                message.getId(),
+                                sender.getUsername(),
+                                receiver.getUsername(),
+                                message.getContent(),
+                                message.getImageUrl(),
+                                message.isRead(),
+                                message.getCreatedAt());
+
+                messagingTemplate.convertAndSendToUser(
+                                receiverUsername,
+                                "/queue/messages",
+                                response);
 
                 // Send notification to receiver
                 notificationService.create(

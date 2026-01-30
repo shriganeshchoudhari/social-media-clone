@@ -123,6 +123,22 @@ export default function Navbar() {
                                 <MessageCircle size={24} strokeWidth={isActive('/inbox') ? 2.5 : 2} />
                             </button>
 
+                            <button
+                                onClick={() => navigate("/explore")}
+                                className={`p-2 rounded-xl transition-all text-sm font-medium ${isActive('/explore') ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title="Explore Trending"
+                            >
+                                🔥
+                            </button>
+
+                            <button
+                                onClick={() => navigate("/admin")}
+                                className={`p-2 rounded-xl transition-all text-sm font-medium ${isActive('/admin') ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title="Admin Dashboard"
+                            >
+                                🛡️
+                            </button>
+
                             {/* Notifications */}
                             <div className="relative" ref={notificationRef}>
                                 <button

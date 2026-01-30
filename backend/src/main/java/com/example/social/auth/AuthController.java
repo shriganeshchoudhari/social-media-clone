@@ -21,4 +21,17 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
+
+    @PostMapping("/forgot-password")
+    public void forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request.email());
+    }
+
+    @PostMapping("/reset-password")
+    public void resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(
+                request.email(),
+                request.otp(),
+                request.newPassword());
+    }
 }

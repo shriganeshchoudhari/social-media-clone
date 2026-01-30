@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.10</version>
+        <version>3.4.1</version>
         <relativePath/>
     </parent>
 
@@ -63,6 +63,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -70,7 +76,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- JWT (we’ll use this in next step) -->
+        <!-- JWT (we'll use this in next step) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -132,6 +138,11 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

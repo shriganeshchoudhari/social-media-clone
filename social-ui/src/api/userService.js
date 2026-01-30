@@ -1,10 +1,16 @@
 import api from "./axios";
 
-export const updateProfile = (bio, avatarFile) => {
+export const updateProfile = (profile, avatarFile) => {
     const form = new FormData();
 
-    if (bio !== null && bio !== undefined) {
-        form.append("bio", bio);
+    if (profile.bio !== null && profile.bio !== undefined) {
+        form.append("bio", profile.bio);
+    }
+
+    if (profile.interests && profile.interests.length > 0) {
+        profile.interests.forEach(interest => {
+            form.append("interests", interest);
+        });
     }
 
     if (avatarFile) {
@@ -16,20 +22,23 @@ export const updateProfile = (bio, avatarFile) => {
     });
 };
 
-export const changePassword = (oldPassword, newPassword) =>
+export const changePassword = (passwordData) =>
     api.post("/users/me/change-password", {
-        oldPassword,
-        newPassword
+        oldPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
     });
 
 export const getCurrentUser = () =>
     api.get("/users/me");
 
+export const getMyInterests = () =>
+    api.get("/users/me/interests");
+
 export const getUserProfile = (username) =>
     api.get(`/users/${username}`);
 
 export const togglePrivacy = () =>
-    api.post("/users/me/privacy");
+    api.post("/users/me/privacy").then(res => res.data);
 
 export const deleteAccount = () =>
     api.delete("/users/me");

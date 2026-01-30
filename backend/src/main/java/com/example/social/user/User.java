@@ -2,6 +2,7 @@ package com.example.social.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -35,10 +36,27 @@ public class User {
     private LocalDateTime createdAt;
 
     @Builder.Default
+    @JsonProperty("isPrivate")
     private boolean isPrivate = false;
 
     @Builder.Default
     private int tokenVersion = 0;
+
+    @Builder.Default
+    private boolean isBanned = false;
+
+    @Builder.Default
+    @Column(length = 20)
+    private String role = "USER";
+
+    @Builder.Default
+    private int warningCount = 0;
+
+    private LocalDateTime bannedUntil;
+
+    public boolean isSuspended() {
+        return bannedUntil != null && bannedUntil.isAfter(LocalDateTime.now());
+    }
 
     @PrePersist
     void onCreate() {

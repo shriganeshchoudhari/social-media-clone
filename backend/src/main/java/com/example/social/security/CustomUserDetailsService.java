@@ -19,6 +19,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+                if (user.isSuspended()) {
+                        throw new RuntimeException("Account suspended until " + user.getBannedUntil());
+                }
+
                 return new CustomUserDetails(user);
         }
 }

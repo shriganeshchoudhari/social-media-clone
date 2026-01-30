@@ -13,18 +13,39 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
+    private final com.example.social.user.UserInterestRepository userInterestRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/me")
-    public User me(Authentication auth) {
+    public com.example.social.user.User me(Authentication auth) {
         return userService.getUserByUsername(auth.getName());
+    }
+
+    @GetMapping("/me/interests")
+    public java.util.List<String> getMyInterests(Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userInterestRepository.findTagsByUser(user);
+    }
+
+    @PostMapping("/me/interests")
+    public void saveInterest(Authentication auth, @RequestParam String tag) {
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        com.example.social.user.UserInterest interest = new com.example.social.user.UserInterest();
+        interest.setUser(user);
+        interest.setTag(tag);
+        userInterestRepository.save(interest);
     }
 
     @PutMapping(value = "/me", consumes = "multipart/form-data")
     public User updateProfile(
             @RequestParam(required = false) String bio,
             @RequestParam(required = false) MultipartFile avatar,
+            @RequestParam(required = false) java.util.List<String> interests,
             Authentication auth) {
-        return userService.updateProfile(auth.getName(), bio, avatar);
+        return userService.updateProfile(auth.getName(), bio, avatar, interests);
     }
 
     @PostMapping("/me/change-password")
@@ -45,8 +66,8 @@ public class UserController {
     }
 
     @PostMapping("/me/privacy")
-    public void togglePrivacy(Authentication auth) {
-        userService.togglePrivacy(auth.getName());
+    public User togglePrivacy(Authentication auth) {
+        return userService.togglePrivacy(auth.getName());
     }
 
     @DeleteMapping("/me")

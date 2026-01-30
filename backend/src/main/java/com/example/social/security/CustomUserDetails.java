@@ -16,6 +16,8 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final int tokenVersion;
+    private final boolean isBanned;
+    private final String role;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
@@ -23,7 +25,9 @@ public class CustomUserDetails implements UserDetails {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.tokenVersion = user.getTokenVersion();
-        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        this.isBanned = user.isBanned();
+        this.role = user.getRole();
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
     }
 
     @Override
