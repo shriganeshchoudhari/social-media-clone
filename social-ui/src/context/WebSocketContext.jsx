@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { getNotifications, markAllRead } from '../api/notificationService';
 
 const WebSocketContext = createContext(null);
 
@@ -15,6 +16,11 @@ export const WebSocketProvider = ({ children }) => {
 
     useEffect(() => {
         if (!token) return;
+
+        // Fetch existing notifications
+        getNotifications().then(res => {
+            setNotifications(res.data);
+        }).catch(err => console.error("Failed to load notifications", err));
 
         const socket = new SockJS('http://localhost:8081/ws');
         const stompClient = new Client({
@@ -42,7 +48,9 @@ export const WebSocketProvider = ({ children }) => {
     }, [token]);
 
     const clearNotifications = () => {
-        setNotifications([]);
+        markAllRead().then(() => {
+            setNotifications([]);
+        }).catch(err => console.error(err));
     };
 
     return (

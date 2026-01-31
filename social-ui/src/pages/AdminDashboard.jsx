@@ -12,17 +12,33 @@ export default function AdminDashboard() {
 
     const load = async () => {
         try {
-            const [usersRes, reportsRes, auditRes] = await Promise.all([
+            const token = localStorage.getItem("token");
+            const role = token ? JSON.parse(atob(token.split(".")[1])).role : null;
+
+            const promises = [
                 api.get("/admin/users"),
-                api.get("/admin/reports"),
-                api.get("/admin/audit")
-            ]);
-            setUsers(usersRes.data);
-            setReports(reportsRes.data);
-            setAuditLogs(auditRes.data);
+                api.get("/admin/reports")
+            ];
+
+            if (role === 'ADMIN') {
+                promises.push(api.get("/admin/audit"));
+            }
+
+            const results = await Promise.all(promises);
+
+            setUsers(results[0].data);
+            setReports(results[1].data);
+
+            if (role === 'ADMIN') {
+                setAuditLogs(results[2].data);
+            } else {
+                setAuditLogs([]);
+            }
         } catch (error) {
             console.error("Failed to load admin data", error);
-            alert("Failed to load admin data. Make sure you have admin privileges.");
+            // Don't show alert if it's just a 403 on one endpoint, but here we handled it.
+            // Still, if reports/users fail, we should know.
+            alert("Failed to  load admin dashboard. Ensure you have permissions.");
         } finally {
             setLoading(false);
         }
@@ -112,12 +128,14 @@ export default function AdminDashboard() {
                         >
                             Users
                         </button>
-                        <button
-                            className={`px-4 py-2 font-medium ${activeTab === 'audit' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-                            onClick={() => setActiveTab('audit')}
-                        >
-                            Audit Logs
-                        </button>
+                        {(localStorage.getItem("token") && JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role === 'ADMIN') && (
+                            <button
+                                className={`px-4 py-2 font-medium ${activeTab === 'audit' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                                onClick={() => setActiveTab('audit')}
+                            >
+                                Audit Logs
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -130,15 +148,15 @@ export default function AdminDashboard() {
                             reports.map(r => (
                                 <div key={r.id} className="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded">
                                     <div className="flex justify-between items-start mb-1">
-                                        <span className="font-semibold text-orange-800 dark:text-orange-300">Post ID: {r.post.id}</span>
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">by {r.reporter.username}</span>
+                                        <span className="font-semibold text-orange-800 dark:text-orange-300">Post ID: {r.postId}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">by {r.reporterUsername}</span>
                                     </div>
                                     <p className="text-sm text-gray-700 dark:text-gray-300"><strong>Reason:</strong> {r.reason}</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1"><strong>Content:</strong> {r.post.content}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1"><strong>Content:</strong> {r.postContent}</p>
 
                                     <div className="flex gap-2 mt-3">
                                         <button
-                                            onClick={() => deletePost(r.post.id)}
+                                            onClick={() => deletePost(r.postId)}
                                             className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                                         >
                                             Delete Post
@@ -169,21 +187,25 @@ export default function AdminDashboard() {
                                 {u.banned ? (
                                     <div className="flex items-center gap-2">
                                         <span className="text-red-500 font-semibold text-sm">BANNED</span>
-                                        <button
-                                            onClick={() => unbanUser(u.username)}
-                                            className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                                        >
-                                            Unban
-                                        </button>
+                                        {((localStorage.getItem("token") && JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role === 'ADMIN')) && (
+                                            <button
+                                                onClick={() => unbanUser(u.username)}
+                                                className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                                            >
+                                                Unban
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="flex items-center">
-                                        <button
-                                            onClick={() => banUser(u.username)}
-                                            className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                                        >
-                                            Ban
-                                        </button>
+                                        {((localStorage.getItem("token") && JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role === 'ADMIN')) && (
+                                            <button
+                                                onClick={() => banUser(u.username)}
+                                                className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                            >
+                                                Ban
+                                            </button>
+                                        )}
 
                                         <button
                                             onClick={() => api.post(`/admin/warn/${u.username}`).then(() => alert(`Warned ${u.username}`))}
@@ -192,19 +214,23 @@ export default function AdminDashboard() {
                                             Warn
                                         </button>
 
-                                        <button
-                                            onClick={() => api.post(`/admin/suspend/${u.username}?days=7`).then(() => alert(`Suspended ${u.username} for 7 days`))}
-                                            className="ml-2 text-sm bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700"
-                                        >
-                                            Suspend 7d
-                                        </button>
+                                        {((localStorage.getItem("token") && JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role === 'ADMIN')) && (
+                                            <>
+                                                <button
+                                                    onClick={() => api.post(`/admin/suspend/${u.username}?days=7`).then(() => alert(`Suspended ${u.username} for 7 days`))}
+                                                    className="ml-2 text-sm bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700"
+                                                >
+                                                    Suspend 7d
+                                                </button>
 
-                                        <button
-                                            onClick={() => api.post(`/admin/unsuspend/${u.username}`).then(() => alert(`Unsuspended ${u.username}`))}
-                                            className="ml-2 text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                                        >
-                                            Unsuspend
-                                        </button>
+                                                <button
+                                                    onClick={() => api.post(`/admin/unsuspend/${u.username}`).then(() => alert(`Unsuspended ${u.username}`))}
+                                                    className="ml-2 text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                                                >
+                                                    Unsuspend
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -212,8 +238,8 @@ export default function AdminDashboard() {
                     </div>
                 )}
 
-                {/* AUDIT LOGS TAB */}
-                {activeTab === 'audit' && (
+                {/* AUDIT LOGS TAB - ADMIN ONLY */}
+                {activeTab === 'audit' && ((localStorage.getItem("token") && JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role === 'ADMIN')) && (
                     <div>
                         <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Audit Logs (Last 50 Actions)</h3>
                         {auditLogs.length === 0 ? (
@@ -224,7 +250,7 @@ export default function AdminDashboard() {
                                     <div key={log.id} className="bg-gray-50 dark:bg-gray-700 p-3 rounded text-sm text-gray-800 dark:text-gray-200 flex justify-between">
                                         <span>
                                             <span className="font-bold text-red-500">[{log.action}]</span>{" "}
-                                            <span className="font-medium text-blue-600">{log.admin?.username || 'Unknown'}</span>{" "}
+                                            <span className="font-medium text-blue-600">{log.adminUsername || 'Unknown'}</span>{" "}
                                             performed action on <span className="font-medium">{log.targetUsername || 'N/A'}</span>:{" "}
                                             <span className="italic">{log.details}</span>
                                         </span>

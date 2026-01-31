@@ -162,6 +162,18 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+
+            <!-- Flyway Plugin -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/socialdb</url>
+                    <user>social</user>
+                    <password>social</password>
+                    <cleanDisabled>false</cleanDisabled>
+                </configuration>
+            </plugin>
             
         </plugins>
     </build>

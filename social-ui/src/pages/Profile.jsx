@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProfile, toggleFollow, toggleBlock } from "../api/profileService";
+import { getProfile, toggleFollow, toggleBlock, getFollowers, getFollowing } from "../api/profileService";
 import { getPostsByUser } from "../api/postService";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
@@ -10,6 +10,11 @@ export default function Profile() {
     const { username } = useParams();
     const [profile, setProfile] = useState(null);
     const [posts, setPosts] = useState([]);
+    const postsRef = useRef(null);
+
+    const scrollToPosts = () => {
+        postsRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     // Get current user on mount (lazy init)
     const [currentUser] = useState(() => {
@@ -26,6 +31,11 @@ export default function Profile() {
     });
 
     const [selected, setSelected] = useState(null);
+
+    // User List Modal State
+    const [showUserModal, setShowUserModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [userList, setUserList] = useState([]);
 
     const load = useCallback(() => {
         getProfile(username).then(res => {
@@ -59,24 +69,68 @@ export default function Profile() {
 
     const isMe = currentUser === profile.username;
 
+    const openFollowers = async () => {
+        try {
+            const res = await getFollowers(profile.username);
+            setUserList(res.data);
+            setModalTitle("Followers");
+            setShowUserModal(true);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const openFollowing = async () => {
+        try {
+            const res = await getFollowing(profile.username);
+            setUserList(res.data);
+            setModalTitle("Following");
+            setShowUserModal(true);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
         <Layout>
             <Navbar />
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-4 transition-colors duration-200">
                 <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{profile.username}</h2>
+                    <div className="flex-1 flex items-center gap-4">
+                        {/* Avatar */}
+                        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-md shrink-0">
+                            {profile.profileImageUrl ? (
+                                <img
+                                    src={`http://localhost:8081${profile.profileImageUrl}`}
+                                    alt={profile.username}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold">
+                                    {profile.username[0].toUpperCase()}
+                                </div>
+                            )}
+                        </div>
 
-                        <p className="text-gray-600 dark:text-gray-300 mb-4 whitespace-pre-wrap">
-                            {profile.bio || "No bio available"}
-                        </p>
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{profile.username}</h2>
+                            <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+                                {profile.bio || "No bio available"}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <div className="flex gap-6 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 text-gray-700 dark:text-gray-300">
-                    <div><span className="font-bold text-gray-900 dark:text-white">{profile.postCount}</span> posts</div>
-                    <div><span className="font-bold text-gray-900 dark:text-white">{profile.followersCount}</span> followers</div>
-                    <div><span className="font-bold text-gray-900 dark:text-white">{profile.followingCount}</span> following</div>
+                    <button onClick={scrollToPosts} className="hover:text-blue-600 transition-colors">
+                        <span className="font-bold text-gray-900 dark:text-white">{profile.postCount}</span> posts
+                    </button>
+                    <button onClick={openFollowers} className="hover:text-blue-600 transition-colors">
+                        <span className="font-bold text-gray-900 dark:text-white">{profile.followersCount}</span> followers
+                    </button>
+                    <button onClick={openFollowing} className="hover:text-blue-600 transition-colors">
+                        <span className="font-bold text-gray-900 dark:text-white">{profile.followingCount}</span> following
+                    </button>
                 </div>
 
                 {isMe ? (
@@ -123,7 +177,7 @@ export default function Profile() {
                     <p className="text-gray-500 dark:text-gray-400">Follow to see their posts.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-3 gap-2 mt-4">
+                <div ref={postsRef} className="grid grid-cols-3 gap-2 mt-4">
                     {posts.map(post => (
                         <div key={post.id} className="relative aspect-square group cursor-pointer"
                             onClick={() => setSelected(post)}>
@@ -203,6 +257,47 @@ export default function Profile() {
                                     Report
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* User List Modal */}
+            {showUserModal && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-[70] flex justify-center items-center backdrop-blur-sm p-4 animate-in fade-in duration-200"
+                    onClick={() => setShowUserModal(false)}
+                >
+                    <div
+                        className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                            <h3 className="font-bold text-lg dark:text-white">{modalTitle}</h3>
+                            <button onClick={() => setShowUserModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                                ✕
+                            </button>
+                        </div>
+                        <div className="max-h-96 overflow-y-auto p-2">
+                            {userList.length === 0 ? (
+                                <p className="text-center text-gray-500 py-4">No users found.</p>
+                            ) : (
+                                userList.map((u, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer"
+                                        onClick={() => {
+                                            navigate(`/profile/${u}`);
+                                            setShowUserModal(false);
+                                        }}
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold shrink-0">
+                                            {u[0].toUpperCase()}
+                                        </div>
+                                        <span className="font-medium text-gray-900 dark:text-white">{u}</span>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

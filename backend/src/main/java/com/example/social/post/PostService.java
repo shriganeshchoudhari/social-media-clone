@@ -54,6 +54,7 @@ public class PostService {
                 return mapToResponse(saved, user);
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> getFeed(int page, int size) {
                 Pageable pageable = PageRequest.of(page, size);
 
@@ -75,6 +76,7 @@ public class PostService {
                                 });
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public PostResponse getPostById(Long postId, String username) {
                 User currentUser = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -85,6 +87,7 @@ public class PostService {
                 return mapToResponse(post, currentUser);
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> getPersonalFeed(String username, int page, int size) {
 
                 User currentUser = userRepository.findByUsername(username)
@@ -96,6 +99,7 @@ public class PostService {
                                 .map(post -> mapToResponse(post, currentUser));
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> getPostsByUser(String viewerUsername, String targetUsername, int page, int size) {
                 User viewer = userRepository.findByUsername(viewerUsername).orElseThrow();
                 User target = userRepository.findByUsername(targetUsername)
@@ -113,6 +117,7 @@ public class PostService {
                                 .map(post -> mapToResponse(post, viewer));
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public java.util.List<PostResponse> getPostsByUser(String targetUsername, String viewerUsername) {
                 User target = userRepository.findByUsername(targetUsername)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -132,6 +137,7 @@ public class PostService {
                                 .toList();
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> explore(int page, int size, String username) {
                 User currentUser = userRepository.findByUsername(username).orElseThrow();
                 Pageable pageable = PageRequest.of(page, size);
@@ -140,6 +146,7 @@ public class PostService {
                 return explorePersonalized(page, size, username);
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> explorePersonalized(int page, int size, String username) {
                 User currentUser = userRepository.findByUsername(username).orElseThrow();
                 Pageable pageable = PageRequest.of(page, size);

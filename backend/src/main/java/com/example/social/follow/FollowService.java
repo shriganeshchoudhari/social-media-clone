@@ -56,6 +56,7 @@ public class FollowService {
                 }
         }
 
+        @Transactional
         public List<String> getFollowing(String username) {
 
                 User user = userRepository.findByUsername(username)
@@ -67,6 +68,7 @@ public class FollowService {
                                 .toList();
         }
 
+        @Transactional
         public List<String> getFollowers(String username) {
 
                 User user = userRepository.findByUsername(username)

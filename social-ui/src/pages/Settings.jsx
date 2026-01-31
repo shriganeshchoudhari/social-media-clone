@@ -25,6 +25,9 @@ export default function Settings() {
     const [message, setMessage] = useState({ type: "", text: "" });
     const [newInterest, setNewInterest] = useState("");
 
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+
     useEffect(() => {
         loadProfile();
     }, []);
@@ -44,8 +47,12 @@ export default function Settings() {
                 email: user.email,
                 bio: user.bio || "",
                 isPrivate: user.isPrivate || false,
-                interests: interests || []
+                interests: interests || [],
+                profileImageUrl: user.profileImageUrl
             });
+            if (user.profileImageUrl) {
+                setPreviewUrl(`http://localhost:8081${user.profileImageUrl}`);
+            }
         } catch (err) {
             setMessage({ type: "error", text: "Failed to load profile" });
         } finally {
@@ -53,13 +60,28 @@ export default function Settings() {
         }
     };
 
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatarFile(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            await updateProfile(profile);
+            // Pass profile AND avatarFile to the service
+            await updateProfile(profile, avatarFile);
             setMessage({ type: "success", text: "Profile updated successfully" });
+
+            // Refresh profile to get the new avatar URL from backend if needed, 
+            // though we already have the local preview.
+            // Let's reload to be safe and ensure backend persistence.
+            setTimeout(loadProfile, 500);
         } catch (err) {
+            console.error(err);
             setMessage({ type: "error", text: "Failed to update profile" });
         } finally {
             setLoading(false);
@@ -152,6 +174,34 @@ export default function Settings() {
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4 dark:text-white">Profile Settings</h2>
                     <form onSubmit={handleProfileUpdate} className="space-y-4">
+
+                        {/* Avatar Section */}
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                                {previewUrl ? (
+                                    <img src={previewUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
+                                        {profile.username ? profile.username[0].toUpperCase() : "?"}
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1 dark:text-gray-300">Profile Picture</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarChange}
+                                    className="block w-full text-sm text-gray-500
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-full file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-blue-50 file:text-blue-700
+                                        hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300
+                                    "
+                                />
+                            </div>
+                        </div>
                         <div>
                             <label className="block text-sm font-medium mb-1 dark:text-gray-300">Bio</label>
                             <textarea

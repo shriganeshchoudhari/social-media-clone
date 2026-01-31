@@ -11,3 +11,9 @@ export const updateProfile = (bio, imageUrl) =>
 
 export const toggleBlock = (username) =>
     api.post(`/users/${username}/block`);
+
+export const getFollowers = (username) =>
+    api.get(`/users/${username}/followers`);
+
+export const getFollowing = (username) =>
+    api.get(`/users/${username}/following`);

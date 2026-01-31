@@ -52,15 +52,17 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 // Admin-only endpoints
-                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MODERATOR")
 
                                                 // Explicit protected APIs
-                                                .requestMatchers("/api/posts/**").hasRole("USER")
-                                                .requestMatchers("/api/likes/**").hasRole("USER")
-                                                .requestMatchers("/api/comments/**").hasRole("USER")
-                                                .requestMatchers("/api/follows/**").hasRole("USER")
-                                                .requestMatchers("/api/users/**").hasRole("USER")
-                                                .requestMatchers("/api/chat/**").hasRole("USER")
+                                                // Explicit protected APIs - Allow any authenticated role (USER, ADMIN,
+                                                // MODERATOR)
+                                                .requestMatchers("/api/posts/**").authenticated()
+                                                .requestMatchers("/api/likes/**").authenticated()
+                                                .requestMatchers("/api/comments/**").authenticated()
+                                                .requestMatchers("/api/follows/**").authenticated()
+                                                .requestMatchers("/api/users/**").authenticated()
+                                                .requestMatchers("/api/chat/**").authenticated()
                                                 .anyRequest().authenticated()) // -> .anyRequest().authenticated()
                                 .addFilterBefore(
                                                 jwtAuthenticationFilter,

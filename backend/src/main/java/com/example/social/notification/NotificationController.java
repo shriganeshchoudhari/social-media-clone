@@ -16,11 +16,38 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<Notification>> myNotifications(Authentication auth) {
+    public ResponseEntity<List<NotificationDto>> myNotifications(Authentication auth) {
         List<Notification> notifications = notificationService.getMyNotifications(auth.getName());
+        List<NotificationDto> dtos = notifications.stream()
+                .map(n -> new NotificationDto(
+                        n.getId(),
+                        n.getMessage(),
+                        n.getType(),
+                        n.getReferenceId(),
+                        n.getActorUsername(),
+                        n.isRead(),
+                        java.time.ZoneId.systemDefault().getRules().getOffset(java.time.Instant.now()).getTotalSeconds()
+                                * 1000 + n.getCreatedAt().toEpochSecond(java.time.ZoneOffset.UTC) * 1000 // Approximate
+                                                                                                         // or better:
+                // n.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+                // Simpler:
+                // java.sql.Timestamp.valueOf(n.getCreatedAt()).getTime()
+                ))
+                .toList();
+
+        // Fix timestamp conversion
+        dtos = notifications.stream().map(n -> new NotificationDto(
+                n.getId(),
+                n.getMessage(),
+                n.getType(),
+                n.getReferenceId(),
+                n.getActorUsername(),
+                n.isRead(),
+                n.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli())).toList();
+
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noCache().mustRevalidate())
-                .body(notifications);
+                .body(dtos);
     }
 
     @GetMapping("/unread-count")

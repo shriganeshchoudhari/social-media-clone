@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
 
-export default function UserMenu({ username, logout }) {
+export default function UserMenu({ username, avatarUrl, logout }) {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
@@ -30,8 +30,16 @@ export default function UserMenu({ username, logout }) {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-1 pr-2 transition-colors"
             >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
-                    {username ? username[0].toUpperCase() : <User size={16} />}
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm overflow-hidden border border-white dark:border-gray-600">
+                    {avatarUrl ? (
+                        <img
+                            src={`http://localhost:8081${avatarUrl}`}
+                            alt={username}
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        username ? username[0].toUpperCase() : <User size={16} />
+                    )}
                 </div>
                 <ChevronDown size={14} className={`text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>

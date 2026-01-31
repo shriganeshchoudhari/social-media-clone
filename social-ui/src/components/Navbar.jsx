@@ -1,9 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import useTheme from "../hooks/useTheme";
-import { getUnreadCount } from "../api/notificationService";
-import useNotificationSocket from "../hooks/useNotificationSocket";
+import { useWebSocket } from "../context/WebSocketContext";
 import NotificationDropdown from "./NotificationDropdown";
+import { getCurrentUser } from "../api/userService";
+
 import UserMenu from "./UserMenu";
 import { Home, MessageCircle, Bell, Search, Sun, Moon } from "lucide-react";
 
@@ -15,10 +16,12 @@ export default function Navbar() {
     // Notification Logic
     const [showNotifications, setShowNotifications] = useState(false);
     const notificationRef = useRef(null);
-    const [unreadCount, setUnreadCount] = useState(0);
+    const { notifications } = useWebSocket();
+    const unreadCount = notifications.filter(n => !n.read).length;
 
     // Search Logic
     const [q, setQ] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState(null);
 
     // User Logic
     const [username] = useState(() => {
@@ -34,6 +37,14 @@ export default function Navbar() {
         return "";
     });
 
+    useEffect(() => {
+        if (username) {
+            getCurrentUser().then(res => {
+                setAvatarUrl(res.data.profileImageUrl);
+            }).catch(err => console.error("Failed to fetch user in navbar", err));
+        }
+    }, [username]);
+
     const getUserId = () => {
         const token = localStorage.getItem("token");
         if (!token) return null;
@@ -44,15 +55,19 @@ export default function Navbar() {
     };
     const userId = getUserId();
 
-    // Socket Subscription
-    useNotificationSocket(userId, () => {
-        setUnreadCount(prev => prev + 1);
-    });
+    const getUserRole = () => {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.role;
+        } catch (e) { return null; }
+    };
+    const userRole = getUserRole();
 
-    // Initial Badge Fetch
-    useEffect(() => {
-        getUnreadCount().then(res => setUnreadCount(res.data));
-    }, []);
+
+
+
 
     // Click Outside Handler for Notifications
     useEffect(() => {
@@ -131,13 +146,15 @@ export default function Navbar() {
                                 🔥
                             </button>
 
-                            <button
-                                onClick={() => navigate("/admin")}
-                                className={`p-2 rounded-xl transition-all text-sm font-medium ${isActive('/admin') ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-                                title="Admin Dashboard"
-                            >
-                                🛡️
-                            </button>
+                            {(userRole === 'ADMIN' || userRole === 'MODERATOR') && (
+                                <button
+                                    onClick={() => navigate("/admin")}
+                                    className={`p-2 rounded-xl transition-all text-sm font-medium ${isActive('/admin') ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                    title="Admin Dashboard"
+                                >
+                                    🛡️
+                                </button>
+                            )}
 
                             {/* Notifications */}
                             <div className="relative" ref={notificationRef}>
@@ -173,7 +190,7 @@ export default function Navbar() {
 
                         <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
-                        <UserMenu username={username} logout={logout} />
+                        <UserMenu username={username} avatarUrl={avatarUrl} logout={logout} />
                     </div>
 
                 </div>
