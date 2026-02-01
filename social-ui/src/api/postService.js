@@ -24,10 +24,17 @@ export const deletePost = (postId) =>
     api.delete(`/posts/${postId}`);
 
 export const editPost = (postId, content) => {
-    const formData = new FormData();
-    formData.append("content", content);
-    return api.put(`/posts/${postId}`, formData);
+    return api.put(`/posts/${postId}`, { content });
 };
 
 export const getPostsByUser = (username) =>
     api.get(`/posts/user/${username}`);
+
+export const toggleSavePost = (postId) =>
+    api.post(`/posts/${postId}/save`);
+
+export const getSavedPosts = (page = 0) =>
+    api.get(`/posts/saved?page=${page}`);
+
+export const searchPosts = (query, page = 0, size = 10) =>
+    api.get(`/posts/search?q=${query}&page=${page}&size=${size}`);

@@ -1,6 +1,5 @@
-package com.example.social.comment;
+package com.example.social.post;
 
-import com.example.social.post.Post;
 import com.example.social.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,32 +7,27 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "saved_posts", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "user_id", "post_id" })
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+public class SavedPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 300)
-    private String content;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private Comment parentComment;
 
     private LocalDateTime createdAt;
 

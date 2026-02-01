@@ -38,7 +38,7 @@ public class NotificationService {
                 saved.getActorUsername(),
                 false,
                 System.currentTimeMillis());
-        publisher.sendToUser(user.getId(), payload);
+        publisher.sendToUser(user.getUsername(), payload);
     }
 
     public List<Notification> getMyNotifications(String username) {

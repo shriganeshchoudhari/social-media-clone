@@ -12,16 +12,22 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentService commentService;
+    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/{postId}/comments")
     public CommentResponse addComment(
             @PathVariable Long postId,
             @RequestBody CreateCommentRequest request,
             Authentication authentication) {
-        return commentService.addComment(
+        CommentResponse saved = commentService.addComment(
                 authentication.getName(),
                 postId,
                 request);
+
+        // Broadcast to /topic/posts/{postId}/comments
+        messagingTemplate.convertAndSend("/topic/posts/" + postId + "/comments", saved);
+
+        return saved;
     }
 
     @GetMapping("/{postId}/comments")

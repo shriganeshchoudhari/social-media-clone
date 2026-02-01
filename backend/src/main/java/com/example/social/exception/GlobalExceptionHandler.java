@@ -10,6 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handle(RuntimeException ex) {
+        ex.printStackTrace(); // Log the error!
         return ResponseEntity.badRequest().body(
                 Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
     }

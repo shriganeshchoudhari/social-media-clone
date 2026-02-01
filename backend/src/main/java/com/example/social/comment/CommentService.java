@@ -35,6 +35,12 @@ public class CommentService {
                                 .post(post)
                                 .build();
 
+                if (request.parentId() != null) {
+                        Comment parent = commentRepository.findById(request.parentId())
+                                        .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+                        comment.setParentComment(parent);
+                }
+
                 Comment saved = commentRepository.save(comment);
 
                 // Send notification to post author if not self-comment
@@ -47,11 +53,23 @@ public class CommentService {
                                         user.getUsername() + " commented on your post");
                 }
 
+                // Send notification to parent comment author if reply
+                if (comment.getParentComment() != null
+                                && !comment.getParentComment().getAuthor().getId().equals(user.getId())) {
+                        notificationService.create(
+                                        comment.getParentComment().getAuthor(),
+                                        com.example.social.notification.NotificationType.COMMENT,
+                                        post.getId(),
+                                        user.getUsername(),
+                                        user.getUsername() + " replied to your comment");
+                }
+
                 return new CommentResponse(
                                 saved.getId(),
                                 saved.getContent(),
                                 user.getUsername(),
-                                saved.getCreatedAt());
+                                saved.getCreatedAt(),
+                                saved.getParentComment() != null ? saved.getParentComment().getId() : null);
         }
 
         public Page<CommentResponse> getComments(Long postId, int page, int size) {
@@ -63,6 +81,7 @@ public class CommentService {
                                                 c.getId(),
                                                 c.getContent(),
                                                 c.getAuthor().getUsername(),
-                                                c.getCreatedAt()));
+                                                c.getCreatedAt(),
+                                                c.getParentComment() != null ? c.getParentComment().getId() : null));
         }
 }

@@ -33,6 +33,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                 String token = authorization.get(0).substring(7); // Remove "Bearer "
                 try {
                     String username = jwtService.extractUsername(token);
+                    System.out.println("WebSocket Auth: Extracted username: " + username);
 
                     if (username != null) {
                         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -41,11 +42,17 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                                     userDetails, null, userDetails.getAuthorities());
                             accessor.setUser(auth);
+                            System.out.println("WebSocket Auth: Successfully authenticated user: " + username);
+                        } else {
+                            System.out.println("WebSocket Auth: Token invalid for user: " + username);
                         }
                     }
                 } catch (Exception e) {
-                    // Token invalid or expired
+                    System.out.println("WebSocket Auth: Error during authentication: " + e.getMessage());
+                    e.printStackTrace();
                 }
+            } else {
+                System.out.println("WebSocket Auth: No Authorization header found");
             }
         }
         return message;

@@ -20,6 +20,7 @@ public class RecommendationService {
     private final PostRepository postRepo;
     private final UserRepository userRepo;
 
+    private final com.example.social.post.SavedPostRepository savedPostRepo;
     private final com.example.social.like.PostLikeRepository postLikeRepository;
 
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -45,6 +46,7 @@ public class RecommendationService {
                 pageable).map(post -> {
                     long likeCount = postLikeRepository.countByPost(post);
                     boolean likedByMe = postLikeRepository.existsByUserAndPost(user, post);
+                    boolean isSaved = savedPostRepo.existsByUserAndPost(user, post);
                     java.util.List<String> imageUrls = post.getImages().stream()
                             .map(com.example.social.post.PostImage::getUrl)
                             .toList();
@@ -56,7 +58,9 @@ public class RecommendationService {
                             imageUrls,
                             post.getCreatedAt(),
                             likeCount,
-                            likedByMe);
+                            likedByMe,
+                            isSaved,
+                            post.getAuthor().getProfileImageUrl());
                 });
     }
 }

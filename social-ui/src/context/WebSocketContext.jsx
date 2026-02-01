@@ -14,6 +14,8 @@ export const WebSocketProvider = ({ children }) => {
     // For now we don't expose client to children to avoid re-renders or leaks
     // If we need to send messages, we should expose a sendMessage function
 
+    const clientRef = React.useRef(null);
+
     useEffect(() => {
         if (!token) return;
 
@@ -41,9 +43,17 @@ export const WebSocketProvider = ({ children }) => {
         });
 
         stompClient.activate();
+        clientRef.current = stompClient;
 
         return () => {
-            stompClient.deactivate();
+            // We can't easily deactivate if we want to share the client, 
+            // but for now, we will rely on cleanup.
+            // If we share it, children might try to use it after unmount.
+            // A better approach for shared client:
+            if (clientRef.current) {
+                clientRef.current.deactivate();
+                clientRef.current = null;
+            }
         };
     }, [token]);
 
@@ -54,7 +64,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     return (
-        <WebSocketContext.Provider value={{ notifications, clearNotifications }}>
+        <WebSocketContext.Provider value={{ notifications, clearNotifications, stompClient: clientRef.current }}>
             {children}
         </WebSocketContext.Provider>
     );

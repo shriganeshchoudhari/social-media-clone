@@ -78,4 +78,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("tag2") String tag2,
             @Param("tag3") String tag3,
             Pageable pageable);
+
+    @Query("""
+            SELECT p FROM Post p
+            JOIN FETCH p.author
+            LEFT JOIN FETCH p.images
+            WHERE LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%'))
+            ORDER BY p.createdAt DESC
+            """)
+    Page<Post> searchByContent(@Param("query") String query, Pageable pageable);
 }

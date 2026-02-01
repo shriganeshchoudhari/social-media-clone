@@ -4,6 +4,8 @@ import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import LikeButton from "../components/LikeButton";
 import CommentList from "../components/CommentList";
+import RichText from "../components/RichText";
+import MediaGallery from "../components/MediaGallery";
 import { getPostById } from "../api/postService";
 import { toggleLike } from "../api/likeService";
 
@@ -113,9 +115,11 @@ export default function PostPage() {
                         </div>
                     </div>
 
-                    <p className="text-gray-800 dark:text-gray-200 mb-6 text-lg whitespace-pre-wrap leading-relaxed">
-                        {post.content}
-                    </p>
+                    <div className="mb-6 text-lg leading-relaxed">
+                        <RichText text={post.content} />
+                    </div>
+
+                    <MediaGallery images={post.images} />
 
                     <div className="border-t dark:border-gray-700 pt-4">
                         <LikeButton post={post} onToggle={optimisticLike} showText={true} />

@@ -37,19 +37,29 @@ export default function Profile() {
     const [modalTitle, setModalTitle] = useState("");
     const [userList, setUserList] = useState([]);
 
+
+    const [activeTab, setActiveTab] = useState("posts");
+    const [savedPosts, setSavedPosts] = useState([]);
+
     const load = useCallback(() => {
         getProfile(username).then(res => {
             setProfile(res.data);
-
             const isMe = currentUser === res.data.username;
 
             if (!res.data.isPrivate || res.data.following || isMe) {
+                // Load User Posts
                 getPostsByUser(username).then(pRes => {
-                    // Backend now returns List<PostResponse> directly
                     setPosts(pRes.data);
-                }).catch(err => {
-                    console.error("Failed to load posts", err);
-                });
+                }).catch(err => console.error("Failed to load posts", err));
+
+                // Load Saved Posts if it's my profile
+                if (isMe) {
+                    import("../api/postService").then(({ getSavedPosts }) => {
+                        getSavedPosts().then(sRes => {
+                            setSavedPosts(sRes.data.content);
+                        }).catch(err => console.error("Failed to load saved posts", err));
+                    });
+                }
             } else {
                 setPosts([]);
             }
@@ -58,6 +68,7 @@ export default function Profile() {
 
     useEffect(() => {
         load();
+        setActiveTab("posts"); // Reset tab on profile change
     }, [load]);
 
     if (!profile) return (
@@ -168,7 +179,32 @@ export default function Profile() {
 
             </div>
 
+            {/* Tabs (Only if isMe) */}
+            {isMe && (
+                <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm px-4">
+                    <button
+                        className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 ${activeTab === "posts"
+                                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            }`}
+                        onClick={() => setActiveTab("posts")}
+                    >
+                        My Posts
+                    </button>
+                    <button
+                        className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 ${activeTab === "saved"
+                                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            }`}
+                        onClick={() => setActiveTab("saved")}
+                    >
+                        Saved
+                    </button>
+                </div>
+            )}
+
             {/* Privacy / Posts Section */}
+            {/* Privacy / Posts / Saved Section */}
             {(profile.isPrivate && !profile.following && !isMe) ? (
                 <div className="text-center py-10 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                     <p className="text-xl font-semibold text-gray-700 dark:text-gray-300">
@@ -178,7 +214,7 @@ export default function Profile() {
                 </div>
             ) : (
                 <div ref={postsRef} className="grid grid-cols-3 gap-2 mt-4">
-                    {posts.map(post => (
+                    {(activeTab === 'posts' ? posts : savedPosts).map(post => (
                         <div key={post.id} className="relative aspect-square group cursor-pointer"
                             onClick={() => setSelected(post)}>
                             {post.images && post.images.length > 0 ? (
@@ -195,9 +231,9 @@ export default function Profile() {
                             )}
                         </div>
                     ))}
-                    {posts.length === 0 && (
+                    {(activeTab === 'posts' ? posts : savedPosts).length === 0 && (
                         <div className="col-span-3 text-center py-10 text-gray-500 dark:text-gray-400">
-                            No posts yet.
+                            {activeTab === 'posts' ? "No posts yet." : "No saved posts."}
                         </div>
                     )}
                 </div>

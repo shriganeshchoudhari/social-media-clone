@@ -54,9 +54,9 @@ public class PostController {
     @PutMapping("/{id}")
     public PostResponse editPost(
             @PathVariable Long id,
-            @RequestParam String content,
+            @RequestBody java.util.Map<String, String> payload,
             Authentication auth) {
-        return postService.editPost(id, content, auth.getName());
+        return postService.editPost(id, payload.get("content"), auth.getName());
     }
 
     @GetMapping("/user/{username}")
@@ -71,9 +71,34 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Authentication auth) {
+
         return recommendationService.recommend(
                 auth.getName(),
                 org.springframework.data.domain.PageRequest.of(page, size));
+    }
+
+    @GetMapping("/search")
+    public Page<PostResponse> searchPosts(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication auth) {
+        return postService.searchPosts(q, page, size, auth.getName());
+    }
+
+    @PostMapping("/{id}/save")
+    public void toggleSavePost(
+            @PathVariable Long id,
+            Authentication auth) {
+        postService.toggleSavePost(id, auth.getName());
+    }
+
+    @GetMapping("/saved")
+    public Page<PostResponse> getSavedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication auth) {
+        return postService.getSavedPosts(auth.getName(), page, size);
     }
 
 }

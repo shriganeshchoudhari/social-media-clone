@@ -21,7 +21,9 @@ public class PostService {
         private final FollowRepository followRepository;
         private final BlockRepository blockRepository;
         private final UserInterestRepository userInterestRepository;
+        private final SavedPostRepository savedPostRepository;
 
+        @org.springframework.transaction.annotation.Transactional
         public PostResponse createPost(String username, String content,
                         java.util.List<org.springframework.web.multipart.MultipartFile> images) {
 
@@ -57,23 +59,24 @@ public class PostService {
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> getFeed(int page, int size) {
                 Pageable pageable = PageRequest.of(page, size);
+                return postRepository.findFeed(pageable).map(this::mapToResponsePublic);
+        }
 
-                // Use dummy user for public feed (likedByMe will always be false)
-                return postRepository.findFeed(pageable)
-                                .map(post -> {
-                                        java.util.List<String> imageUrls = post.getImages().stream()
-                                                        .map(PostImage::getUrl)
-                                                        .toList();
+        private PostResponse mapToResponsePublic(Post post) {
+                java.util.List<String> imageUrls = post.getImages().stream()
+                                .map(PostImage::getUrl)
+                                .toList();
 
-                                        return new PostResponse(
-                                                        post.getId(),
-                                                        post.getContent(),
-                                                        post.getAuthor().getUsername(),
-                                                        imageUrls,
-                                                        post.getCreatedAt(),
-                                                        postLikeRepository.countByPost(post),
-                                                        false);
-                                });
+                return new PostResponse(
+                                post.getId(),
+                                post.getContent(),
+                                post.getAuthor().getUsername(),
+                                imageUrls,
+                                post.getCreatedAt(),
+                                postLikeRepository.countByPost(post),
+                                false,
+                                false,
+                                post.getAuthor().getProfileImageUrl());
         }
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -139,9 +142,6 @@ public class PostService {
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public Page<PostResponse> explore(int page, int size, String username) {
-                User currentUser = userRepository.findByUsername(username).orElseThrow();
-                Pageable pageable = PageRequest.of(page, size);
-
                 // Try personalized explore first
                 return explorePersonalized(page, size, username);
         }
@@ -178,10 +178,39 @@ public class PostService {
                                 posts.getTotalElements());
         }
 
+        @org.springframework.transaction.annotation.Transactional
+        public void toggleSavePost(Long postId, String username) {
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+                Post post = postRepository.findById(postId)
+                                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+                java.util.Optional<SavedPost> existing = savedPostRepository.findByUserAndPost(user, post);
+                if (existing.isPresent()) {
+                        savedPostRepository.delete(existing.get());
+                } else {
+                        savedPostRepository.save(SavedPost.builder()
+                                        .user(user)
+                                        .post(post)
+                                        .build());
+                }
+        }
+
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
+        public Page<PostResponse> getSavedPosts(String username, int page, int size) {
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+                Pageable pageable = PageRequest.of(page, size);
+
+                return savedPostRepository.findByUserOrderByCreatedAtDesc(user, pageable)
+                                .map(saved -> mapToResponse(saved.getPost(), user));
+        }
+
         private PostResponse mapToResponse(Post post, User currentUser) {
 
                 long likeCount = postLikeRepository.countByPost(post);
                 boolean likedByMe = postLikeRepository.existsByUserAndPost(currentUser, post);
+                boolean isSaved = savedPostRepository.existsByUserAndPost(currentUser, post);
 
                 // Extract image URLs from PostImage entities
                 java.util.List<String> imageUrls = post.getImages().stream()
@@ -195,9 +224,12 @@ public class PostService {
                                 imageUrls,
                                 post.getCreatedAt(),
                                 likeCount,
-                                likedByMe);
+                                likedByMe,
+                                isSaved,
+                                post.getAuthor().getProfileImageUrl());
         }
 
+        @org.springframework.transaction.annotation.Transactional
         public void deletePost(Long postId, String username) {
                 Post post = postRepository.findById(postId)
                                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -216,6 +248,7 @@ public class PostService {
                 postRepository.delete(post);
         }
 
+        @org.springframework.transaction.annotation.Transactional
         public PostResponse editPost(Long postId, String content, String username) {
                 Post post = postRepository.findById(postId)
                                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -231,6 +264,7 @@ public class PostService {
                 return mapToResponse(saved, post.getAuthor());
         }
 
+        @org.springframework.transaction.annotation.Transactional
         public void deleteAdminPost(Long postId) {
                 Post post = postRepository.findById(postId)
                                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -240,5 +274,26 @@ public class PostService {
                         fileStorageService.deleteFile(img.getUrl());
                 }
                 postRepository.delete(post);
+        }
+
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
+        public Page<PostResponse> searchPosts(String query, int page, int size, String username) {
+                User currentUser = userRepository.findByUsername(username).orElseThrow();
+                Pageable pageable = PageRequest.of(page, size);
+
+                Page<Post> posts = postRepository.searchByContent(query, pageable);
+
+                // Filter blocked users
+                java.util.List<Post> filtered = posts.getContent().stream()
+                                .filter(post -> !blockRepository.existsByBlockerAndBlocked(currentUser,
+                                                post.getAuthor())
+                                                && !blockRepository.existsByBlockerAndBlocked(post.getAuthor(),
+                                                                currentUser))
+                                .toList();
+
+                return new PageImpl<>(
+                                filtered.stream().map(post -> mapToResponse(post, currentUser)).toList(),
+                                pageable,
+                                posts.getTotalElements());
         }
 }

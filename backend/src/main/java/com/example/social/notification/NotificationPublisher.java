@@ -10,10 +10,13 @@ public class NotificationPublisher {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendToUser(Long userId, NotificationDto payload) {
-        // Send to /topic/user/{userId}
-        messagingTemplate.convertAndSend(
-                "/topic/user/" + userId,
+    public void sendToUser(String username, NotificationDto payload) {
+        // Send to /user/{username}/queue/notifications
+        // This requires setApplicationDestinationPrefixes / userDestinationPrefix
+        // config
+        messagingTemplate.convertAndSendToUser(
+                username,
+                "/queue/notifications",
                 payload);
     }
 }

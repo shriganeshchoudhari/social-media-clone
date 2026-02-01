@@ -10,5 +10,7 @@ public record PostResponse(
                 List<String> images,
                 LocalDateTime createdAt,
                 Long likeCount,
-                boolean likedByMe) {
+                boolean likedByMe,
+                boolean isSaved,
+                String authorProfileImage) {
 }
