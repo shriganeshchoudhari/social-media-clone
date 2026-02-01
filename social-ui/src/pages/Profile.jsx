@@ -11,6 +11,7 @@ export default function Profile() {
     const [profile, setProfile] = useState(null);
     const [posts, setPosts] = useState([]);
     const postsRef = useRef(null);
+    const [error, setError] = useState(null);
 
     const scrollToPosts = () => {
         postsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -63,6 +64,9 @@ export default function Profile() {
             } else {
                 setPosts([]);
             }
+        }).catch(err => {
+            console.error(err);
+            setError(err.response?.status === 404 ? "User not found" : "Failed to load profile");
         });
     }, [username, currentUser]);
 
@@ -70,6 +74,30 @@ export default function Profile() {
         load();
         setActiveTab("posts"); // Reset tab on profile change
     }, [load]);
+
+    if (error === "User not found") return (
+        <Layout>
+            <Navbar />
+            <div className="text-center py-20">
+                <div className="text-6xl mb-4">😕</div>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">User not found</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">The user @{username} does not exist.</p>
+                <button 
+                    onClick={() => navigate("/")}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    Go Home
+                </button>
+            </div>
+        </Layout>
+    );
+
+    if (error) return (
+        <Layout>
+            <Navbar />
+            <div className="text-center mt-10 text-red-500">{error}</div>
+        </Layout>
+    );
 
     if (!profile) return (
         <Layout>

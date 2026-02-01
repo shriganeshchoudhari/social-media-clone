@@ -122,7 +122,9 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "User not found: " + username));
     }
 
     public ProfileResponse getProfile(String viewerUsername, String targetUsername) {
