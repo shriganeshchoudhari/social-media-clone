@@ -1,14 +1,11 @@
 package com.example.social.admin;
 
 import com.example.social.moderation.ReportRepository;
-import com.example.social.post.PostRepository;
 import com.example.social.post.PostService;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
 import com.example.social.user.UserService;
-import com.example.social.admin.AdminAuditLogRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.Repository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +21,6 @@ public class AdminController {
 
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
-    private final PostRepository postRepository;
     private final PostService postService;
     private final UserService userService;
     private final AdminAuditService auditService;

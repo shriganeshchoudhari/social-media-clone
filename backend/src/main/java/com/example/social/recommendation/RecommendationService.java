@@ -1,6 +1,5 @@
 package com.example.social.recommendation;
 
-import com.example.social.post.Post;
 import com.example.social.post.PostRepository;
 import com.example.social.user.User;
 import com.example.social.user.UserInterestRepository;
