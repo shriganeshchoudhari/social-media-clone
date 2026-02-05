@@ -2,15 +2,16 @@ import { useEffect, useRef } from "react";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 
-export default function useChatSocket(onMessage) {
+export default function useChatSocket(onMessage, onEvent) {
     const stompRef = useRef(null);
     const onMessageRef = useRef(onMessage);
+    const onEventRef = useRef(onEvent);
     const processedMessagesRef = useRef(new Set());
 
-    // Keep the ref updated with the latest callback
     useEffect(() => {
         onMessageRef.current = onMessage;
-    }, [onMessage]);
+        onEventRef.current = onEvent;
+    }, [onMessage, onEvent]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -50,6 +51,21 @@ export default function useChatSocket(onMessage) {
                     }
                 }
             );
+
+            // Subscribe to private event queue (typing, read)
+            stompClient.subscribe(
+                "/user/queue/events",
+                (msg) => {
+                    if (msg.body && onEventRef.current) {
+                        try {
+                            const event = JSON.parse(msg.body);
+                            onEventRef.current(event);
+                        } catch (e) {
+                            console.error("Failed to parse chat event", msg.body);
+                        }
+                    }
+                }
+            );
         }, (err) => {
             console.error("Chat WebSocket error:", err);
         });
@@ -74,5 +90,25 @@ export default function useChatSocket(onMessage) {
         }
     };
 
-    return { send };
+    const sendTyping = (receiver) => {
+        if (stompRef.current && stompRef.current.connected) {
+            stompRef.current.send(
+                "/app/chat.typing",
+                {},
+                JSON.stringify({ receiver })
+            );
+        }
+    };
+
+    const sendRead = (receiver, messageId) => {
+        if (stompRef.current && stompRef.current.connected) {
+            stompRef.current.send(
+                "/app/chat.read",
+                {},
+                JSON.stringify({ receiver, messageId })
+            );
+        }
+    };
+
+    return { send, sendTyping, sendRead };
 }

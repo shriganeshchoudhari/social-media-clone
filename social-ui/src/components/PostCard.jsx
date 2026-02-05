@@ -41,7 +41,9 @@ export default function PostCard({ post, currentUser, onDelete, onUpdate, menuAc
                 <div className="flex items-center gap-3">
                     <Link to={`/profile/${post.authorUsername}`}>
                         <img
-                            src={post.authorProfileImage || `https://ui-avatars.com/api/?name=${post.authorUsername}&background=random`}
+                            src={post.authorProfileImage
+                                ? (post.authorProfileImage.startsWith("http") ? post.authorProfileImage : `http://localhost:8081${post.authorProfileImage}`)
+                                : `https://ui-avatars.com/api/?name=${post.authorUsername}&background=random`}
                             alt={post.authorUsername}
                             className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                         />

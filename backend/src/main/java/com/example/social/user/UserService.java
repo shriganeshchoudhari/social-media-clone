@@ -188,7 +188,21 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public org.springframework.data.domain.Page<ProfileResponse> searchUsers(String query,
+            org.springframework.data.domain.Pageable pageable) {
+        return userRepository.findByUsernameContainingIgnoreCase(query, pageable)
+                .map(u -> new ProfileResponse(
+                        u.getUsername(),
+                        u.getBio(),
+                        u.getProfileImageUrl(),
+                        0L, 0L, 0L, // Counts are not needed for simple search result
+                        u.isPrivate(),
+                        false // Follow status unknown/irrelevant for simple search list (or we can query)
+                ));
+    }
+
     public void unsuspend(String username) {
+
         User user = getUserByUsername(username);
         user.setBannedUntil(null);
         userRepository.save(user);

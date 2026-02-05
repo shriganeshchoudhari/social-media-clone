@@ -121,10 +121,23 @@ export default function Search() {
                             key={u.username}
                             className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm flex flex-col transition-colors duration-200"
                         >
-                            <Link to={`/profile/${u.username}`} className="text-lg font-bold text-gray-900 dark:text-white hover:underline">
-                                {u.username}
-                            </Link>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{u.bio || "No bio"}</p>
+                            <div className="flex items-center gap-3">
+                                <Link to={`/profile/${u.username}`}>
+                                    <img
+                                        src={u.profileImageUrl
+                                            ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `http://localhost:8081${u.profileImageUrl}`)
+                                            : `https://ui-avatars.com/api/?name=${u.username}&background=random`}
+                                        alt={u.username}
+                                        className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                                    />
+                                </Link>
+                                <div>
+                                    <Link to={`/profile/${u.username}`} className="text-lg font-bold text-gray-900 dark:text-white hover:underline">
+                                        {u.username}
+                                    </Link>
+                                    <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{u.bio || "No bio"}</p>
+                                </div>
+                            </div>
                         </div>
                     ))}
 

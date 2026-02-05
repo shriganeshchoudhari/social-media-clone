@@ -106,24 +106,30 @@ public class ChatService {
                 java.util.Map<String, Message> latestMap = new java.util.LinkedHashMap<>();
 
                 for (Message m : messages) {
-                        String other = m.getSender().getUsername().equals(me.getUsername())
+                        String otherUsername = m.getSender().getUsername().equals(me.getUsername())
                                         ? m.getReceiver().getUsername()
                                         : m.getSender().getUsername();
 
-                        // System.out.println("Processing message with: " + other);
-
-                        if (!latestMap.containsKey(other)) {
-                                latestMap.put(other, m);
+                        if (!latestMap.containsKey(otherUsername)) {
+                                latestMap.put(otherUsername, m);
                         }
                 }
 
                 System.out.println("Unique conversations: " + latestMap.size());
 
                 return latestMap.entrySet().stream()
-                                .map(e -> new com.example.social.chat.dto.ConversationResponse(
-                                                e.getKey(),
-                                                e.getValue().getContent(),
-                                                e.getValue().getCreatedAt()))
+                                .map(e -> {
+                                        Message m = e.getValue();
+                                        User otherUser = m.getSender().getUsername().equals(me.getUsername())
+                                                        ? m.getReceiver()
+                                                        : m.getSender();
+
+                                        return new com.example.social.chat.dto.ConversationResponse(
+                                                        e.getKey(),
+                                                        m.getContent(),
+                                                        m.getCreatedAt(),
+                                                        otherUser.getProfileImageUrl());
+                                })
                                 .toList();
         }
 
@@ -169,5 +175,38 @@ public class ChatService {
                                 sender.getId(),
                                 sender.getUsername(),
                                 sender.getUsername() + " sent you a message");
+        }
+
+        public void sendTyping(String senderUsername, String receiverUsername) {
+                messagingTemplate.convertAndSendToUser(
+                                receiverUsername,
+                                "/queue/events",
+                                new com.example.social.chat.dto.SocketEvent(
+                                                com.example.social.chat.dto.SocketEventType.TYPING,
+                                                new com.example.social.chat.dto.TypingPayload(senderUsername) // Sender
+                                                                                                              // is the
+                                                                                                              // one
+                                                                                                              // typing
+                                ));
+        }
+
+        @org.springframework.transaction.annotation.Transactional
+        public void sendReadReceipt(String readerUsername, String originalSenderUsername, Long messageId) {
+                // Update DB
+                // We can optimize this to mark everything before this ID as read, but for now
+                // simple update
+                // Ideally we'd have a method markMessagesAsRead(reader, sender)
+                User reader = userRepository.findByUsername(readerUsername).orElseThrow();
+                User originalSender = userRepository.findByUsername(originalSenderUsername).orElseThrow();
+                messageRepository.markRead(reader, originalSender);
+
+                // Broadcast event
+                messagingTemplate.convertAndSendToUser(
+                                originalSenderUsername,
+                                "/queue/events",
+                                new com.example.social.chat.dto.SocketEvent(
+                                                com.example.social.chat.dto.SocketEventType.READ,
+                                                new com.example.social.chat.dto.ReadPayload(readerUsername,
+                                                                messageId)));
         }
 }

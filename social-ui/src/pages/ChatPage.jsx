@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import { getConversation, sendMessageWithImage } from "../api/chatService";
+import { getUserProfile } from "../api/userService";
 import useChatSocket from "../hooks/useChatSocket";
 
 export default function ChatPage() {
@@ -10,9 +11,13 @@ export default function ChatPage() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
+    const [otherUser, setOtherUser] = useState(null);
     const [text, setText] = useState("");
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeoutRef = useRef(null);
+    const lastTypedRef = useRef(0);
 
     // Get current user
     const getCurrentUser = () => {
@@ -28,7 +33,7 @@ export default function ChatPage() {
 
     const myUsername = getCurrentUser();
 
-    // Load conversation history
+    // Load conversation history and user profile
     const load = useCallback(() => {
         getConversation(username)
             .then(res => {
@@ -39,6 +44,10 @@ export default function ChatPage() {
                 console.error("Failed to load conversation", err);
                 setLoading(false);
             });
+
+        getUserProfile(username)
+            .then(res => setOtherUser(res.data))
+            .catch(err => console.error("Failed to load user profile", err));
     }, [username]);
 
     useEffect(() => {
@@ -46,7 +55,7 @@ export default function ChatPage() {
     }, [load]);
 
     // Real-time WebSocket
-    const { send } = useChatSocket((message) => {
+    const { send, sendTyping, sendRead } = useChatSocket((message) => {
         // Only add if it's from the other person in this conversation
         // Don't add our own messages since they're already added optimistically
         if (message.sender === username && message.receiver === myUsername) {
@@ -64,8 +73,57 @@ export default function ChatPage() {
 
                 return [...prev, message];
             });
+
+            // If we are looking at the chat, mark as read immediately
+            sendRead(username, message.id);
+        }
+    }, (event) => {
+        if (event.type === "TYPING") {
+            const payload = event.payload;
+            if (payload.receiver === username) {
+                setIsTyping(true);
+                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
+            }
+        } else if (event.type === "READ") {
+            const payload = event.payload;
+            if (payload.receiver === username) {
+                // Mark messages as read
+                setMessages(prev => prev.map(m => {
+                    if (m.sender === myUsername && (m.id <= payload.messageId || !payload.messageId)) {
+                        return { ...m, isRead: true };
+                    }
+                    return m;
+                }));
+            }
         }
     });
+
+    // Mark messages as read when valid messages are loaded initially
+    const handleOneTimeRead = useCallback(() => {
+        if (messages.length > 0) {
+            // Check if the last message from them is unread
+            const lastMsgFromThem = [...messages].reverse().find(m => m.sender === username);
+            if (lastMsgFromThem && !lastMsgFromThem.isRead) {
+                sendRead(username, lastMsgFromThem.id);
+            }
+        }
+    }, [messages, username, sendRead]);
+
+    useEffect(() => {
+        if (!loading) {
+            handleOneTimeRead();
+        }
+    }, [loading, handleOneTimeRead]);
+
+
+    const handleTyping = () => {
+        const now = Date.now();
+        if (now - lastTypedRef.current > 2000) {
+            sendTyping(username);
+            lastTypedRef.current = now;
+        }
+    };
 
     const submit = async (e) => {
         e.preventDefault();
@@ -121,6 +179,17 @@ export default function ChatPage() {
                         <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-100">
                             &larr;
                         </button>
+
+                        {otherUser && (
+                            <img
+                                src={otherUser.profileImageUrl
+                                    ? (otherUser.profileImageUrl.startsWith("http") ? otherUser.profileImageUrl : `http://localhost:8081${otherUser.profileImageUrl}`)
+                                    : `https://ui-avatars.com/api/?name=${username}&background=random`}
+                                alt={username}
+                                className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                            />
+                        )}
+
                         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                             {username}
                         </h2>
@@ -139,7 +208,7 @@ export default function ChatPage() {
                             const isSelf = m.sender === myUsername;
 
                             return (
-                                <div className={`max-w-[75%] rounded-lg px-4 py-2 shadow-sm text-sm ${isSelf
+                                <div key={m.id || index} className={`max-w-[75%] rounded-lg px-4 py-2 shadow-sm text-sm ${isSelf
                                     ? 'bg-blue-600 text-white rounded-br-none ml-auto'
                                     : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-bl-none'
                                     }`}>
@@ -164,6 +233,11 @@ export default function ChatPage() {
                                 </div>
                             );
                         })
+                    )}
+                    {isTyping && (
+                        <div className="text-xs text-gray-500 italic ml-4 animate-pulse">
+                            {username} is typing...
+                        </div>
                     )}
                 </div>
 
@@ -200,7 +274,10 @@ export default function ChatPage() {
                             className="flex-1 border dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
                             placeholder="Type a message..."
                             value={text}
-                            onChange={e => setText(e.target.value)}
+                            onChange={e => {
+                                setText(e.target.value);
+                                handleTyping();
+                            }}
                         />
                         <button
                             disabled={!text.trim() && !imageFile}

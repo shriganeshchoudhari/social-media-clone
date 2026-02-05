@@ -58,9 +58,13 @@ export default function Inbox() {
                                 onClick={() => navigate(`/chat/${c.username}`)}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                                        {c.username.charAt(0).toUpperCase()}
-                                    </div>
+                                    <img
+                                        src={c.profileImage
+                                            ? (c.profileImage.startsWith("http") ? c.profileImage : `http://localhost:8081${c.profileImage}`)
+                                            : `https://ui-avatars.com/api/?name=${c.username}&background=random`}
+                                        alt={c.username}
+                                        className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                                    />
                                     <div>
                                         <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {c.username}
