@@ -56,6 +56,10 @@ public class User {
 
     private LocalDateTime bannedUntil;
 
+    @Builder.Default
+    @Column(columnDefinition = "boolean default false")
+    private boolean verified = false;
+
     public boolean isSuspended() {
         return bannedUntil != null && bannedUntil.isAfter(LocalDateTime.now());
     }

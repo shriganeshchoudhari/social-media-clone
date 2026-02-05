@@ -1,0 +1,105 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< com.example:social >-------------------------
+[INFO] Building social-media-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.10:run (default-cli) > test-compile @ social >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ social ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 25 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ social ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ social ---
+[INFO] skip non existing resourceDirectory F:\DEVOPS\social-media-clone\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ social ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.10:run (default-cli) < test-compile @ social <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.10:run (default-cli) @ social ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.10)
+
+2026-02-05T22:31:19.877+05:30  INFO 11536 --- [           main] c.example.social.SocialMediaApplication  : Starting SocialMediaApplication using Java 21.0.3 with PID 11536 (F:\DEVOPS\social-media-clone\backend\target\classes started by shrig in F:\DEVOPS\social-media-clone\backend)
+2026-02-05T22:31:19.880+05:30  INFO 11536 --- [           main] c.example.social.SocialMediaApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-02-05T22:31:21.151+05:30  INFO 11536 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-05T22:31:21.312+05:30  INFO 11536 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 145 ms. Found 19 JPA repository interfaces.
+2026-02-05T22:31:21.905+05:30  INFO 11536 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-02-05T22:31:21.920+05:30  INFO 11536 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-05T22:31:21.920+05:30  INFO 11536 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-02-05T22:31:21.972+05:30  INFO 11536 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-02-05T22:31:21.972+05:30  INFO 11536 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2039 ms
+2026-02-05T22:31:22.260+05:30  INFO 11536 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-05T22:31:22.491+05:30  INFO 11536 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@8f6b4ab
+2026-02-05T22:31:22.493+05:30  INFO 11536 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-05T22:31:22.553+05:30  INFO 11536 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:5432/socialdb (PostgreSQL 17.6)
+2026-02-05T22:31:22.689+05:30  INFO 11536 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 25 migrations (execution time 00:00.100s)
+2026-02-05T22:31:22.711+05:30  INFO 11536 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 107
+2026-02-05T22:31:22.714+05:30  INFO 11536 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-02-05T22:31:22.811+05:30  INFO 11536 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-05T22:31:22.853+05:30  INFO 11536 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.41.Final
+2026-02-05T22:31:22.890+05:30  INFO 11536 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-02-05T22:31:23.133+05:30  INFO 11536 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-05T22:31:23.221+05:30  INFO 11536 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.6
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-05T22:31:24.650+05:30  INFO 11536 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-05T22:31:24.906+05:30  INFO 11536 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-05T22:31:25.450+05:30  INFO 11536 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-05T22:31:27.821+05:30  INFO 11536 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 4 endpoints beneath base path '/actuator'
+2026-02-05T22:31:28.328+05:30  INFO 11536 --- [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-02-05T22:31:28.329+05:30  INFO 11536 --- [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@2f8a6f35]]
+2026-02-05T22:31:28.329+05:30  INFO 11536 --- [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-02-05T22:31:28.346+05:30  INFO 11536 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2026-02-05T22:31:28.357+05:30  INFO 11536 --- [           main] c.example.social.SocialMediaApplication  : Started SocialMediaApplication in 9.011 seconds (process running for 9.343)
+
+
+=============================================
+ DIAGNOSTIC PASSWORD CHECKER
+=============================================
+User found: diana_p
+DB Password Hash: $2a$10$37R/Ff28f/RWlmZFtEu0QexAptjQqM1nXLdRGV99gfXwSZXW6YWlq
+Testing against plain text: 'admin123'
+MATCH RESULT: ? SUCCESS
+=============================================
+
+
+2026-02-05T22:32:28.301+05:30  INFO 11536 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2026-02-05T22:32:28.387+05:30  INFO 11536 --- [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-05T22:32:28.387+05:30  INFO 11536 --- [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-02-05T22:32:28.388+05:30  INFO 11536 --- [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-02-05T22:33:04.041+05:30  WARN 11536 --- [nio-8081-exec-3] org.hibernate.orm.query                  : HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory
+2026-02-05T22:33:04.396+05:30  WARN 11536 --- [nio-8081-exec-3] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2026-02-05T22:33:04.512+05:30  WARN 11536 --- [nio-8081-exec-4] org.hibernate.orm.query                  : HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory
+Login attempt for username: alice_w
+User found: alice_w, checking password...
+Stored hash: $2a$10$d7R.8bs5IOVkHl4jbWRXEuh1Gpwup9Jh9sNthNXI9HYw.3syjaW/e
+Input password length: 8
+Password matches: true
+Login successful for: alice_w
+2026-02-05T22:33:17.278+05:30  WARN 11536 --- [nio-8081-exec-7] org.hibernate.orm.query                  : HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory
+2026-02-05T22:33:17.426+05:30  WARN 11536 --- [nio-8081-exec-7] org.hibernate.orm.query                  : HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory
+2026-02-05T22:33:37.932+05:30  WARN 11536 --- [nio-8081-exec-1] org.hibernate.orm.query                  : HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory

@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { getConversation, sendMessageWithImage } from "../api/chatService";
 import { getUserProfile } from "../api/userService";
 import useChatSocket from "../hooks/useChatSocket";
+import VerificationBadge from "../components/VerificationBadge";
 
 export default function ChatPage() {
 
@@ -190,8 +191,9 @@ export default function ChatPage() {
                             />
                         )}
 
-                        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
                             {username}
+                            {otherUser?.verified && <VerificationBadge className="w-5 h-5" />}
                         </h2>
                     </div>
                 </div>

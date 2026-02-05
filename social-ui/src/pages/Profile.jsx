@@ -4,6 +4,7 @@ import { getProfile, toggleFollow, toggleBlock, getFollowers, getFollowing } fro
 import { getPostsByUser } from "../api/postService";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
+import VerificationBadge from "../components/VerificationBadge";
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -82,7 +83,7 @@ export default function Profile() {
                 <div className="text-6xl mb-4">😕</div>
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">User not found</h2>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">The user @{username} does not exist.</p>
-                <button 
+                <button
                     onClick={() => navigate("/")}
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
@@ -152,7 +153,10 @@ export default function Profile() {
                         </div>
 
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{profile.username}</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                                {profile.username}
+                                {profile.verified && <VerificationBadge className="w-6 h-6" />}
+                            </h2>
                             <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
                                 {profile.bio || "No bio available"}
                             </p>
@@ -212,8 +216,8 @@ export default function Profile() {
                 <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm px-4">
                     <button
                         className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 ${activeTab === "posts"
-                                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                            : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             }`}
                         onClick={() => setActiveTab("posts")}
                     >
@@ -221,8 +225,8 @@ export default function Profile() {
                     </button>
                     <button
                         className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 ${activeTab === "saved"
-                                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                            : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             }`}
                         onClick={() => setActiveTab("saved")}
                     >
@@ -283,6 +287,7 @@ export default function Profile() {
                                     {selected.authorUsername[0].toUpperCase()}
                                 </div>
                                 {selected.authorUsername}
+                                {selected.authorVerified && <VerificationBadge />}
                             </h3>
                             <button onClick={() => setSelected(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-200">
                                 ✕

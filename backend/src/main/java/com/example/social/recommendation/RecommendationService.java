@@ -59,7 +59,8 @@ public class RecommendationService {
                             likeCount,
                             likedByMe,
                             isSaved,
-                            post.getAuthor().getProfileImageUrl());
+                            post.getAuthor().getProfileImageUrl(),
+                            post.getAuthor().isVerified());
                 });
     }
 }

@@ -45,6 +45,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/auth/**").permitAll()
                                                 .requestMatchers("/ws/**").permitAll() // WebSocket Handshake
                                                 .requestMatchers("/ws").permitAll()
+                                                .requestMatchers("/api/users/*/verify").permitAll()
                                                 .requestMatchers("/uploads/**").permitAll() // Allow serving static
                                                                                             // files
                                                 .requestMatchers("/actuator/**").permitAll()

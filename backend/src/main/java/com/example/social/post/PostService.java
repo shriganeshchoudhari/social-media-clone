@@ -86,7 +86,8 @@ public class PostService {
                                 postLikeRepository.countByPost(post),
                                 false,
                                 false,
-                                post.getAuthor().getProfileImageUrl());
+                                post.getAuthor().getProfileImageUrl(),
+                                post.getAuthor().isVerified());
         }
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -236,7 +237,8 @@ public class PostService {
                                 likeCount,
                                 likedByMe,
                                 isSaved,
-                                post.getAuthor().getProfileImageUrl());
+                                post.getAuthor().getProfileImageUrl(),
+                                post.getAuthor().isVerified());
         }
 
         @org.springframework.transaction.annotation.Transactional

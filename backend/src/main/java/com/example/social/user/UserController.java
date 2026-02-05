@@ -79,4 +79,9 @@ public class UserController {
     public void block(@PathVariable String username, Authentication auth) {
         userService.toggleBlock(auth.getName(), username);
     }
+
+    @PostMapping("/{username}/verify")
+    public void verifyUser(@PathVariable String username) {
+        userService.verifyUser(username);
+    }
 }

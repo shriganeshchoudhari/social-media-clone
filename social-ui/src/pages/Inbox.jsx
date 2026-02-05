@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import { getInbox } from "../api/chatService";
+import VerificationBadge from "../components/VerificationBadge";
 
 export default function Inbox() {
 
@@ -66,8 +67,9 @@ export default function Inbox() {
                                         className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                                     />
                                     <div>
-                                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex items-center gap-1">
                                             {c.username}
+                                            {c.verified && <VerificationBadge className="w-4 h-4" />}
                                         </h3>
                                         <p className="text-sm text-gray-500 line-clamp-1 h-5">
                                             {c.lastMessage}

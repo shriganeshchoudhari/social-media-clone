@@ -6,6 +6,7 @@ import { searchGroups } from "../api/groupService";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import PostCard from "../components/PostCard";
+import VerificationBadge from "../components/VerificationBadge";
 
 export default function Search() {
     const [params] = useSearchParams();
@@ -134,6 +135,7 @@ export default function Search() {
                                 <div>
                                     <Link to={`/profile/${u.username}`} className="text-lg font-bold text-gray-900 dark:text-white hover:underline">
                                         {u.username}
+                                        {u.verified && <VerificationBadge />}
                                     </Link>
                                     <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{u.bio || "No bio"}</p>
                                 </div>

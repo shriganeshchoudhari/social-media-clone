@@ -69,7 +69,8 @@ public class CommentService {
                                 saved.getContent(),
                                 user.getUsername(),
                                 saved.getCreatedAt(),
-                                saved.getParentComment() != null ? saved.getParentComment().getId() : null);
+                                saved.getParentComment() != null ? saved.getParentComment().getId() : null,
+                                user.isVerified());
         }
 
         public Page<CommentResponse> getComments(Long postId, int page, int size) {
@@ -82,6 +83,7 @@ public class CommentService {
                                                 c.getContent(),
                                                 c.getAuthor().getUsername(),
                                                 c.getCreatedAt(),
-                                                c.getParentComment() != null ? c.getParentComment().getId() : null));
+                                                c.getParentComment() != null ? c.getParentComment().getId() : null,
+                                                c.getAuthor().isVerified()));
         }
 }

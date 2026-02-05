@@ -128,7 +128,8 @@ public class ChatService {
                                                         e.getKey(),
                                                         m.getContent(),
                                                         m.getCreatedAt(),
-                                                        otherUser.getProfileImageUrl());
+                                                        otherUser.getProfileImageUrl(),
+                                                        otherUser.isVerified());
                                 })
                                 .toList();
         }

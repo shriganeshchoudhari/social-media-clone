@@ -6,6 +6,8 @@ import RichText from "./RichText";
 import MediaGallery from "./MediaGallery";
 import { editPost, toggleSavePost } from "../api/postService";
 
+import VerificationBadge from "./VerificationBadge";
+
 export default function PostCard({ post, currentUser, onDelete, onUpdate, menuActions }) {
     const isMyPost = post.authorUsername === currentUser;
     const [isEditing, setIsEditing] = useState(false);
@@ -51,6 +53,7 @@ export default function PostCard({ post, currentUser, onDelete, onUpdate, menuAc
                     <div className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                         <Link to={`/profile/${post.authorUsername}`} className="hover:underline">
                             {post.authorUsername}
+                            {post.authorVerified && <VerificationBadge />}
                         </Link>
                         <p className="text-xs text-gray-500">
                             {new Date(post.createdAt).toLocaleDateString()}

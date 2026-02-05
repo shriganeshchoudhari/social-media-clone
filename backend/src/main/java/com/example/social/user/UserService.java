@@ -148,7 +148,8 @@ public class UserService {
                 followingCount,
                 postCount,
                 target.isPrivate(),
-                following);
+                following,
+                target.isVerified());
     }
 
     public User togglePrivacy(String username) {
@@ -197,14 +198,21 @@ public class UserService {
                         u.getProfileImageUrl(),
                         0L, 0L, 0L, // Counts are not needed for simple search result
                         u.isPrivate(),
-                        false // Follow status unknown/irrelevant for simple search list (or we can query)
-                ));
+                        false, // Follow status unknown/irrelevant for simple search list (or we can query)
+                        u.isVerified()));
     }
 
     public void unsuspend(String username) {
-
         User user = getUserByUsername(username);
         user.setBannedUntil(null);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void verifyUser(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow();
+        user.setVerified(true);
+        userRepository.save(user);
+        System.out.println("VERIFICATION SUCCESS: User " + username + " is now verified.");
     }
 }

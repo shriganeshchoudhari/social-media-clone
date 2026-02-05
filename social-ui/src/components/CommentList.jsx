@@ -3,6 +3,8 @@ import { getComments, addComment } from "../api/commentService";
 import { useWebSocket } from "../context/WebSocketContext";
 import RichText from "./RichText";
 
+import VerificationBadge from "./VerificationBadge";
+
 export default function CommentList({ postId }) {
 
     const [comments, setComments] = useState([]);
@@ -110,7 +112,10 @@ export default function CommentList({ postId }) {
         return (
             <div className={`mb-2 ${comment.parentId ? "ml-6 border-l-2 border-gray-100 dark:border-gray-700 pl-2" : ""}`}>
                 <div className="text-sm">
-                    <span className="font-medium text-gray-900 dark:text-gray-200">{comment.authorUsername}</span>{" "}
+                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                        {comment.authorUsername}
+                        {comment.authorVerified && <VerificationBadge className="w-3 h-3" />}
+                    </span>{" "}
                     <span className="text-gray-700 dark:text-gray-400">
                         <RichText text={comment.content} />
                     </span>
