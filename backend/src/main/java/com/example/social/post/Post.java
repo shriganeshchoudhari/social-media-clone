@@ -46,6 +46,10 @@ public class Post {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private com.example.social.group.Group group;
+
     private LocalDateTime createdAt;
 
     @PrePersist

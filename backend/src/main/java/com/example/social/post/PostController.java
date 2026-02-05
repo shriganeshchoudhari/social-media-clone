@@ -18,8 +18,9 @@ public class PostController {
     public PostResponse createPost(
             @RequestParam("content") String content,
             @RequestParam(value = "images", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> images,
+            @RequestParam(value = "groupId", required = false) Long groupId,
             Authentication authentication) {
-        return postService.createPost(authentication.getName(), content, images);
+        return postService.createPost(authentication.getName(), content, images, groupId);
     }
 
     @GetMapping("/feed")

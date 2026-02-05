@@ -31,7 +31,7 @@ export const WebSocketProvider = ({ children }) => {
                 Authorization: `Bearer ${token}`
             },
             debug: (str) => {
-                // console.log(str);
+                console.log(str);
             },
             onConnect: () => {
                 // Subscribe to private notifications

@@ -6,7 +6,9 @@ import NotificationDropdown from "./NotificationDropdown";
 import { getCurrentUser } from "../api/userService";
 
 import UserMenu from "./UserMenu";
-import { Home, MessageCircle, Bell, Search, Sun, Moon } from "lucide-react";
+import { Home, MessageCircle, Bell, Search, Sun, Moon, Users } from "lucide-react";
+
+
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -144,6 +146,14 @@ export default function Navbar() {
                                 title="Explore Trending"
                             >
                                 🔥
+                            </button>
+
+                            <button
+                                onClick={() => navigate("/groups")}
+                                className={`p-2 rounded-xl transition-all relative group ${isActive('/groups') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title="Communities"
+                            >
+                                <Users size={24} strokeWidth={isActive('/groups') ? 2.5 : 2} />
                             </button>
 
                             {(userRole === 'ADMIN' || userRole === 'MODERATOR') && (

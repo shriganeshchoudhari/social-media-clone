@@ -127,6 +127,10 @@ public class UserService {
                         org.springframework.http.HttpStatus.NOT_FOUND, "User not found: " + username));
     }
 
+    public java.util.Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
     public ProfileResponse getProfile(String viewerUsername, String targetUsername) {
         User me = getUserByUsername(viewerUsername);
         User target = getUserByUsername(targetUsername);

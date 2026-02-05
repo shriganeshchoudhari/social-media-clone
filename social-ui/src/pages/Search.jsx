@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { searchUsers } from "../api/searchService";
 import { searchPosts } from "../api/postService";
+import { searchGroups } from "../api/groupService";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import PostCard from "../components/PostCard";
@@ -10,9 +11,10 @@ export default function Search() {
     const [params] = useSearchParams();
     const query = params.get("q");
 
-    const [activeTab, setActiveTab] = useState("users"); // 'users' or 'posts'
+    const [activeTab, setActiveTab] = useState("users"); // 'users', 'posts', 'groups'
     const [userResults, setUserResults] = useState([]);
     const [postResults, setPostResults] = useState([]);
+    const [groupResults, setGroupResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -33,6 +35,7 @@ export default function Search() {
         if (!query) {
             setUserResults([]);
             setPostResults([]);
+            setGroupResults([]);
             return;
         }
 
@@ -44,10 +47,15 @@ export default function Search() {
                 .then(res => setUserResults(res.data.content))
                 .catch(() => setError("Failed to search users."))
                 .finally(() => setLoading(false));
-        } else {
+        } else if (activeTab === "posts") {
             searchPosts(query)
                 .then(res => setPostResults(res.data.content))
                 .catch(() => setError("Failed to search posts."))
+                .finally(() => setLoading(false));
+        } else if (activeTab === "groups") {
+            searchGroups(query)
+                .then(res => setGroupResults(res.data))
+                .catch(() => setError("Failed to search groups."))
                 .finally(() => setLoading(false));
         }
     }, [query, activeTab]);
@@ -76,6 +84,12 @@ export default function Search() {
                         People
                     </button>
                     <button
+                        className={`mr-6 py-2 font-medium ${activeTab === "groups" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}
+                        onClick={() => setActiveTab("groups")}
+                    >
+                        Communities
+                    </button>
+                    <button
                         className={`py-2 font-medium ${activeTab === "posts" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}
                         onClick={() => setActiveTab("posts")}
                     >
@@ -94,6 +108,9 @@ export default function Search() {
                         {activeTab === "posts" && postResults.length === 0 && (
                             <p className="text-gray-500">No posts found.</p>
                         )}
+                        {activeTab === "groups" && groupResults.length === 0 && (
+                            <p className="text-gray-500">No communities found.</p>
+                        )}
                     </>
                 )}
 
@@ -109,6 +126,28 @@ export default function Search() {
                             </Link>
                             <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{u.bio || "No bio"}</p>
                         </div>
+                    ))}
+
+                    {/* Group Results */}
+                    {activeTab === "groups" && groupResults.map(g => (
+                        <Link to={`/groups/${g.id}`} key={g.id} className="block group">
+                            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">
+                                <div className="flex justify-between items-start">
+                                    <h3 className="font-bold text-lg dark:text-white group-hover:text-blue-600 transition-colors">
+                                        {g.name}
+                                    </h3>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${g.privacy === 'PUBLIC' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                                        {g.privacy}
+                                    </span>
+                                </div>
+                                <p className="text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
+                                    {g.description}
+                                </p>
+                                <div className="mt-2 text-sm text-gray-500">
+                                    {g.memberCount} members
+                                </div>
+                            </div>
+                        </Link>
                     ))}
 
                     {/* Post Results */}

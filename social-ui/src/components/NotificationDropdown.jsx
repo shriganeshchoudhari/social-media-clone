@@ -52,9 +52,14 @@ export default function NotificationDropdown({ onClose }) {
                                 key={index}
                                 className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group"
                                 onClick={() => {
-                                    // Basic handling: if message mentions a user or post, maybe navigate?
-                                    // For now just close
-                                    // onClose(); 
+                                    if (notif.type === 'GROUP_INVITE') {
+                                        navigate('/groups');
+                                    } else if (notif.type === 'GROUP_JOIN_REQUEST') {
+                                        navigate(`/groups/${notif.referenceId}`);
+                                    } else if (notif.type === 'GROUP_JOIN_APPROVED') {
+                                        navigate(`/groups/${notif.referenceId}`);
+                                    }
+                                    onClose();
                                 }}
                             >
                                 <div className="flex gap-3">

@@ -6,7 +6,7 @@ import RichText from "./RichText";
 import MediaGallery from "./MediaGallery";
 import { editPost, toggleSavePost } from "../api/postService";
 
-export default function PostCard({ post, currentUser, onDelete, onUpdate }) {
+export default function PostCard({ post, currentUser, onDelete, onUpdate, menuActions }) {
     const isMyPost = post.authorUsername === currentUser;
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(post.content);
@@ -109,6 +109,18 @@ export default function PostCard({ post, currentUser, onDelete, onUpdate }) {
                                         Report
                                     </button>
                                 )}
+                                {menuActions && menuActions.map((action, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => {
+                                            action.onClick();
+                                            setShowMenu(false);
+                                        }}
+                                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 ${action.className || 'text-gray-700 dark:text-gray-200'}`}
+                                    >
+                                        {action.label}
+                                    </button>
+                                ))}
                             </div>
                         </>
                     )}

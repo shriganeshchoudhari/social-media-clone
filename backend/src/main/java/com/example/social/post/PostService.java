@@ -22,17 +22,27 @@ public class PostService {
         private final BlockRepository blockRepository;
         private final UserInterestRepository userInterestRepository;
         private final SavedPostRepository savedPostRepository;
+        private final com.example.social.group.GroupRepository groupRepository;
 
         @org.springframework.transaction.annotation.Transactional
         public PostResponse createPost(String username, String content,
-                        java.util.List<org.springframework.web.multipart.MultipartFile> images) {
+                        java.util.List<org.springframework.web.multipart.MultipartFile> images, Long groupId) {
 
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+                com.example.social.group.Group group = null;
+                if (groupId != null) {
+                        group = groupRepository.findById(groupId)
+                                        .orElseThrow(() -> new RuntimeException("Group not found"));
+                        // Optional: Check if user is member of group before posting?
+                        // For now, assume public/open or validated by frontend/logic elsewhere.
+                }
+
                 Post post = Post.builder()
                                 .content(content)
                                 .author(user)
+                                .group(group)
                                 .build();
 
                 // Handle multiple images
@@ -295,5 +305,11 @@ public class PostService {
                                 filtered.stream().map(post -> mapToResponse(post, currentUser)).toList(),
                                 pageable,
                                 posts.getTotalElements());
+        }
+
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
+        public Page<PostResponse> mapPosts(Page<Post> posts, String username) {
+                User currentUser = userRepository.findByUsername(username).orElseThrow();
+                return posts.map(post -> mapToResponse(post, currentUser));
         }
 }

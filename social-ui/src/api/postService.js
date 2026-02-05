@@ -1,11 +1,15 @@
 import api from "./axios";
 
-export const createPost = async (content, imageFiles) => {
+export const createPost = async (content, imageFiles, groupId) => {
     const formData = new FormData();
     formData.append("content", content);
 
     if (imageFiles && imageFiles.length > 0) {
         imageFiles.forEach(file => formData.append("images", file));
+    }
+
+    if (groupId) {
+        formData.append("groupId", groupId);
     }
 
     return api.post("/posts", formData, { headers: { "Content-Type": "multipart/form-data" } });

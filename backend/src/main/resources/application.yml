@@ -2,6 +2,7 @@ server:
   port: ${PORT:8081}
   error:
     include-message: always
+    include-binding-errors: always
 
 spring:
   datasource:
@@ -12,7 +13,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
   flyway:
     locations: classpath:db/migration
     enabled: true

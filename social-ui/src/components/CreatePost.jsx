@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPost } from "../api/postService";
 
-export default function CreatePost({ onPost }) {
+export default function CreatePost({ onPost, extraData = {} }) {
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState([]);
@@ -12,7 +12,7 @@ export default function CreatePost({ onPost }) {
 
         setLoading(true);
         try {
-            await createPost(content, files);
+            await createPost(content, files, extraData.groupId);
             setContent("");
             setFiles([]);
             onPost(); // refresh feed
@@ -26,6 +26,9 @@ export default function CreatePost({ onPost }) {
     const removeFile = (index) => {
         setFiles(prev => prev.filter((_, i) => i !== index));
     };
+
+    // Debug
+    // console.log("CreatePost extraData:", extraData);
 
     return (
         <form

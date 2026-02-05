@@ -10,9 +10,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handle(RuntimeException ex) {
-        ex.printStackTrace(); // Log the error!
+        ex.printStackTrace();
+        String error = ex.getMessage() != null ? ex.getMessage() : "Unknown error";
+        String cause = ex.getCause() != null ? ex.getCause().toString() : "No cause";
         return ResponseEntity.badRequest().body(
-                Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
+                Map.of("error", error, "exception", ex.getClass().getName(), "cause", cause));
     }
 
     @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
