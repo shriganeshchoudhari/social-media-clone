@@ -4,7 +4,6 @@ import com.example.social.chat.dto.MessageResponse;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
 import org.springframework.stereotype.Service;
-import com.example.social.chat.MessageRepository;
 
 import java.util.List;
 

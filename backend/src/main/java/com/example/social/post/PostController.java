@@ -1,13 +1,18 @@
 package com.example.social.post;
 
 import com.example.social.post.dto.PostResponse;
-import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
+@Tag(name = "Posts", description = "Post creation, feed, and management endpoints")
 public class PostController {
 
     private final PostService postService;
@@ -20,18 +25,24 @@ public class PostController {
     }
 
     @PostMapping(consumes = "multipart/form-data")
+    @Operation(summary = "Create new post", description = "Create a new post with optional images and group association")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Post created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     public PostResponse createPost(
-            @RequestParam("content") String content,
-            @RequestParam(value = "images", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> images,
-            @RequestParam(value = "groupId", required = false) Long groupId,
+            @Parameter(description = "Post content text") @RequestParam("content") String content,
+            @Parameter(description = "Optional images (max 10MB each)") @RequestParam(value = "images", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> images,
+            @Parameter(description = "Optional group ID to post in") @RequestParam(value = "groupId", required = false) Long groupId,
             Authentication authentication) {
         return postService.createPost(authentication.getName(), content, images, groupId);
     }
 
     @GetMapping("/feed")
+    @Operation(summary = "Get global feed", description = "Retrieve paginated global feed of all posts")
     public Page<PostResponse> getFeed(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "10") int size) {
         return postService.getFeed(page, size);
     }
 
@@ -73,9 +84,10 @@ public class PostController {
     }
 
     @GetMapping("/explore")
+    @Operation(summary = "Explore recommended posts", description = "Get personalized post recommendations based on user interests")
     public Page<PostResponse> explore(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "10") int size,
             Authentication auth) {
 
         return recommendationService.recommend(

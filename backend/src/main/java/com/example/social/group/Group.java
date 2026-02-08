@@ -32,6 +32,7 @@ public class Group {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pinned_post_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private com.example.social.post.Post pinnedPost;
 
     private LocalDateTime createdAt;

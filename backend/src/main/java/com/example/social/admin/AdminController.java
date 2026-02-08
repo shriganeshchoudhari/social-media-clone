@@ -5,6 +5,10 @@ import com.example.social.post.PostService;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
 import com.example.social.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+@Tag(name = "Admin", description = "Administrative and moderation endpoints (requires ADMIN or MODERATOR role)")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminController {
 
     private final UserRepository userRepository;
@@ -40,6 +46,7 @@ public class AdminController {
     }
 
     @GetMapping("/users")
+    @Operation(summary = "List all users", description = "Retrieve list of all registered users (Admin/Moderator only)")
     public List<User> users() {
         return userRepository.findAll();
     }
@@ -61,7 +68,8 @@ public class AdminController {
 
     @PostMapping("/ban/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void ban(@PathVariable String username) {
+    @Operation(summary = "Ban user", description = "Permanently ban a user (Admin only)")
+    public void ban(@Parameter(description = "Username to ban") @PathVariable String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setBanned(true);
@@ -98,7 +106,9 @@ public class AdminController {
     }
 
     @DeleteMapping("/posts/{postId}")
-    public void deletePost(@PathVariable Long postId, Authentication auth) {
+    @Operation(summary = "Delete post", description = "Delete a post as admin/moderator")
+    public void deletePost(@Parameter(description = "Post ID to delete") @PathVariable Long postId,
+            Authentication auth) {
         // Log first because post might be gone after delete (though we only need ID)
         auditService.log(auth.getName(), "DELETE_POST", "Post ID " + postId, "Deleted post by admin");
 

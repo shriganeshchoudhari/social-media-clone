@@ -23,6 +23,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,6 +2,9 @@ package com.example.social.user;
 
 import com.example.social.user.dto.PasswordChangeRequest;
 import com.example.social.user.dto.ProfileResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Users", description = "User profile and account management endpoints")
 public class UserController {
 
     private final UserService userService;
@@ -17,6 +21,7 @@ public class UserController {
     private final UserRepository userRepository;
 
     @GetMapping("/me")
+    @Operation(summary = "Get current user", description = "Retrieve authenticated user's information")
     public com.example.social.user.User me(Authentication auth) {
         return userService.getUserByUsername(auth.getName());
     }
@@ -40,10 +45,11 @@ public class UserController {
     }
 
     @PutMapping(value = "/me", consumes = "multipart/form-data")
+    @Operation(summary = "Update profile", description = "Update user profile with bio, avatar, and interests")
     public User updateProfile(
-            @RequestParam(required = false) String bio,
-            @RequestParam(required = false) MultipartFile avatar,
-            @RequestParam(required = false) java.util.List<String> interests,
+            @Parameter(description = "User bio") @RequestParam(required = false) String bio,
+            @Parameter(description = "Profile avatar image") @RequestParam(required = false) MultipartFile avatar,
+            @Parameter(description = "User interests/tags") @RequestParam(required = false) java.util.List<String> interests,
             Authentication auth) {
         return userService.updateProfile(auth.getName(), bio, avatar, interests);
     }
@@ -59,8 +65,9 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
+    @Operation(summary = "Get user profile", description = "Retrieve public profile information for a specific user")
     public ProfileResponse getProfile(
-            @PathVariable String username,
+            @Parameter(description = "Username to retrieve") @PathVariable String username,
             Authentication auth) {
         return userService.getProfile(auth.getName(), username);
     }

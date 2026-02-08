@@ -28,7 +28,8 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .headers(headers -> headers
                                                 .contentSecurityPolicy(
-                                                                csp -> csp.policyDirectives("default-src 'self'"))
+                                                                csp -> csp.policyDirectives(
+                                                                                "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:"))
                                                 .frameOptions(frame -> frame.deny())
                                                 .xssProtection(xss -> xss.disable()))
                                 .formLogin(form -> form.disable())
@@ -49,6 +50,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/uploads/**").permitAll() // Allow serving static
                                                                                             // files
                                                 .requestMatchers("/actuator/**").permitAll()
+                                                // Swagger UI and OpenAPI endpoints
+                                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
+                                                                "/swagger-ui.html")
+                                                .permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                                                 .permitAll()
 

@@ -1,9 +1,6 @@
 package com.example.social.group.dto;
 
 import com.example.social.group.GroupMember;
-import lombok.Builder;
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
 public class GroupMemberResponse {

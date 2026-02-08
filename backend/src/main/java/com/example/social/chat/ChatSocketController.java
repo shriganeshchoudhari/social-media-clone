@@ -6,7 +6,6 @@ import com.example.social.chat.dto.ReadPayload;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 
 public class ChatSocketController {
 

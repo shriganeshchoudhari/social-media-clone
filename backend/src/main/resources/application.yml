@@ -55,6 +55,8 @@ logging:
     root: INFO
     "[org.springframework.security]": WARN
     "[org.hibernate.SQL]": OFF
+    "[org.springdoc]": DEBUG
+    "[org.springframework.web]": DEBUG
 
 management:
   endpoints:
@@ -72,3 +74,14 @@ app:
 jwt:
   secret: ${JWT_SECRET:12345678901234567890123456789012}
   expiration: ${JWT_EXPIRATION:86400000}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    try-it-out-enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+    display-request-duration: true

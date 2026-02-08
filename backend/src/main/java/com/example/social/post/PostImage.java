@@ -15,6 +15,7 @@ public class PostImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Post post;
 
     public PostImage() {

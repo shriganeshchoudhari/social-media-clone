@@ -4,7 +4,6 @@ import com.example.social.post.PostRepository;
 import com.example.social.user.User;
 import com.example.social.user.UserInterestRepository;
 import com.example.social.user.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,5 @@
 package com.example.social.group.event;
 
-import lombok.Builder;
-import lombok.Data;
 import java.time.LocalDateTime;
 
 public class GroupEventResponse {

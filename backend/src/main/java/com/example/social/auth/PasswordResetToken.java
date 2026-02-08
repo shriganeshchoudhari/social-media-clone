@@ -2,7 +2,6 @@ package com.example.social.auth;
 
 import com.example.social.user.User;
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 

@@ -1,9 +1,5 @@
 package com.example.social.notification;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 public class NotificationDto {
     private Long id;
     private String message;
