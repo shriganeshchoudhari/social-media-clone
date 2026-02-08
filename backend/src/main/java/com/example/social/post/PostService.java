@@ -4,14 +4,12 @@ import com.example.social.follow.FollowRepository;
 import com.example.social.like.PostLikeRepository;
 import com.example.social.post.dto.*;
 import com.example.social.user.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PostService {
 
         private final PostRepository postRepository;
@@ -23,6 +21,27 @@ public class PostService {
         private final UserInterestRepository userInterestRepository;
         private final SavedPostRepository savedPostRepository;
         private final com.example.social.group.GroupRepository groupRepository;
+
+        public PostService(
+                        PostRepository postRepository,
+                        UserRepository userRepository,
+                        PostLikeRepository postLikeRepository,
+                        com.example.social.file.FileStorageService fileStorageService,
+                        FollowRepository followRepository,
+                        BlockRepository blockRepository,
+                        UserInterestRepository userInterestRepository,
+                        SavedPostRepository savedPostRepository,
+                        com.example.social.group.GroupRepository groupRepository) {
+                this.postRepository = postRepository;
+                this.userRepository = userRepository;
+                this.postLikeRepository = postLikeRepository;
+                this.fileStorageService = fileStorageService;
+                this.followRepository = followRepository;
+                this.blockRepository = blockRepository;
+                this.userInterestRepository = userInterestRepository;
+                this.savedPostRepository = savedPostRepository;
+                this.groupRepository = groupRepository;
+        }
 
         @org.springframework.transaction.annotation.Transactional
         public PostResponse createPost(String username, String content,

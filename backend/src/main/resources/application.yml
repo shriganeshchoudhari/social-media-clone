@@ -7,8 +7,21 @@ server:
 spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/socialdb}
-    username: ${DB_USER:social}
-    password: ${DB_PASS:social}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/social_mongo}
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME:elastic}
+    password: ${ELASTICSEARCH_PASSWORD:changeme}
+
 
   jpa:
     open-in-view: false

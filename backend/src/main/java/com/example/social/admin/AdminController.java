@@ -5,7 +5,6 @@ import com.example.social.post.PostService;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
 import com.example.social.user.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
 public class AdminController {
 
@@ -25,6 +23,21 @@ public class AdminController {
     private final UserService userService;
     private final AdminAuditService auditService;
     private final AdminAuditLogRepository auditRepo;
+
+    public AdminController(
+            UserRepository userRepository,
+            ReportRepository reportRepository,
+            PostService postService,
+            UserService userService,
+            AdminAuditService auditService,
+            AdminAuditLogRepository auditRepo) {
+        this.userRepository = userRepository;
+        this.reportRepository = reportRepository;
+        this.postService = postService;
+        this.userService = userService;
+        this.auditService = auditService;
+        this.auditRepo = auditRepo;
+    }
 
     @GetMapping("/users")
     public List<User> users() {

@@ -1,0 +1,7 @@
+backend/target
+social-ui/node_modules
+social-ui/dist
+.git
+.vscode
+.idea
+*.log

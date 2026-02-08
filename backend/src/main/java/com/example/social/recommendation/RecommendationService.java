@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class RecommendationService {
 
     private final UserInterestRepository interestRepo;
@@ -21,6 +20,19 @@ public class RecommendationService {
 
     private final com.example.social.post.SavedPostRepository savedPostRepo;
     private final com.example.social.like.PostLikeRepository postLikeRepository;
+
+    public RecommendationService(
+            UserInterestRepository interestRepo,
+            PostRepository postRepo,
+            UserRepository userRepo,
+            com.example.social.post.SavedPostRepository savedPostRepo,
+            com.example.social.like.PostLikeRepository postLikeRepository) {
+        this.interestRepo = interestRepo;
+        this.postRepo = postRepo;
+        this.userRepo = userRepo;
+        this.savedPostRepo = savedPostRepo;
+        this.postLikeRepository = postLikeRepository;
+    }
 
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<com.example.social.post.dto.PostResponse> recommend(String username, Pageable pageable) {

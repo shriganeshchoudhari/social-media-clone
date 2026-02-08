@@ -3,13 +3,12 @@ package com.example.social.chat;
 import com.example.social.chat.dto.MessageResponse;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.example.social.chat.MessageRepository;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ChatService {
 
         private final MessageRepository messageRepository;
@@ -18,6 +17,21 @@ public class ChatService {
         private final com.example.social.file.FileStorageService fileStorageService;
         private final com.example.social.user.BlockRepository blockRepository;
         private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+
+        public ChatService(
+                        MessageRepository messageRepository,
+                        UserRepository userRepository,
+                        com.example.social.notification.NotificationService notificationService,
+                        com.example.social.file.FileStorageService fileStorageService,
+                        com.example.social.user.BlockRepository blockRepository,
+                        org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
+                this.messageRepository = messageRepository;
+                this.userRepository = userRepository;
+                this.notificationService = notificationService;
+                this.fileStorageService = fileStorageService;
+                this.blockRepository = blockRepository;
+                this.messagingTemplate = messagingTemplate;
+        }
 
         @org.springframework.transaction.annotation.Transactional
         public void sendMessage(String senderUsername, String receiverUsername, String content) {

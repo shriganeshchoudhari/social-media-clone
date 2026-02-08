@@ -3,7 +3,6 @@ package com.example.social.user;
 import com.example.social.post.Post;
 import com.example.social.post.PostImage;
 import com.example.social.user.dto.ProfileResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -24,6 +25,36 @@ public class UserService {
     private final com.example.social.follow.FollowRepository followRepository;
     private final BlockRepository blockRepository;
     private final UserInterestRepository userInterestRepository;
+    private final com.example.social.activity.ActivityLogService activityLogService;
+    private final com.example.social.search.UserSyncService userSyncService;
+    private final com.example.social.search.UserSearchRepository userSearchRepository;
+
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            com.example.social.file.FileStorageService fileStorageService,
+            com.example.social.post.PostRepository postRepository,
+            com.example.social.like.PostLikeRepository postLikeRepository,
+            com.example.social.comment.CommentRepository commentRepository,
+            com.example.social.follow.FollowRepository followRepository,
+            BlockRepository blockRepository,
+            UserInterestRepository userInterestRepository,
+            com.example.social.activity.ActivityLogService activityLogService,
+            com.example.social.search.UserSyncService userSyncService,
+            com.example.social.search.UserSearchRepository userSearchRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.fileStorageService = fileStorageService;
+        this.postRepository = postRepository;
+        this.postLikeRepository = postLikeRepository;
+        this.commentRepository = commentRepository;
+        this.followRepository = followRepository;
+        this.blockRepository = blockRepository;
+        this.userInterestRepository = userInterestRepository;
+        this.activityLogService = activityLogService;
+        this.userSyncService = userSyncService;
+        this.userSearchRepository = userSearchRepository;
+    }
 
     public void toggleBlock(String me, String targetUsername) {
         User blocker = getUserByUsername(me);
@@ -48,6 +79,8 @@ public class UserService {
             b.setBlocker(blocker);
             b.setBlocked(blocked);
             blockRepository.save(b);
+            activityLogService.logActivity(blocker.getId(), blocker.getUsername(), "BLOCK_USER",
+                    "Blocked user: " + targetUsername, null);
         }
     }
 
@@ -88,6 +121,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "userProfiles", key = "#username")
     public User updateProfile(String username, String bio, MultipartFile avatar, List<String> interests) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -118,7 +152,11 @@ public class UserService {
             }
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        userSyncService.syncUser(savedUser);
+        activityLogService.logActivity(savedUser.getId(), savedUser.getUsername(), "UPDATE_PROFILE",
+                "Updated profile details", null);
+        return savedUser;
     }
 
     public User getUserByUsername(String username) {
@@ -131,6 +169,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    @Cacheable(value = "userProfiles", key = "#targetUsername")
     public ProfileResponse getProfile(String viewerUsername, String targetUsername) {
         User me = getUserByUsername(viewerUsername);
         User target = getUserByUsername(targetUsername);
@@ -155,7 +194,11 @@ public class UserService {
     public User togglePrivacy(String username) {
         User user = getUserByUsername(username);
         user.setPrivate(!user.isPrivate());
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        userSyncService.syncUser(saved);
+        activityLogService.logActivity(saved.getId(), saved.getUsername(), "TOGGLE_PRIVACY",
+                "Changed privacy to: " + saved.isPrivate(), null);
+        return saved;
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) {
@@ -175,6 +218,8 @@ public class UserService {
         user.setTokenVersion(user.getTokenVersion() + 1); // Invalidate
                                                           // tokens
         userRepository.save(user);
+        activityLogService.logActivity(user.getId(), user.getUsername(), "CHANGE_PASSWORD",
+                "Password changed successfully", null);
     }
 
     public void warn(String username) {
@@ -191,15 +236,15 @@ public class UserService {
 
     public org.springframework.data.domain.Page<ProfileResponse> searchUsers(String query,
             org.springframework.data.domain.Pageable pageable) {
-        return userRepository.findByUsernameContainingIgnoreCase(query, pageable)
-                .map(u -> new ProfileResponse(
-                        u.getUsername(),
-                        u.getBio(),
-                        u.getProfileImageUrl(),
+        return userSearchRepository.findByUsernameContaining(query, pageable)
+                .map(doc -> new ProfileResponse(
+                        doc.getUsername(),
+                        doc.getBio(),
+                        doc.getProfileImageUrl(),
                         0L, 0L, 0L, // Counts are not needed for simple search result
-                        u.isPrivate(),
-                        false, // Follow status unknown/irrelevant for simple search list (or we can query)
-                        u.isVerified()));
+                        false, // Privacy unknown from ES doc unless we add it
+                        false, // Follow status unknown/irrelevant for simple search list
+                        doc.isVerified()));
     }
 
     public void unsuspend(String username) {
@@ -213,6 +258,8 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow();
         user.setVerified(true);
         userRepository.save(user);
+        userSyncService.syncUser(user);
+        activityLogService.logActivity(user.getId(), user.getUsername(), "VERIFY_USER", "User verified", null);
         System.out.println("VERIFICATION SUCCESS: User " + username + " is now verified.");
     }
 }

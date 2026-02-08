@@ -4,21 +4,28 @@ import com.example.social.comment.dto.*;
 import com.example.social.post.Post;
 import com.example.social.post.PostRepository;
 import com.example.social.user.User;
-import com.example.social.user.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class CommentService {
 
         private final CommentRepository commentRepository;
-        private final UserRepository userRepository;
         private final PostRepository postRepository;
-
+        private final com.example.social.user.UserRepository userRepository;
         private final com.example.social.notification.NotificationService notificationService;
+
+        public CommentService(
+                        CommentRepository commentRepository,
+                        PostRepository postRepository,
+                        com.example.social.user.UserRepository userRepository,
+                        com.example.social.notification.NotificationService notificationService) {
+                this.commentRepository = commentRepository;
+                this.postRepository = postRepository;
+                this.userRepository = userRepository;
+                this.notificationService = notificationService;
+        }
 
         @Transactional
         public CommentResponse addComment(String username, Long postId, CreateCommentRequest request) {

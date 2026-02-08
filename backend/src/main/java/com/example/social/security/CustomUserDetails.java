@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Getter
 public class CustomUserDetails implements UserDetails {
 
     private final Long id;
@@ -28,6 +27,22 @@ public class CustomUserDetails implements UserDetails {
         this.isBanned = user.isBanned();
         this.role = user.getRole();
         this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getTokenVersion() {
+        return tokenVersion;
+    }
+
+    public boolean isBanned() {
+        return isBanned;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     @Override

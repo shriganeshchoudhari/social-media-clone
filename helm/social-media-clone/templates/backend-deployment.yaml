@@ -4,29 +4,37 @@ metadata:
   name: {{ .Release.Name }}-backend
   labels:
     app: backend
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.backend.replicaCount }}
   selector:
     matchLabels:
       app: backend
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app: backend
+        release: {{ .Release.Name }}
     spec:
       containers:
         - name: backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           ports:
-            - containerPort: 8081
+            - name: http
+              containerPort: 8081
+              protocol: TCP
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.backend.env.springProfilesActive | quote }}
             - name: DB_URL
               value: "jdbc:postgresql://{{ .Release.Name }}-postgres:5432/{{ .Values.postgres.auth.database }}"
             - name: DB_USER
-              value: {{ .Values.postgres.auth.username | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: postgres-username
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
@@ -38,6 +46,57 @@ spec:
                   name: {{ .Release.Name }}-secrets
                   key: jwt-secret
             - name: JWT_EXPIRATION
-              value: {{ .Values.backend.env.jwtExpiration | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: jwt-expiration
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
+            # MongoDB connection
+            - name: SPRING_DATA_MONGODB_URI
+              value: "mongodb://{{ .Release.Name }}-mongodb:27017/{{ .Values.mongodb.database }}"
+            - name: SPRING_DATA_MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: mongodb-root-username
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: mongodb-root-password
+            - name: SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE
+              value: "admin"
+            # Redis connection
+            - name: SPRING_DATA_REDIS_HOST
+              value: "{{ .Release.Name }}-redis"
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
+            # Elasticsearch connection
+            - name: SPRING_ELASTICSEARCH_URIS
+              value: "http://{{ .Release.Name }}-elasticsearch:9200"
+            # Kafka connection
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Release.Name }}-kafka:9092"
+          {{- if .Values.backend.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.backend.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.backend.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.readinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.backend.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.backend.readinessProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}

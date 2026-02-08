@@ -2,19 +2,26 @@ package com.example.social.notification;
 
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final NotificationPublisher publisher;
+
+    public NotificationService(
+            NotificationRepository notificationRepository,
+            UserRepository userRepository,
+            NotificationPublisher publisher) {
+        this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
+        this.publisher = publisher;
+    }
 
     public void create(User user, NotificationType type, Long referenceId, String actorUsername, String message) {
 

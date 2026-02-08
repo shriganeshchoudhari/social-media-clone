@@ -1,6 +1,5 @@
 package com.example.social.notification;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -8,12 +7,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/notifications")
-@RequiredArgsConstructor
 public class NotificationController {
 
         private final NotificationService notificationService;
+
+        public NotificationController(NotificationService notificationService) {
+                this.notificationService = notificationService;
+        }
 
         @GetMapping
         public ResponseEntity<List<NotificationDto>> myNotifications(Authentication auth) {

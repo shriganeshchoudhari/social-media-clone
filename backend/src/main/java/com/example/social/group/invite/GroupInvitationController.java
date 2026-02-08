@@ -1,7 +1,6 @@
 package com.example.social.group.invite;
 
 import com.example.social.group.GroupService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,10 +8,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups/invitations")
-@RequiredArgsConstructor
 public class GroupInvitationController {
 
     private final GroupService groupService;
+
+    public GroupInvitationController(GroupService groupService) {
+        this.groupService = groupService;
+    }
 
     @PostMapping("/invite")
     public void inviteUsers(@RequestBody InviteRequest request, Authentication auth) {
@@ -37,30 +39,55 @@ public class GroupInvitationController {
 
     @PostMapping("/{id}/reject")
     public void rejectInvitation(@PathVariable Long id, Authentication auth) {
-        // Can be used for rejecting invites (by user) or rejecting values (by admin)?
-        // Service has rejectInvitation(id, username).
-        // If admin rejecting request: need separate method or reuse?
-        // Service rejectInvitation checks "Not your invitation".
-        // Admin rejection logic not fully in service yet?
-        // Re-using rejectInvitation for USER rejecting an INVITE.
-        // For ADMIN rejecting a REQUEST, we need logic.
-        // Let's assume for now this is for User rejecting invalid.
         groupService.rejectInvitation(id, auth.getName());
     }
 
-    @lombok.Data
-    @lombok.NoArgsConstructor
-    @lombok.AllArgsConstructor
     public static class InviteRequest {
         private Long groupId;
         private List<String> usernames;
+
+        public InviteRequest() {
+        }
+
+        public InviteRequest(Long groupId, List<String> usernames) {
+            this.groupId = groupId;
+            this.usernames = usernames;
+        }
+
+        public Long getGroupId() {
+            return groupId;
+        }
+
+        public void setGroupId(Long groupId) {
+            this.groupId = groupId;
+        }
+
+        public List<String> getUsernames() {
+            return usernames;
+        }
+
+        public void setUsernames(List<String> usernames) {
+            this.usernames = usernames;
+        }
     }
 
-    @lombok.Data
-    @lombok.NoArgsConstructor
-    @lombok.AllArgsConstructor
     public static class JoinRequest {
         private Long groupId;
+
+        public JoinRequest() {
+        }
+
+        public JoinRequest(Long groupId) {
+            this.groupId = groupId;
+        }
+
+        public Long getGroupId() {
+            return groupId;
+        }
+
+        public void setGroupId(Long groupId) {
+            this.groupId = groupId;
+        }
     }
 
     @GetMapping("/my")

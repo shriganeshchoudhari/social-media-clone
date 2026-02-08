@@ -3,13 +3,11 @@ package com.example.social.follow;
 import com.example.social.user.User;
 import com.example.social.user.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class FollowService {
 
         private final FollowRepository followRepository;
@@ -17,6 +15,17 @@ public class FollowService {
         private final com.example.social.user.BlockRepository blockRepository;
 
         private final com.example.social.notification.NotificationService notificationService;
+
+        public FollowService(
+                        FollowRepository followRepository,
+                        UserRepository userRepository,
+                        com.example.social.user.BlockRepository blockRepository,
+                        com.example.social.notification.NotificationService notificationService) {
+                this.followRepository = followRepository;
+                this.userRepository = userRepository;
+                this.blockRepository = blockRepository;
+                this.notificationService = notificationService;
+        }
 
         @Transactional
         public void toggleFollow(String followerUsername, String followingUsername) {

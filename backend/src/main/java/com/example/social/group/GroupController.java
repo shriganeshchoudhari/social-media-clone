@@ -4,7 +4,6 @@ import com.example.social.group.dto.GroupRequest;
 import com.example.social.group.dto.GroupResponse;
 import com.example.social.post.Post;
 import com.example.social.post.dto.PostResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups")
-@RequiredArgsConstructor
 public class GroupController {
 
     private final GroupService groupService;
@@ -49,6 +47,11 @@ public class GroupController {
     // I will add a public map method to PostService.
 
     private final com.example.social.post.PostService postService;
+
+    public GroupController(GroupService groupService, com.example.social.post.PostService postService) {
+        this.groupService = groupService;
+        this.postService = postService;
+    }
 
     @PostMapping
     public GroupResponse createGroup(@RequestBody GroupRequest request, Authentication auth) {

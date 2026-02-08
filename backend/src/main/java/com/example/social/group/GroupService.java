@@ -6,7 +6,6 @@ import com.example.social.post.Post;
 import com.example.social.post.PostRepository;
 import com.example.social.user.User;
 import com.example.social.user.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class GroupService {
 
     private final GroupRepository groupRepository;
@@ -28,6 +26,23 @@ public class GroupService {
     private final PostRepository postRepository;
     private final com.example.social.notification.NotificationService notificationService;
     private final com.example.social.group.event.GroupEventRepository groupEventRepository;
+
+    public GroupService(
+            GroupRepository groupRepository,
+            GroupMemberRepository groupMemberRepository,
+            com.example.social.group.invite.GroupInvitationRepository groupInvitationRepository,
+            UserService userService,
+            PostRepository postRepository,
+            com.example.social.notification.NotificationService notificationService,
+            com.example.social.group.event.GroupEventRepository groupEventRepository) {
+        this.groupRepository = groupRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.groupInvitationRepository = groupInvitationRepository;
+        this.userService = userService;
+        this.postRepository = postRepository;
+        this.notificationService = notificationService;
+        this.groupEventRepository = groupEventRepository;
+    }
 
     @Transactional
     public GroupResponse createGroup(String username, GroupRequest request) {

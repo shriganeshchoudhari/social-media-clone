@@ -1,7 +1,5 @@
 package com.example.social.group.event;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,10 +9,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups")
-@RequiredArgsConstructor
 public class GroupEventController {
 
     private final GroupEventService groupEventService;
+
+    public GroupEventController(GroupEventService groupEventService) {
+        this.groupEventService = groupEventService;
+    }
 
     @PostMapping("/{id}/events")
     public GroupEventResponse createEvent(@PathVariable Long id, @RequestBody EventRequest request,
@@ -33,12 +34,43 @@ public class GroupEventController {
         groupEventService.deleteEvent(eventId, auth.getName());
     }
 
-    @Data
     public static class EventRequest {
         private String title;
         private String description;
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         private LocalDateTime startTime;
         private String location;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public LocalDateTime getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(LocalDateTime startTime) {
+            this.startTime = startTime;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
     }
 }

@@ -8,11 +8,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
-@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
     private final com.example.social.recommendation.RecommendationService recommendationService;
+
+    public PostController(PostService postService,
+            com.example.social.recommendation.RecommendationService recommendationService) {
+        this.postService = postService;
+        this.recommendationService = recommendationService;
+    }
 
     @PostMapping(consumes = "multipart/form-data")
     public PostResponse createPost(

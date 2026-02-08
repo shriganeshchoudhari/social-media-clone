@@ -5,10 +5,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class NotificationPublisher {
 
     private final SimpMessagingTemplate messagingTemplate;
+
+    public NotificationPublisher(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     public void sendToUser(String username, NotificationDto payload) {
         // Send to /user/{username}/queue/notifications

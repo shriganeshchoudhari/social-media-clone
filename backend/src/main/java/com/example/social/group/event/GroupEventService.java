@@ -6,7 +6,6 @@ import com.example.social.group.GroupMemberRepository;
 import com.example.social.group.GroupMember;
 import com.example.social.user.User;
 import com.example.social.user.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +15,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class GroupEventService {
 
     private final GroupEventRepository groupEventRepository;
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final UserService userService;
+
+    public GroupEventService(
+            GroupEventRepository groupEventRepository,
+            GroupRepository groupRepository,
+            GroupMemberRepository groupMemberRepository,
+            UserService userService) {
+        this.groupEventRepository = groupEventRepository;
+        this.groupRepository = groupRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.userService = userService;
+    }
 
     @Transactional
     public GroupEventResponse createEvent(Long groupId, String username, String title, String description,

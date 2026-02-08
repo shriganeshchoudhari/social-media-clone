@@ -4,34 +4,59 @@ metadata:
   name: {{ .Release.Name }}-postgres
   labels:
     app: postgres
+    release: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: postgres
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app: postgres
+        release: {{ .Release.Name }}
     spec:
       containers:
         - name: postgres
           image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
           env:
             - name: POSTGRES_USER
-              value: {{ .Values.postgres.auth.username | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: postgres-username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-secrets
                   key: postgres-password
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.auth.database | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: postgres-database
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           ports:
-            - containerPort: 5432
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U {{ .Values.postgres.auth.username }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           volumeMounts:
             - name: pgdata
               mountPath: /var/lib/postgresql/data
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
       volumes:
         - name: pgdata
           persistentVolumeClaim:
@@ -41,6 +66,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-postgres-pvc
+  labels:
+    app: postgres
+    release: {{ .Release.Name }}
 spec:
   accessModes:
     - ReadWriteOnce

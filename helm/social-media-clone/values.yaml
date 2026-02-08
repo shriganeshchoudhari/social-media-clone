@@ -1,5 +1,6 @@
 global:
   environment: dev
+  namespace: social-media
 
 postgres:
   image:
@@ -16,12 +17,19 @@ postgres:
     enabled: true
     size: 1Gi
     storageClass: ""
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 backend:
   image:
     repository: social-backend
-    tag: dev-ws
-    pullPolicy: IfNotPresent
+    tag: latest
+    pullPolicy: Always
   service:
     type: ClusterIP
     port: 8081
@@ -30,17 +38,59 @@ backend:
     springProfilesActive: dev
     jwtSecret: "12345678901234567890123456789012"
     jwtExpiration: "86400000"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  livenessProbe:
+    enabled: true
+    path: /actuator/health/liveness
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    path: /actuator/health/readiness
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
 
 frontend:
   image:
     repository: social-ui
-    tag: dev-ws
+    tag: latest
     pullPolicy: IfNotPresent
   service:
     type: NodePort
     port: 5173
     nodePort: 30000
   replicaCount: 1
+  env:
+    backendUrl: "http://social-media-backend:8081"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
 
 pgadmin:
   enabled: true
@@ -48,10 +98,19 @@ pgadmin:
     repository: dpage/pgadmin4
     tag: latest
   service:
+    type: NodePort
     port: 80
+    nodePort: 30050
   auth:
     email: admin@admin.com
     password: admin
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
 
 prometheus:
   enabled: true
@@ -59,7 +118,16 @@ prometheus:
     repository: prom/prometheus
     tag: latest
   service:
+    type: NodePort
     port: 9090
+    nodePort: 30090
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+    limits:
+      memory: "512Mi"
+      cpu: "400m"
 
 grafana:
   enabled: true
@@ -67,8 +135,92 @@ grafana:
     repository: grafana/grafana
     tag: latest
   service:
+    type: NodePort
     port: 3000
     nodePort: 32000
   auth:
     username: admin
     password: admin
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+mongodb:
+  image:
+    repository: mongo
+    tag: "7.0"
+  database: socialdb
+  auth:
+    rootUsername: admin
+    rootPassword: mongopass
+  persistence:
+    size: 2Gi
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+redis:
+  image:
+    repository: redis
+    tag: "7-alpine"
+  password: ""  # Leave empty for no password
+  persistence:
+    size: 1Gi
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+elasticsearch:
+  image:
+    repository: docker.elastic.co/elasticsearch/elasticsearch
+    tag: "8.11.0"
+  javaOpts: "-Xms512m -Xmx512m"
+  persistence:
+    size: 5Gi
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+zookeeper:
+  image:
+    repository: confluentinc/cp-zookeeper
+    tag: "7.5.0"
+  persistence:
+    size: 1Gi
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+    limits:
+      memory: "512Mi"
+      cpu: "400m"
+
+kafka:
+  image:
+    repository: confluentinc/cp-kafka
+    tag: "7.5.0"
+  persistence:
+    size: 2Gi
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"

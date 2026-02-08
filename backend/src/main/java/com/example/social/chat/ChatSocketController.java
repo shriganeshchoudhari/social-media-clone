@@ -4,16 +4,17 @@ import com.example.social.chat.dto.ChatMessagePayload;
 import com.example.social.chat.dto.TypingPayload;
 import com.example.social.chat.dto.ReadPayload;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
-@Controller
-@RequiredArgsConstructor
 public class ChatSocketController {
 
     private final ChatService chatService;
+
+    public ChatSocketController(ChatService chatService) {
+        this.chatService = chatService;
+    }
 
     @MessageMapping("/chat.send")
     public void send(ChatMessagePayload payload, Authentication auth) {

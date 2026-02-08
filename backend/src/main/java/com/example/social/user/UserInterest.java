@@ -1,13 +1,9 @@
 package com.example.social.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "user_interests")
-@Getter
-@Setter
 public class UserInterest {
 
     @Id
@@ -18,4 +14,31 @@ public class UserInterest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    public UserInterest() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

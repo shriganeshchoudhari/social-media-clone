@@ -2,18 +2,18 @@ package com.example.social.chat;
 
 import com.example.social.chat.dto.SendMessageRequest;
 import com.example.social.chat.dto.MessageResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/chat")
-@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
+
+    public ChatController(ChatService chatService) {
+        this.chatService = chatService;
+    }
 
     @PostMapping("/send/{username}")
     public void send(
