@@ -40,8 +40,11 @@ public class GroupEventService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
 
-        if (!groupMemberRepository.existsByGroupAndUser(group, user)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member");
+        com.example.social.group.GroupMember member = groupMemberRepository.findByGroupAndUser(group, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member"));
+
+        if (member.getRole() != GroupMember.GroupRole.ADMIN && member.getRole() != GroupMember.GroupRole.MODERATOR) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Admins and Moderators can create events");
         }
 
         GroupEvent event = GroupEvent.builder()
@@ -94,11 +97,12 @@ public class GroupEventService {
 
         if (!event.getOrganizer().equals(user)) {
             // Allow Group Admin to delete too
-            boolean isAdmin = groupMemberRepository.findByGroupAndUser(event.getGroup(), user)
-                    .map(m -> m.getRole() == GroupMember.GroupRole.ADMIN)
+            boolean isAdminOrMod = groupMemberRepository.findByGroupAndUser(event.getGroup(), user)
+                    .map(m -> m.getRole() == GroupMember.GroupRole.ADMIN
+                            || m.getRole() == GroupMember.GroupRole.MODERATOR)
                     .orElse(false);
 
-            if (!isAdmin) {
+            if (!isAdminOrMod) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized");
             }
         }

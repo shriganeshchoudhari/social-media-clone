@@ -99,7 +99,7 @@ export default function GroupEvents({ groupId, isMember, isAdmin }) {
                                         Organizer: @{event.organizerUsername || "User"}
                                     </p>
                                 </div>
-                                {(isAdmin || true) && ( // Check if creator? 
+                                {(isAdmin) && ( // Check if creator? 
                                     <button
                                         onClick={() => handleDelete(event.id)}
                                         className="text-red-500 hover:text-red-700 h-8 w-8"

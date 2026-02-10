@@ -11,6 +11,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handle(RuntimeException ex) {
         ex.printStackTrace();
+        System.err.println("RuntimeException handled: " + ex.getMessage());
         String error = ex.getMessage() != null ? ex.getMessage() : "Unknown error";
         String cause = ex.getCause() != null ? ex.getCause().toString() : "No cause";
         return ResponseEntity.badRequest().body(

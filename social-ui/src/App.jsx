@@ -80,6 +80,15 @@ export default function App() {
         />
 
         <Route
+          path="/chat/group/:groupId"
+          element={
+            <ProtectedRoute>
+              <ChatPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/inbox"
           element={
             <ProtectedRoute>

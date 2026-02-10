@@ -27,7 +27,8 @@ public class UserService {
     private final UserInterestRepository userInterestRepository;
     private final com.example.social.activity.ActivityLogService activityLogService;
     private final com.example.social.search.UserSyncService userSyncService;
-    private final com.example.social.search.UserSearchRepository userSearchRepository;
+    // private final com.example.social.search.UserSearchRepository
+    // userSearchRepository;
 
     public UserService(
             UserRepository userRepository,
@@ -40,8 +41,9 @@ public class UserService {
             BlockRepository blockRepository,
             UserInterestRepository userInterestRepository,
             com.example.social.activity.ActivityLogService activityLogService,
-            com.example.social.search.UserSyncService userSyncService,
-            com.example.social.search.UserSearchRepository userSearchRepository) {
+            com.example.social.search.UserSyncService userSyncService
+    // com.example.social.search.UserSearchRepository userSearchRepository
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.fileStorageService = fileStorageService;
@@ -53,7 +55,7 @@ public class UserService {
         this.userInterestRepository = userInterestRepository;
         this.activityLogService = activityLogService;
         this.userSyncService = userSyncService;
-        this.userSearchRepository = userSearchRepository;
+        // this.userSearchRepository = userSearchRepository;
     }
 
     public void toggleBlock(String me, String targetUsername) {
@@ -236,15 +238,19 @@ public class UserService {
 
     public org.springframework.data.domain.Page<ProfileResponse> searchUsers(String query,
             org.springframework.data.domain.Pageable pageable) {
-        return userSearchRepository.findByUsernameContaining(query, pageable)
-                .map(doc -> new ProfileResponse(
-                        doc.getUsername(),
-                        doc.getBio(),
-                        doc.getProfileImageUrl(),
-                        0L, 0L, 0L, // Counts are not needed for simple search result
-                        false, // Privacy unknown from ES doc unless we add it
-                        false, // Follow status unknown/irrelevant for simple search list
-                        doc.isVerified()));
+        // Elastic disabled for debugging
+        return org.springframework.data.domain.Page.empty(pageable);
+        /*
+         * return userSearchRepository.findByUsernameContaining(query, pageable)
+         * .map(doc -> new ProfileResponse(
+         * doc.getUsername(),
+         * doc.getBio(),
+         * doc.getProfileImageUrl(),
+         * 0L, 0L, 0L, // Counts are not needed for simple search result
+         * false, // Privacy unknown from ES doc unless we add it
+         * false, // Follow status unknown/irrelevant for simple search list
+         * doc.isVerified()));
+         */
     }
 
     public void unsuspend(String username) {

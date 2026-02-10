@@ -7,6 +7,7 @@ import com.example.social.chat.dto.ReadPayload;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
 
+@org.springframework.stereotype.Controller
 public class ChatSocketController {
 
     private final ChatService chatService;
@@ -19,7 +20,7 @@ public class ChatSocketController {
     public void send(ChatMessagePayload payload, Authentication auth) {
         String sender = auth.getName();
         String receiver = payload.receiver();
-        chatService.sendMessage(sender, receiver, payload.content());
+        chatService.sendMessage(sender, receiver, payload.content(), null);
     }
 
     @MessageMapping("/chat.typing")

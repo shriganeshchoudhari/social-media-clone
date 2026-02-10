@@ -17,6 +17,7 @@ public class Message {
     private User sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id", nullable = true)
     private User receiver;
 
     @Column(nullable = false)
@@ -28,11 +29,24 @@ public class Message {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_group_id")
+    private ChatGroup chatGroup;
+
+    private String voiceUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_to_id")
+    private Message replyTo;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<MessageReaction> reactions = new java.util.ArrayList<>();
+
     public Message() {
     }
 
     public Message(Long id, User sender, User receiver, String content, String imageUrl, boolean isRead,
-            LocalDateTime createdAt) {
+            LocalDateTime createdAt, ChatGroup chatGroup, String voiceUrl, Message replyTo) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
@@ -40,7 +54,12 @@ public class Message {
         this.imageUrl = imageUrl;
         this.isRead = isRead;
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+        this.chatGroup = chatGroup;
+        this.voiceUrl = voiceUrl;
+        this.replyTo = replyTo;
     }
+
+    // Getters and Setters...
 
     public Long getId() {
         return id;
@@ -98,6 +117,38 @@ public class Message {
         this.createdAt = createdAt;
     }
 
+    public ChatGroup getChatGroup() {
+        return chatGroup;
+    }
+
+    public void setChatGroup(ChatGroup chatGroup) {
+        this.chatGroup = chatGroup;
+    }
+
+    public String getVoiceUrl() {
+        return voiceUrl;
+    }
+
+    public void setVoiceUrl(String voiceUrl) {
+        this.voiceUrl = voiceUrl;
+    }
+
+    public Message getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(Message replyTo) {
+        this.replyTo = replyTo;
+    }
+
+    public java.util.List<MessageReaction> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(java.util.List<MessageReaction> reactions) {
+        this.reactions = reactions;
+    }
+
     // Builder
     public static MessageBuilder builder() {
         return new MessageBuilder();
@@ -110,7 +161,10 @@ public class Message {
         private String content;
         private String imageUrl;
         private boolean isRead = false;
-        private LocalDateTime createdAt = LocalDateTime.now();
+        private LocalDateTime createdAt = LocalDateTime.now(); // Default to now
+        private ChatGroup chatGroup;
+        private String voiceUrl;
+        private Message replyTo;
 
         public MessageBuilder id(Long id) {
             this.id = id;
@@ -147,8 +201,24 @@ public class Message {
             return this;
         }
 
+        public MessageBuilder chatGroup(ChatGroup chatGroup) {
+            this.chatGroup = chatGroup;
+            return this;
+        }
+
+        public MessageBuilder voiceUrl(String voiceUrl) {
+            this.voiceUrl = voiceUrl;
+            return this;
+        }
+
+        public MessageBuilder replyTo(Message replyTo) {
+            this.replyTo = replyTo;
+            return this;
+        }
+
         public Message build() {
-            return new Message(id, sender, receiver, content, imageUrl, isRead, createdAt);
+            return new Message(id, sender, receiver, content, imageUrl, isRead, createdAt, chatGroup, voiceUrl,
+                    replyTo);
         }
     }
 }

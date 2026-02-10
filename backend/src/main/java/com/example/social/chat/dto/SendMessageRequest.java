@@ -1,4 +1,6 @@
 package com.example.social.chat.dto;
 
-public record SendMessageRequest(String content) {
+public record SendMessageRequest(
+        String content,
+        String voiceUrl) {
 }
