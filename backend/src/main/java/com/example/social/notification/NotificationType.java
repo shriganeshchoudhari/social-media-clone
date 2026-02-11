@@ -7,5 +7,6 @@ public enum NotificationType {
     MESSAGE,
     GROUP_INVITE,
     GROUP_JOIN_REQUEST,
-    GROUP_JOIN_APPROVED
+    GROUP_JOIN_APPROVED,
+    MENTION
 }

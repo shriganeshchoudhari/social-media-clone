@@ -1,24 +1,10 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    getNotifications,
-    markAllRead,
-    markOneRead
-} from "../api/notificationService";
+import { markOneRead } from "../api/notificationService";
 import { useWebSocket } from "../context/WebSocketContext";
 
 export default function Notifications() {
     const navigate = useNavigate();
-    const [list, setList] = useState([]);
-    const { clearNotifications } = useWebSocket(); // Optional: if you want to sync with WS context
-
-    const load = () => {
-        getNotifications().then(res => setList(res.data));
-    };
-
-    useEffect(() => {
-        load();
-    }, []);
+    const { notifications, clearNotifications, markNotificationAsRead } = useWebSocket();
 
     // Format timestamp
     const formatTime = (timestamp) => {
@@ -37,13 +23,9 @@ export default function Notifications() {
         <div className="max-w-2xl mx-auto p-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Notifications</h2>
-                {list.some(n => !n.read) && (
+                {notifications.some(n => !n.read) && (
                     <button
-                        onClick={async () => {
-                            await markAllRead();
-                            load();
-                            // clearNotifications(); // Update context/badge if needed
-                        }}
+                        onClick={clearNotifications}
                         className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium hover:underline"
                     >
                         Mark all read
@@ -52,17 +34,16 @@ export default function Notifications() {
             </div>
 
             <div className="space-y-3">
-                {list.length === 0 ? (
+                {notifications.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">No notifications yet.</p>
                 ) : (
-                    list.map(n => (
+                    notifications.map(n => (
                         <div
                             key={n.id}
                             onClick={async () => {
                                 if (!n.read) {
-                                    await markOneRead(n.id);
-                                    // Refresh list to update UI state
-                                    load();
+                                    markOneRead(n.id).catch(console.error); // Update DB
+                                    markNotificationAsRead(n.id); // Update UI
                                 }
 
                                 // Navigate based on type

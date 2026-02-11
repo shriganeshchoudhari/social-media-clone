@@ -71,7 +71,12 @@ public class RecommendationService {
                             likedByMe,
                             isSaved,
                             post.getAuthor().getProfileImageUrl(),
-                            post.getAuthor().isVerified());
+                            post.getAuthor().isVerified(),
+                            post.getLinkUrl(),
+                            post.getLinkTitle(),
+                            post.getLinkDescription(),
+                            post.getLinkImage(),
+                            null);
                 });
     }
 }

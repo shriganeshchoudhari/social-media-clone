@@ -26,7 +26,7 @@ public class ChatSocketController {
     @MessageMapping("/chat.typing")
     public void typing(TypingPayload payload, Authentication auth) {
         String sender = auth.getName();
-        chatService.sendTyping(sender, payload.receiver());
+        chatService.sendTyping(sender, payload.receiver(), payload.groupId());
     }
 
     @MessageMapping("/chat.read")
@@ -34,6 +34,6 @@ public class ChatSocketController {
         String reader = auth.getName();
         // payload.receiver() is the original sender of the message who needs to know it
         // was read
-        chatService.sendReadReceipt(reader, payload.receiver(), payload.messageId());
+        chatService.sendReadReceipt(reader, payload.receiver(), payload.messageId(), payload.groupId());
     }
 }

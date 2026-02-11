@@ -13,5 +13,10 @@ public record PostResponse(
         boolean likedByMe,
         boolean isSaved,
         String authorProfileImage,
-        boolean authorVerified) {
+        boolean authorVerified,
+        String linkUrl,
+        String linkTitle,
+        String linkDescription,
+        String linkImage,
+        com.example.social.poll.dto.PollResponse poll) {
 }

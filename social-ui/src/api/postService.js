@@ -1,6 +1,6 @@
 import api from "./axios";
 
-export const createPost = async (content, imageFiles, groupId) => {
+export const createPost = async (content, imageFiles, groupId, pollQuestion, pollOptions, pollDurationDays) => {
     const formData = new FormData();
     formData.append("content", content);
 
@@ -12,8 +12,21 @@ export const createPost = async (content, imageFiles, groupId) => {
         formData.append("groupId", groupId);
     }
 
+    if (pollQuestion) {
+        formData.append("pollQuestion", pollQuestion);
+    }
+    if (pollOptions && pollOptions.length > 0) {
+        pollOptions.forEach(option => formData.append("pollOptions", option));
+    }
+    if (pollDurationDays) {
+        formData.append("pollDurationDays", pollDurationDays);
+    }
+
     return api.post("/posts", formData, { headers: { "Content-Type": "multipart/form-data" } });
 };
+
+export const votePoll = (postId, optionId) =>
+    api.post(`/posts/${postId}/vote`, { optionId });
 
 export const getPostById = (id) =>
     api.get(`/posts/${id}`);

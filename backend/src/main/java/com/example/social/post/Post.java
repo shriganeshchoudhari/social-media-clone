@@ -19,6 +19,12 @@ public class Post {
 
     private String imageUrl;
 
+    // Link Preview Metadata
+    private String linkUrl;
+    private String linkTitle;
+    private String linkDescription;
+    private String linkImage;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> images = new ArrayList<>();
 
@@ -39,6 +45,9 @@ public class Post {
     @JoinColumn(name = "group_id")
     private com.example.social.group.Group group;
 
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private com.example.social.poll.Poll poll;
+
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -51,7 +60,9 @@ public class Post {
 
     public Post(Long id, String content, String imageUrl, List<PostImage> images,
             List<com.example.social.comment.Comment> comments, List<com.example.social.like.PostLike> likes,
-            List<SavedPost> savedBy, User author, com.example.social.group.Group group, LocalDateTime createdAt) {
+            List<SavedPost> savedBy, User author, com.example.social.group.Group group, LocalDateTime createdAt,
+            String linkUrl, String linkTitle, String linkDescription, String linkImage,
+            com.example.social.poll.Poll poll) {
         this.id = id;
         this.content = content;
         this.imageUrl = imageUrl;
@@ -62,6 +73,11 @@ public class Post {
         this.author = author;
         this.group = group;
         this.createdAt = createdAt;
+        this.linkUrl = linkUrl;
+        this.linkTitle = linkTitle;
+        this.linkDescription = linkDescription;
+        this.linkImage = linkImage;
+        this.poll = poll;
     }
 
     // Getters
@@ -146,6 +162,48 @@ public class Post {
         this.createdAt = createdAt;
     }
 
+    // Link Getters
+    public String getLinkUrl() {
+        return linkUrl;
+    }
+
+    public String getLinkTitle() {
+        return linkTitle;
+    }
+
+    public String getLinkDescription() {
+        return linkDescription;
+    }
+
+    public String getLinkImage() {
+        return linkImage;
+    }
+
+    // Link Setters
+    public void setLinkUrl(String linkUrl) {
+        this.linkUrl = linkUrl;
+    }
+
+    public void setLinkTitle(String linkTitle) {
+        this.linkTitle = linkTitle;
+    }
+
+    public void setLinkDescription(String linkDescription) {
+        this.linkDescription = linkDescription;
+    }
+
+    public void setLinkImage(String linkImage) {
+        this.linkImage = linkImage;
+    }
+
+    public com.example.social.poll.Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(com.example.social.poll.Poll poll) {
+        this.poll = poll;
+    }
+
     // Builder
     public static PostBuilder builder() {
         return new PostBuilder();
@@ -162,6 +220,12 @@ public class Post {
         private User author;
         private com.example.social.group.Group group;
         private LocalDateTime createdAt;
+        // Link fields
+        private String linkUrl;
+        private String linkTitle;
+        private String linkDescription;
+        private String linkImage;
+        private com.example.social.poll.Poll poll;
 
         public PostBuilder id(Long id) {
             this.id = id;
@@ -213,8 +277,34 @@ public class Post {
             return this;
         }
 
+        public PostBuilder linkUrl(String linkUrl) {
+            this.linkUrl = linkUrl;
+            return this;
+        }
+
+        public PostBuilder linkTitle(String linkTitle) {
+            this.linkTitle = linkTitle;
+            return this;
+        }
+
+        public PostBuilder linkDescription(String linkDescription) {
+            this.linkDescription = linkDescription;
+            return this;
+        }
+
+        public PostBuilder linkImage(String linkImage) {
+            this.linkImage = linkImage;
+            return this;
+        }
+
+        public PostBuilder poll(com.example.social.poll.Poll poll) {
+            this.poll = poll;
+            return this;
+        }
+
         public Post build() {
-            return new Post(id, content, imageUrl, images, comments, likes, savedBy, author, group, createdAt);
+            return new Post(id, content, imageUrl, images, comments, likes, savedBy, author, group, createdAt, linkUrl,
+                    linkTitle, linkDescription, linkImage, poll);
         }
     }
 }

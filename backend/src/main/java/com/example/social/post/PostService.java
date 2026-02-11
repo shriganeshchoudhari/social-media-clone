@@ -21,6 +21,9 @@ public class PostService {
         private final UserInterestRepository userInterestRepository;
         private final SavedPostRepository savedPostRepository;
         private final com.example.social.group.GroupRepository groupRepository;
+        private final LinkPreviewService linkPreviewService;
+        private final com.example.social.poll.PollVoteRepository pollVoteRepository;
+        private final com.example.social.notification.NotificationService notificationService;
 
         public PostService(
                         PostRepository postRepository,
@@ -31,7 +34,10 @@ public class PostService {
                         BlockRepository blockRepository,
                         UserInterestRepository userInterestRepository,
                         SavedPostRepository savedPostRepository,
-                        com.example.social.group.GroupRepository groupRepository) {
+                        com.example.social.group.GroupRepository groupRepository,
+                        LinkPreviewService linkPreviewService,
+                        com.example.social.poll.PollVoteRepository pollVoteRepository,
+                        com.example.social.notification.NotificationService notificationService) {
                 this.postRepository = postRepository;
                 this.userRepository = userRepository;
                 this.postLikeRepository = postLikeRepository;
@@ -41,11 +47,15 @@ public class PostService {
                 this.userInterestRepository = userInterestRepository;
                 this.savedPostRepository = savedPostRepository;
                 this.groupRepository = groupRepository;
+                this.linkPreviewService = linkPreviewService;
+                this.pollVoteRepository = pollVoteRepository;
+                this.notificationService = notificationService;
         }
 
         @org.springframework.transaction.annotation.Transactional
         public PostResponse createPost(String username, String content,
-                        java.util.List<org.springframework.web.multipart.MultipartFile> images, Long groupId) {
+                        java.util.List<org.springframework.web.multipart.MultipartFile> images, Long groupId,
+                        String pollQuestion, List<String> pollOptions, Integer pollDurationDays) {
 
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -54,15 +64,53 @@ public class PostService {
                 if (groupId != null) {
                         group = groupRepository.findById(groupId)
                                         .orElseThrow(() -> new RuntimeException("Group not found"));
-                        // Optional: Check if user is member of group before posting?
-                        // For now, assume public/open or validated by frontend/logic elsewhere.
                 }
 
-                Post post = Post.builder()
+                LinkPreviewService.LinkMetadata linkMetadata = linkPreviewService.extractLinkMetadata(content);
+
+                Post.PostBuilder postBuilder = Post.builder()
                                 .content(content)
                                 .author(user)
-                                .group(group)
-                                .build();
+                                .group(group);
+
+                if (linkMetadata != null) {
+                        postBuilder.linkUrl(linkMetadata.url())
+                                        .linkTitle(linkMetadata.title())
+                                        .linkDescription(linkMetadata.description())
+                                        .linkImage(linkMetadata.image());
+                }
+
+                // Handle Poll Creation
+                if (pollQuestion != null && !pollQuestion.isBlank() && pollOptions != null && pollOptions.size() >= 2) {
+                        com.example.social.poll.Poll poll = com.example.social.poll.Poll.builder()
+                                        .question(pollQuestion)
+                                        .isClosed(false)
+                                        .expiryDateTime(pollDurationDays != null && pollDurationDays > 0
+                                                        ? java.time.LocalDateTime.now().plusDays(pollDurationDays)
+                                                        : java.time.LocalDateTime.now().plusDays(1)) // Default 1 day
+                                        .build();
+
+                        List<com.example.social.poll.PollOption> options = new java.util.ArrayList<>();
+                        for (String optionText : pollOptions) {
+                                if (optionText != null && !optionText.isBlank()) {
+                                        options.add(com.example.social.poll.PollOption.builder()
+                                                        .text(optionText)
+                                                        .poll(poll)
+                                                        .voteCount(0)
+                                                        .build());
+                                }
+                        }
+                        poll.setOptions(options);
+                        postBuilder.poll(poll);
+                }
+
+                Post post = postBuilder.build();
+
+                // If poll exists, set the post reference (bi-directional mapping usually
+                // requires this)
+                if (post.getPoll() != null) {
+                        post.getPoll().setPost(post);
+                }
 
                 // Handle multiple images
                 if (images != null && !images.isEmpty()) {
@@ -82,7 +130,37 @@ public class PostService {
 
                 Post saved = postRepository.save(post);
 
+                processMentions(saved);
+
                 return mapToResponse(saved, user);
+        }
+
+        private void processMentions(Post post) {
+                String content = post.getContent();
+                if (content == null || content.isEmpty())
+                        return;
+
+                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("@(\\w+)");
+                java.util.regex.Matcher matcher = pattern.matcher(content);
+
+                java.util.Set<String> mentionedUsernames = new java.util.HashSet<>();
+                while (matcher.find()) {
+                        mentionedUsernames.add(matcher.group(1));
+                }
+
+                for (String username : mentionedUsernames) {
+                        if (username.equals(post.getAuthor().getUsername()))
+                                continue; // specific logic: don't notify self
+
+                        userRepository.findByUsername(username).ifPresent(targetUser -> {
+                                notificationService.create(
+                                                targetUser,
+                                                com.example.social.notification.NotificationType.MENTION,
+                                                post.getId(),
+                                                post.getAuthor().getUsername(),
+                                                "mentioned you in a post");
+                        });
+                }
         }
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -106,7 +184,12 @@ public class PostService {
                                 false,
                                 false,
                                 post.getAuthor().getProfileImageUrl(),
-                                post.getAuthor().isVerified());
+                                post.getAuthor().isVerified(),
+                                post.getLinkUrl(),
+                                post.getLinkTitle(),
+                                post.getLinkDescription(),
+                                post.getLinkImage(),
+                                mapToPollResponse(post.getPoll(), null));
         }
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -257,7 +340,12 @@ public class PostService {
                                 likedByMe,
                                 isSaved,
                                 post.getAuthor().getProfileImageUrl(),
-                                post.getAuthor().isVerified());
+                                post.getAuthor().isVerified(),
+                                post.getLinkUrl(),
+                                post.getLinkTitle(),
+                                post.getLinkDescription(),
+                                post.getLinkImage(),
+                                mapToPollResponse(post.getPoll(), currentUser));
         }
 
         @org.springframework.transaction.annotation.Transactional
@@ -332,5 +420,38 @@ public class PostService {
         public Page<PostResponse> mapPosts(Page<Post> posts, String username) {
                 User currentUser = userRepository.findByUsername(username).orElseThrow();
                 return posts.map(post -> mapToResponse(post, currentUser));
+        }
+
+        private com.example.social.poll.dto.PollResponse mapToPollResponse(com.example.social.poll.Poll poll,
+                        User currentUser) {
+                if (poll == null)
+                        return null;
+
+                Long userVotedOptionId = null;
+                if (currentUser != null) {
+                        userVotedOptionId = pollVoteRepository.findByUserAndPoll(currentUser, poll)
+                                        .map(vote -> vote.getPollOption().getId())
+                                        .orElse(null);
+                }
+
+                long totalVotes = poll.getOptions().stream().mapToLong(com.example.social.poll.PollOption::getVoteCount)
+                                .sum();
+
+                List<com.example.social.poll.dto.PollOptionResponse> optionResponses = poll.getOptions().stream()
+                                .map(option -> new com.example.social.poll.dto.PollOptionResponse(
+                                                option.getId(),
+                                                option.getText(),
+                                                option.getVoteCount(),
+                                                totalVotes > 0 ? (double) option.getVoteCount() / totalVotes * 100 : 0))
+                                .toList();
+
+                return new com.example.social.poll.dto.PollResponse(
+                                poll.getId(),
+                                poll.getQuestion(),
+                                optionResponses,
+                                poll.getExpiryDateTime(),
+                                poll.isClosed(),
+                                totalVotes,
+                                userVotedOptionId);
         }
 }

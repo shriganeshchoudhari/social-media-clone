@@ -139,4 +139,5 @@ public class ChatController {
             Authentication auth) {
         chatService.leaveGroup(groupId, auth.getName());
     }
+
 }

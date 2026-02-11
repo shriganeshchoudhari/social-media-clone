@@ -28,6 +28,7 @@ export default function ChatPage() {
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isTyping, setIsTyping] = useState(false);
+    const [typingUser, setTypingUser] = useState(null);
 
     const [group, setGroup] = useState(null);
     const [showGroupDetails, setShowGroupDetails] = useState(false);
@@ -61,8 +62,21 @@ export default function ChatPage() {
             getGroupMessages(groupId)
                 .then(res => {
                     const pageContent = res.data.content || [];
-                    setMessages([...pageContent].reverse());
+                    const reversedMessages = [...pageContent].reverse();
+                    setMessages(reversedMessages);
                     setLoading(false);
+
+                    // Mark unread messages as read
+                    reversedMessages.forEach(m => {
+                        const notMe = m.sender !== myUsername;
+                        const notReadByMe = m.readBy && !m.readBy.includes(myUsername);
+                        if (notMe && notReadByMe) {
+                            // Send read receipt
+                            // We don't have sendRead from hook here directly efficiently without refs, 
+                            // but we can use the one from useChatSocket if we move this logic or use a ref.
+                            // Actually, let's just do it in a useEffect that watches messages
+                        }
+                    });
                 })
                 .catch(err => {
                     console.error("Failed to load group chat", err);
@@ -97,6 +111,8 @@ export default function ChatPage() {
         load();
     }, [load]);
 
+
+
     // WebSocket handling
     const { send, sendTyping, sendRead } = useChatSocket((message) => {
         // Logic to filter incoming messages
@@ -110,30 +126,94 @@ export default function ChatPage() {
                 if (isDuplicate) return prev;
                 return [...prev, message];
             });
-            // Mark read if 1-on-1 (Group read receipts not fully implemented yet)
-            if (username && message.sender === username) {
-                sendRead(username, message.id);
+            // Mark read logic
+            if (message.sender !== myUsername) {
+                // For group, we send read receipt if we are focusing on this group
+                if (groupId && message.groupId == groupId) {
+                    sendRead(message.sender, message.id, groupId);
+                } else if (!groupId && message.sender === username) {
+                    sendRead(username, message.id);
+                }
             }
         }
     }, (event) => {
-        // Typing/Read events logic (simplified for groups)
-        if (event.type === "TYPING" && event.payload.receiver === myUsername && !groupId) {
-            // 1-on-1 typing
-            if (event.payload.sender === username) {
+        // Typing/Read events logic
+        // Typing/Read events logic
+        if (event.type === "TYPING") {
+            const isForThisGroup = groupId && event.payload.groupId == groupId;
+            // For 1-on-1, the 'receiver' field in payload holds the person typing (sender)
+            const isForThisPChat = !groupId && event.payload.receiver === username && !event.payload.groupId;
+
+
+            if (isForThisGroup || isForThisPChat) {
+                // Show typing indicator
+                setTypingUser(event.payload.receiver);
                 setIsTyping(true);
                 if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
+                typingTimeoutRef.current = setTimeout(() => {
+                    setIsTyping(false);
+                    setTypingUser(null);
+                }, 3000);
             }
+        } else if (event.type === "READ") {
+            setMessages(prev => prev.map(m => {
+                if (m.id === event.payload.messageId) {
+                    // For 1-on-1, just mark isRead
+                    if (!groupId) return { ...m, isRead: true };
+
+                    // For Group, add to readBy list
+                    const reader = event.payload.receiver; // In READ event, receiver field is used for readerUsername
+                    const existingReadBy = m.readBy || [];
+                    if (!existingReadBy.includes(reader)) {
+                        return { ...m, readBy: [...existingReadBy, reader] };
+                    }
+                }
+                return m;
+            }));
         }
     });
 
-    const handleTyping = () => {
-        if (username) { // Only for 1-on-1
-            const now = Date.now();
-            if (now - lastTypedRef.current > 2000) {
-                sendTyping(username);
-                lastTypedRef.current = now;
+    // Mark messages as read when loaded or updated
+    useEffect(() => {
+        if (!messages.length) return;
+
+        const unreadMessages = messages.filter(m => {
+            if (m.sender === myUsername) return false;
+
+            if (groupId && m.groupId == groupId) {
+                // Check if I am in the readBy list
+                return !(m.readBy && m.readBy.includes(myUsername));
             }
+            // 1-on-1 check
+            return !groupId && !m.groupId && !m.isRead;
+        });
+
+        if (unreadMessages.length > 0) {
+            unreadMessages.forEach(m => {
+                if (groupId) sendRead(m.sender, m.id, groupId);
+                else sendRead(myUsername, m.id);
+            });
+
+            // Optimistic update
+            setMessages(prev => prev.map(msg => {
+                const isTarget = unreadMessages.some(u => u.id === msg.id);
+                if (isTarget) {
+                    if (groupId) {
+                        return { ...msg, readBy: [...(msg.readBy || []), myUsername] };
+                    } else {
+                        return { ...msg, isRead: true };
+                    }
+                }
+                return msg;
+            }));
+        }
+    }, [messages, groupId, myUsername, sendRead]);
+
+    const handleTyping = () => {
+        const now = Date.now();
+        if (now - lastTypedRef.current > 2000) {
+            sendTyping(username, groupId); // username is receiver/null, groupId is set if group
+            lastTypedRef.current = now;
         }
     };
 
@@ -426,9 +506,29 @@ export default function ChatPage() {
 
                                     {renderReactions(m.reactions)}
 
+
+
+                                    {isSelf && groupId && m.readBy && m.readBy.length > 0 && (
+                                        <div
+                                            className="text-[10px] text-blue-100 dark:text-blue-200/70 mt-1 text-right italic cursor-help"
+                                            title={`Viewed by: ${m.readBy.join(', ')}`}
+                                        >
+                                            Viewed by {m.readBy.length}
+                                        </div>
+                                    )}
+
                                     <div className="flex items-center justify-between gap-4 mt-1 relative group/reaction">
                                         <span className="text-[10px] opacity-70">
                                             {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {isSelf && (
+                                                <span className="ml-1 text-xs">
+                                                    {m.isRead ? (
+                                                        <span title="Read" className="text-blue-500">✓✓</span>
+                                                    ) : (
+                                                        <span title="Sent" className="text-gray-400">✓</span>
+                                                    )}
+                                                </span>
+                                            )}
                                         </span>
 
                                         {/* Reaction Button & Picker */}
@@ -464,6 +564,16 @@ export default function ChatPage() {
                             </div>
                         );
                     })}
+                    {isTyping && (
+                        <div className="flex items-center gap-2 mb-2 ml-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div className="bg-gray-200 dark:bg-gray-700 rounded-full px-4 py-2 text-xs text-gray-500 dark:text-gray-400 italic flex items-center gap-1 shadow-sm">
+                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+                                <span className="ml-1">{typingUser ? `${typingUser} is typing...` : 'Typing...'}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Input / Recording Area */}

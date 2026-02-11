@@ -17,15 +17,18 @@ public class PostController {
 
     private final PostService postService;
     private final com.example.social.recommendation.RecommendationService recommendationService;
+    private final com.example.social.poll.PollService pollService;
 
     public PostController(PostService postService,
-            com.example.social.recommendation.RecommendationService recommendationService) {
+            com.example.social.recommendation.RecommendationService recommendationService,
+            com.example.social.poll.PollService pollService) {
         this.postService = postService;
         this.recommendationService = recommendationService;
+        this.pollService = pollService;
     }
 
     @PostMapping(consumes = "multipart/form-data")
-    @Operation(summary = "Create new post", description = "Create a new post with optional images and group association")
+    @Operation(summary = "Create new post", description = "Create a new post with optional images, group association, and poll")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Post created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
@@ -34,8 +37,12 @@ public class PostController {
             @Parameter(description = "Post content text") @RequestParam("content") String content,
             @Parameter(description = "Optional images (max 10MB each)") @RequestParam(value = "images", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> images,
             @Parameter(description = "Optional group ID to post in") @RequestParam(value = "groupId", required = false) Long groupId,
+            @Parameter(description = "Optional Poll Question") @RequestParam(value = "pollQuestion", required = false) String pollQuestion,
+            @Parameter(description = "Optional Poll Options") @RequestParam(value = "pollOptions", required = false) java.util.List<String> pollOptions,
+            @Parameter(description = "Optional Poll Duration in Days") @RequestParam(value = "pollDurationDays", required = false) Integer pollDurationDays,
             Authentication authentication) {
-        return postService.createPost(authentication.getName(), content, images, groupId);
+        return postService.createPost(authentication.getName(), content, images, groupId, pollQuestion, pollOptions,
+                pollDurationDays);
     }
 
     @GetMapping("/feed")
@@ -117,6 +124,14 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size,
             Authentication auth) {
         return postService.getSavedPosts(auth.getName(), page, size);
+    }
+
+    @PostMapping("/{id}/vote")
+    public void votePoll(
+            @PathVariable Long id,
+            @RequestBody com.example.social.poll.dto.VoteRequest voteRequest,
+            Authentication auth) {
+        pollService.vote(id, voteRequest.optionId(), auth.getName());
     }
 
 }

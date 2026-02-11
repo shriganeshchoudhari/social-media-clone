@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 
@@ -80,7 +80,7 @@ export default function useChatSocket(onMessage, onEvent) {
     }, []); // Only run once on mount
 
     // send message
-    const send = (receiver, content) => {
+    const send = useCallback((receiver, content) => {
         if (stompRef.current && stompRef.current.connected) {
             stompRef.current.send(
                 "/app/chat.send",
@@ -88,27 +88,27 @@ export default function useChatSocket(onMessage, onEvent) {
                 JSON.stringify({ receiver, content })
             );
         }
-    };
+    }, []);
 
-    const sendTyping = (receiver) => {
+    const sendTyping = useCallback((receiver, groupId = null) => {
         if (stompRef.current && stompRef.current.connected) {
             stompRef.current.send(
                 "/app/chat.typing",
                 {},
-                JSON.stringify({ receiver })
+                JSON.stringify({ receiver, groupId })
             );
         }
-    };
+    }, []);
 
-    const sendRead = (receiver, messageId) => {
+    const sendRead = useCallback((receiver, messageId, groupId = null) => {
         if (stompRef.current && stompRef.current.connected) {
             stompRef.current.send(
                 "/app/chat.read",
                 {},
-                JSON.stringify({ receiver, messageId })
+                JSON.stringify({ receiver, messageId, groupId })
             );
         }
-    };
+    }, []);
 
     return { send, sendTyping, sendRead };
 }

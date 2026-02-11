@@ -18,6 +18,7 @@ public class ChatService {
         private final com.example.social.file.FileStorageService fileStorageService;
         private final com.example.social.user.BlockRepository blockRepository;
         private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+        private final MessageReadStatusRepository messageReadStatusRepository;
 
         public ChatService(
                         MessageRepository messageRepository,
@@ -27,7 +28,8 @@ public class ChatService {
                         com.example.social.notification.NotificationService notificationService,
                         com.example.social.file.FileStorageService fileStorageService,
                         com.example.social.user.BlockRepository blockRepository,
-                        org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
+                        org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate,
+                        MessageReadStatusRepository messageReadStatusRepository) {
                 this.messageRepository = messageRepository;
                 this.userRepository = userRepository;
                 this.chatGroupRepository = chatGroupRepository;
@@ -36,6 +38,7 @@ public class ChatService {
                 this.fileStorageService = fileStorageService;
                 this.blockRepository = blockRepository;
                 this.messagingTemplate = messagingTemplate;
+                this.messageReadStatusRepository = messageReadStatusRepository;
         }
 
         @org.springframework.transaction.annotation.Transactional
@@ -72,6 +75,7 @@ public class ChatService {
                                 message.getVoiceUrl(),
                                 message.isRead(),
                                 new java.util.ArrayList<>(), // reactions
+                                new java.util.ArrayList<>(), // readBy
                                 message.getCreatedAt());
 
                 messagingTemplate.convertAndSendToUser(
@@ -127,6 +131,7 @@ public class ChatService {
                                                                                 r.getUser().getUsername(),
                                                                                 r.getReaction()))
                                                                 .toList(),
+                                                new java.util.ArrayList<>(), // readBy
                                                 m.getCreatedAt()));
         }
 
@@ -204,6 +209,7 @@ public class ChatService {
                                 message.getVoiceUrl(),
                                 message.isRead(),
                                 new java.util.ArrayList<>(),
+                                new java.util.ArrayList<>(), // readBy
                                 message.getCreatedAt());
 
                 messagingTemplate.convertAndSendToUser(
@@ -220,37 +226,82 @@ public class ChatService {
                                 sender.getUsername() + " sent you a message");
         }
 
-        public void sendTyping(String senderUsername, String receiverUsername) {
-                messagingTemplate.convertAndSendToUser(
-                                receiverUsername,
-                                "/queue/events",
-                                new com.example.social.chat.dto.SocketEvent(
-                                                com.example.social.chat.dto.SocketEventType.TYPING,
-                                                new com.example.social.chat.dto.TypingPayload(senderUsername) // Sender
-                                                                                                              // is the
-                                                                                                              // one
-                                                                                                              // typing
-                                ));
+        public void sendTyping(String senderUsername, String receiverUsername, Long groupId) {
+                if (groupId != null) {
+                        ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
+                        User sender = userRepository.findByUsername(senderUsername).orElseThrow();
+
+                        com.example.social.chat.dto.SocketEvent event = new com.example.social.chat.dto.SocketEvent(
+                                        com.example.social.chat.dto.SocketEventType.TYPING,
+                                        new com.example.social.chat.dto.TypingPayload(senderUsername, groupId));
+
+                        for (User participant : group.getParticipants()) {
+                                if (!participant.getUsername().equals(senderUsername)) {
+                                        messagingTemplate.convertAndSendToUser(
+                                                        participant.getUsername(),
+                                                        "/queue/events",
+                                                        event);
+                                }
+                        }
+                } else {
+                        com.example.social.chat.dto.SocketEvent event = new com.example.social.chat.dto.SocketEvent(
+                                        com.example.social.chat.dto.SocketEventType.TYPING,
+                                        new com.example.social.chat.dto.TypingPayload(senderUsername, null));
+                        messagingTemplate.convertAndSendToUser(
+                                        receiverUsername,
+                                        "/queue/events",
+                                        event);
+                }
         }
 
         @org.springframework.transaction.annotation.Transactional
-        public void sendReadReceipt(String readerUsername, String originalSenderUsername, Long messageId) {
-                // Update DB
-                // We can optimize this to mark everything before this ID as read, but for now
-                // simple update
-                // Ideally we'd have a method markMessagesAsRead(reader, sender)
+        public void sendReadReceipt(String readerUsername, String originalSenderUsername, Long messageId,
+                        Long groupId) {
                 User reader = userRepository.findByUsername(readerUsername).orElseThrow();
-                User originalSender = userRepository.findByUsername(originalSenderUsername).orElseThrow();
-                messageRepository.markRead(reader, originalSender);
 
-                // Broadcast event
-                messagingTemplate.convertAndSendToUser(
-                                originalSenderUsername,
-                                "/queue/events",
-                                new com.example.social.chat.dto.SocketEvent(
-                                                com.example.social.chat.dto.SocketEventType.READ,
-                                                new com.example.social.chat.dto.ReadPayload(readerUsername,
-                                                                messageId)));
+                if (groupId != null) {
+                        // Group Read Receipt
+                        Message message = messageRepository.findById(messageId).orElseThrow();
+
+                        // 1. Save Read Status if not exists
+                        if (messageReadStatusRepository.findByMessageAndUser(message, reader).isEmpty()) {
+                                MessageReadStatus status = new MessageReadStatus(message, reader);
+                                messageReadStatusRepository.save(status);
+                        }
+
+                        // 2. Broadcast to Group
+                        ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
+
+                        com.example.social.chat.dto.SocketEvent event = new com.example.social.chat.dto.SocketEvent(
+                                        com.example.social.chat.dto.SocketEventType.READ,
+                                        new com.example.social.chat.dto.ReadPayload(readerUsername, messageId,
+                                                        groupId));
+
+                        for (User participant : group.getParticipants()) {
+                                // Don't send to reader themselves (optional, but good for sync)
+                                // Actually good to send to reader too for multi-device sync
+                                if (!participant.getUsername().equals(readerUsername)) {
+                                        messagingTemplate.convertAndSendToUser(
+                                                        participant.getUsername(),
+                                                        "/queue/events",
+                                                        event);
+                                }
+                        }
+
+                } else {
+                        // 1-on-1 Read Receipt
+                        User originalSender = userRepository.findByUsername(originalSenderUsername).orElseThrow();
+                        messageRepository.markRead(reader, originalSender);
+
+                        // Broadcast event
+                        messagingTemplate.convertAndSendToUser(
+                                        originalSenderUsername,
+                                        "/queue/events",
+                                        new com.example.social.chat.dto.SocketEvent(
+                                                        com.example.social.chat.dto.SocketEventType.READ,
+                                                        new com.example.social.chat.dto.ReadPayload(readerUsername,
+                                                                        messageId, null)));
+                }
         }
 
         // Group Chat Methods
@@ -332,6 +383,7 @@ public class ChatService {
                                 message.getVoiceUrl(),
                                 message.isRead(),
                                 new java.util.ArrayList<>(),
+                                new java.util.ArrayList<>(), // readBy
                                 message.getCreatedAt());
 
                 // Broadcast to all participants except sender
@@ -381,6 +433,7 @@ public class ChatService {
                                 message.getVoiceUrl(),
                                 message.isRead(),
                                 new java.util.ArrayList<>(),
+                                new java.util.ArrayList<>(), // readBy
                                 message.getCreatedAt());
 
                 for (User participant : group.getParticipants()) {
@@ -417,6 +470,8 @@ public class ChatService {
                                                                                 r.getUser().getUsername(),
                                                                                 r.getReaction()))
                                                                 .toList(),
+                                                messageReadStatusRepository.findByMessage(m).stream()
+                                                                .map(s -> s.getUser().getUsername()).toList(),
                                                 m.getCreatedAt()));
         }
 

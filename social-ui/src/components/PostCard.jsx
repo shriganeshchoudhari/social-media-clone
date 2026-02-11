@@ -164,6 +164,125 @@ export default function PostCard({ post, currentUser, onDelete, onUpdate, menuAc
                 </div>
             )}
 
+            {post.linkUrl && (
+                <a
+                    href={post.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block mt-2 mb-3 border rounded-lg overflow-hidden hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-750 transition-colors group/link"
+                >
+                    {post.linkImage && (
+                        <div className="h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            <img
+                                src={post.linkImage}
+                                alt={post.linkTitle}
+                                className="w-full h-full object-cover group-hover/link:scale-105 transition-transform duration-500"
+                                onError={(e) => { e.target.style.display = 'none' }}
+                            />
+                        </div>
+                    )}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50">
+                        <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100 line-clamp-1 mb-1">
+                            {post.linkTitle || post.linkUrl}
+                        </h4>
+                        {post.linkDescription && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-1">
+                                {post.linkDescription}
+                            </p>
+                        )}
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wide">
+                            {new URL(post.linkUrl).hostname}
+                        </span>
+                    </div>
+                </a>
+            )}
+
+            {/* Poll Rendering */}
+            {post.poll && (
+                <div className="mb-4 p-3 border rounded-lg bg-gray-50 dark:bg-gray-700/30 dark:border-gray-700">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 ml-1">{post.poll.question}</h4>
+                    <div className="space-y-2">
+                        {post.poll.options.map((option) => {
+                            const hasVoted = post.poll.userVotedOptionId !== null;
+                            const isExpired = new Date(post.poll.expiryDateTime) < new Date();
+                            const canVote = !hasVoted && !isExpired && !post.poll.isClosed;
+                            const isSelected = post.poll.userVotedOptionId === option.id;
+
+                            const handleVote = async () => {
+                                if (!canVote) return;
+                                try {
+                                    // Optimistic update
+                                    onUpdate(post.id, (prevPost) => {
+                                        const newTotalVotes = prevPost.poll.totalVotes + 1;
+                                        const newOptions = prevPost.poll.options.map(o => {
+                                            if (o.id === option.id) {
+                                                return { ...o, voteCount: o.voteCount + 1, percentage: ((o.voteCount + 1) / newTotalVotes) * 100 };
+                                            } else {
+                                                return { ...o, percentage: (o.voteCount / newTotalVotes) * 100 };
+                                            }
+                                        });
+                                        return {
+                                            ...prevPost,
+                                            poll: {
+                                                ...prevPost.poll,
+                                                options: newOptions,
+                                                totalVotes: newTotalVotes,
+                                                userVotedOptionId: option.id
+                                            }
+                                        };
+                                    });
+
+                                    const { votePoll } = await import("../api/postService");
+                                    await votePoll(post.poll.id, option.id);
+                                } catch (error) {
+                                    console.error("Vote failed", error);
+                                    alert("Vote failed");
+                                    // Revert would be complex, maybe just refresh parent?
+                                }
+                            };
+
+                            return (
+                                <div key={option.id} className="relative">
+                                    {/* Background Bar for results */}
+                                    {(hasVoted || isExpired || post.poll.isClosed) && (
+                                        <div
+                                            className={`absolute top-0 left-0 h-full rounded transition-all duration-500 ${isSelected ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-gray-200 dark:bg-gray-600'}`}
+                                            style={{ width: `${option.percentage}%` }}
+                                        />
+                                    )}
+
+                                    <button
+                                        onClick={handleVote}
+                                        disabled={!canVote}
+                                        className={`relative w-full text-left px-3 py-2 rounded border transition-colors flex justify-between items-center z-10 
+                                            ${canVote
+                                                ? 'hover:bg-gray-100 dark:hover:bg-gray-600 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                                                : 'border-transparent cursor-default'
+                                            }`}
+                                    >
+                                        <span className={`font-medium text-sm ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200'}`}>
+                                            {option.text}
+                                            {isSelected && <span className="ml-2 text-xs">✓</span>}
+                                        </span>
+                                        {(hasVoted || isExpired || post.poll.isClosed) && (
+                                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                                {Math.round(option.percentage)}%
+                                            </span>
+                                        )}
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-3 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 px-1">
+                        <span>{post.poll.totalVotes} votes</span>
+                        <span>
+                            {new Date(post.poll.expiryDateTime) < new Date() ? "Closed" : `Ends ${new Date(post.poll.expiryDateTime).toLocaleDateString()}`}
+                        </span>
+                    </div>
+                </div>
+            )}
+
             <MediaGallery images={post.images} />
 
             <div className="flex justify-between items-center mt-2">
