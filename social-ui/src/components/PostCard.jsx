@@ -166,7 +166,7 @@ export default function PostCard({ post, currentUser, onDelete, onUpdate, menuAc
 
             {post.linkUrl && (
                 <a
-                    href={post.linkUrl}
+                    href={post.linkUrl.startsWith("http") ? post.linkUrl : `https://${post.linkUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block mt-2 mb-3 border rounded-lg overflow-hidden hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-750 transition-colors group/link"

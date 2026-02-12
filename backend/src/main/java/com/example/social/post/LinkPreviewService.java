@@ -11,12 +11,16 @@ import java.util.regex.Pattern;
 @Service
 public class LinkPreviewService {
 
-    private static final Pattern URL_PATTERN = Pattern.compile("(https?://\\S+)");
+    // Regex to match http://, https://, or www.
+    private static final Pattern URL_PATTERN = Pattern.compile("((https?://|www\\.)\\S+)");
 
     public LinkMetadata extractLinkMetadata(String content) {
         Matcher matcher = URL_PATTERN.matcher(content);
         if (matcher.find()) {
             String url = matcher.group(1);
+            if (!url.startsWith("http")) {
+                url = "https://" + url;
+            }
             try {
                 Document doc = Jsoup.connect(url)
                         .userAgent(

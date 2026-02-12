@@ -7,7 +7,12 @@ export default function RichText({ text }) {
     // 1. Mentions: @username
     // 2. Hashtags: #hashtag
     // 3. URLs: http://... or https://...
-    const regex = /(@\w+)|(#\w+)|(https?:\/\/[^\s]+)/g;
+    // Regex to match:
+    // 1. Mentions: @username
+    // 2. Hashtags: #hashtag
+    // 3. URLs: http://..., https://..., or www....
+    // We use a single capturing group for the whole URL to avoid split creating multiple undefined parts
+    const regex = /(@\w+)|(#\w+)|((?:https?:\/\/|www\.)[^\s]+)/g;
 
     const parts = text.split(regex);
 
@@ -38,11 +43,15 @@ export default function RichText({ text }) {
                     );
                 }
 
-                if (part.startsWith("http")) {
+                if (part.startsWith("http") || part.startsWith("www")) {
+                    let href = part;
+                    if (part.startsWith("www")) {
+                        href = `https://${part}`;
+                    }
                     return (
                         <a
                             key={i}
-                            href={part}
+                            href={href}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 dark:text-blue-400 hover:underline break-all"
