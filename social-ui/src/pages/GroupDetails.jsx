@@ -152,7 +152,7 @@ export default function GroupDetails() {
                                 <span>{group.privacy}</span>
                             </div>
                         </div>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-2 flex-wrap">
                             {/* Settings Button (Admin) */}
                             {group.role === 'ADMIN' && (
                                 <button

@@ -411,7 +411,7 @@ export default function ChatPage() {
     return (
         <Layout>
             <Navbar />
-            <div className="max-w-2xl mx-auto h-[calc(100vh-140px)] flex flex-col relative">
+            <div className="max-w-2xl mx-auto h-full flex flex-col relative">
                 {/* Header */}
                 <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100 dark:border-gray-700 p-4 flex items-center justify-between rounded-t-lg sticky top-0 z-10">
                     <div className="flex items-center gap-3">

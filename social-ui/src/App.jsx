@@ -101,7 +101,6 @@ export default function App() {
           path="/notifications"
           element={
             <ProtectedRoute>
-              <Navbar />
               <Notifications />
             </ProtectedRoute>
           }

@@ -204,18 +204,7 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Navigation (Bottom Bar ideally, but ensuring basic usability here if searching) */}
-            <div className="md:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
-                <form onSubmit={submitSearch} className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                    <input
-                        className="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-full py-1.5 pl-9 pr-4 text-sm focus:outline-none dark:text-white placeholder-gray-400"
-                        placeholder="Search..."
-                        value={q}
-                        onChange={e => setQ(e.target.value)}
-                    />
-                </form>
-            </div>
+
         </nav>
     );
 }

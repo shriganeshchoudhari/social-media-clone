@@ -164,14 +164,14 @@ export default function Profile() {
                     </div>
                 </div>
 
-                <div className="flex gap-6 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 text-gray-700 dark:text-gray-300">
-                    <button onClick={scrollToPosts} className="hover:text-blue-600 transition-colors">
+                <div className="flex justify-around md:justify-start gap-4 md:gap-6 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 text-gray-700 dark:text-gray-300">
+                    <button onClick={scrollToPosts} className="hover:text-blue-600 transition-colors flex flex-col md:flex-row items-center gap-1">
                         <span className="font-bold text-gray-900 dark:text-white">{profile.postCount}</span> posts
                     </button>
-                    <button onClick={openFollowers} className="hover:text-blue-600 transition-colors">
+                    <button onClick={openFollowers} className="hover:text-blue-600 transition-colors flex flex-col md:flex-row items-center gap-1">
                         <span className="font-bold text-gray-900 dark:text-white">{profile.followersCount}</span> followers
                     </button>
-                    <button onClick={openFollowing} className="hover:text-blue-600 transition-colors">
+                    <button onClick={openFollowing} className="hover:text-blue-600 transition-colors flex flex-col md:flex-row items-center gap-1">
                         <span className="font-bold text-gray-900 dark:text-white">{profile.followingCount}</span> following
                     </button>
                 </div>
@@ -179,15 +179,15 @@ export default function Profile() {
                 {isMe ? (
                     <button
                         onClick={() => navigate("/settings")}
-                        className="px-6 py-2 rounded font-medium transition-colors bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        className="w-full md:w-auto px-6 py-2 rounded font-medium transition-colors bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                         Edit Profile
                     </button>
                 ) : (
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <button
                             onClick={() => toggleFollow(profile.username).then(load)}
-                            className={`px-6 py-2 rounded font-medium transition-colors ${profile.following
+                            className={`flex-1 md:flex-none px-6 py-2 rounded font-medium transition-colors ${profile.following
                                 ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
                                 : "bg-blue-600 text-white hover:bg-blue-700"
                                 }`}
@@ -196,7 +196,7 @@ export default function Profile() {
                         </button>
                         <button
                             onClick={() => navigate(`/chat/${profile.username}`)}
-                            className="px-6 py-2 rounded font-medium transition-colors bg-green-600 text-white hover:bg-green-700"
+                            className="flex-1 md:flex-none px-6 py-2 rounded font-medium transition-colors bg-green-600 text-white hover:bg-green-700"
                         >
                             Message
                         </button>
