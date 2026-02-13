@@ -40,9 +40,10 @@ public class PostController {
             @Parameter(description = "Optional Poll Question") @RequestParam(value = "pollQuestion", required = false) String pollQuestion,
             @Parameter(description = "Optional Poll Options") @RequestParam(value = "pollOptions", required = false) java.util.List<String> pollOptions,
             @Parameter(description = "Optional Poll Duration in Days") @RequestParam(value = "pollDurationDays", required = false) Integer pollDurationDays,
+            @Parameter(description = "Optional Shared Post ID") @RequestParam(value = "sharedPostId", required = false) Long sharedPostId,
             Authentication authentication) {
         return postService.createPost(authentication.getName(), content, images, groupId, pollQuestion, pollOptions,
-                pollDurationDays);
+                pollDurationDays, sharedPostId);
     }
 
     @GetMapping("/feed")

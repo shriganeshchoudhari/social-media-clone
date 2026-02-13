@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import PostList from "../components/PostList";
 import GroupEvents from "../components/GroupEvents";
+import { API_BASE_URL } from "../api/config";
 
 import PostCard from "../components/PostCard";
 
@@ -25,7 +26,7 @@ export default function GroupDetails() {
         if (path.startsWith("http")) return path;
 
         // Remove '/api' from the end of VITE_API_URL if it exists
-        const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8081";
+        const apiBase = API_BASE_URL;
         const baseUrl = apiBase.endsWith('/api') ? apiBase.slice(0, -4) : apiBase;
 
         return `${baseUrl}${path}`;

@@ -18,10 +18,12 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Groups from "./pages/Groups";
 import GroupDetails from "./pages/GroupDetails";
 import GroupSettings from "./pages/GroupSettings";
+import CallOverlay from "./components/CallOverlay";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <CallOverlay />
       <Routes>
         <Route
           path="/feed"

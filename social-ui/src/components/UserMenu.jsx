@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import { logout as authLogout } from "../api/authService";
+import { API_BASE_URL } from "../api/config";
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
 
-export default function UserMenu({ username, avatarUrl, logout }) {
+export default function UserMenu({ user, avatarUrl }) {
     const navigate = useNavigate();
+    const username = user?.sub;
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
 
@@ -23,6 +26,12 @@ export default function UserMenu({ username, avatarUrl, logout }) {
         setIsOpen(false);
     };
 
+    const handleLogout = () => {
+        authLogout();
+        setIsOpen(false);
+        navigate('/login');
+    };
+
     return (
         <div className="relative" ref={menuRef}>
             <button
@@ -33,12 +42,12 @@ export default function UserMenu({ username, avatarUrl, logout }) {
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm overflow-hidden border border-white dark:border-gray-600">
                     {avatarUrl ? (
                         <img
-                            src={`http://localhost:8081${avatarUrl}`}
-                            alt={username}
+                            src={avatarUrl.startsWith("http") ? avatarUrl : `${API_BASE_URL}${avatarUrl}`}
+                            alt={user.sub}
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        username ? username[0].toUpperCase() : <User size={16} />
+                        user?.sub ? user.sub[0].toUpperCase() : <User size={16} />
                     )}
                 </div>
                 <ChevronDown size={14} className={`text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -70,7 +79,7 @@ export default function UserMenu({ username, avatarUrl, logout }) {
 
                     <div className="border-t border-gray-100 dark:border-gray-700 p-1">
                         <button
-                            onClick={logout}
+                            onClick={handleLogout}
                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                             <LogOut size={16} />

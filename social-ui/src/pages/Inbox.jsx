@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { getInbox, getMyGroups, createGroup } from "../api/chatService";
 import VerificationBadge from "../components/VerificationBadge";
 import GroupCreationModal from "../components/GroupCreationModal";
+import { API_BASE_URL } from "../api/config";
 
 export default function Inbox() {
 
@@ -85,9 +86,9 @@ export default function Inbox() {
                                         <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-lg overflow-hidden relative">
                                             {g.imageUrl ? (
                                                 <img
-                                                    src={g.imageUrl.startsWith("http") ? g.imageUrl : `http://localhost:8081${g.imageUrl}`}
-                                                    className="w-full h-full object-cover"
+                                                    src={g.imageUrl.startsWith("http") ? g.imageUrl : `${API_BASE_URL}${g.imageUrl}`}
                                                     alt={g.name}
+                                                    className="w-full h-full object-cover"
                                                 />
                                             ) : (
                                                 g.name.substring(0, 1).toUpperCase()
@@ -129,7 +130,7 @@ export default function Inbox() {
                                     <div className="flex items-center gap-4">
                                         <img
                                             src={c.profileImage
-                                                ? (c.profileImage.startsWith("http") ? c.profileImage : `http://localhost:8081${c.profileImage}`)
+                                                ? (c.profileImage.startsWith("http") ? c.profileImage : `${API_BASE_URL}${c.profileImage}`)
                                                 : `https://ui-avatars.com/api/?name=${c.username}&background=random`}
                                             alt={c.username}
                                             className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"

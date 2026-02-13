@@ -76,7 +76,26 @@ public class RecommendationService {
                             post.getLinkTitle(),
                             post.getLinkDescription(),
                             post.getLinkImage(),
-                            null);
+                            null,
+                            post.getSharedPost() != null ? new com.example.social.post.dto.PostResponse(
+                                    post.getSharedPost().getId(),
+                                    post.getSharedPost().getContent(),
+                                    post.getSharedPost().getAuthor().getUsername(),
+                                    post.getSharedPost().getImages().stream()
+                                            .map(com.example.social.post.PostImage::getUrl).toList(),
+                                    post.getSharedPost().getCreatedAt(),
+                                    0L, // Like count for inner
+                                    false, // likedByMe for inner
+                                    false, // isSaved for inner
+                                    post.getSharedPost().getAuthor().getProfileImageUrl(),
+                                    post.getSharedPost().getAuthor().isVerified(),
+                                    post.getSharedPost().getLinkUrl(),
+                                    post.getSharedPost().getLinkTitle(),
+                                    post.getSharedPost().getLinkDescription(),
+                                    post.getSharedPost().getLinkImage(),
+                                    null,
+                                    null)
+                                    : null);
                 });
     }
 }

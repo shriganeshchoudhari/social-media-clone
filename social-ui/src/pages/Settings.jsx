@@ -4,6 +4,7 @@ import api from "../api/axios";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import { updateProfile, changePassword, getCurrentUser, getMyInterests, togglePrivacy, deleteAccount } from "../api/userService";
+import { API_BASE_URL } from "../api/config";
 
 export default function Settings() {
     const navigate = useNavigate();
@@ -51,7 +52,7 @@ export default function Settings() {
                 profileImageUrl: user.profileImageUrl
             });
             if (user.profileImageUrl) {
-                setPreviewUrl(`http://localhost:8081${user.profileImageUrl}`);
+                setPreviewUrl(user.profileImageUrl.startsWith("http") ? user.profileImageUrl : `${API_BASE_URL}${user.profileImageUrl}`);
             }
         } catch (err) {
             setMessage({ type: "error", text: "Failed to load profile" });

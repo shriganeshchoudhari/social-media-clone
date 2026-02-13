@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getGroup, addGroupMember, removeGroupMember, leaveGroup } from "../api/chatService";
+import { getGroup, addGroupMember, removeGroupMember, updateGroup, leaveGroup } from "../api/chatService";
+import { API_BASE_URL } from "../api/config";
 import { searchUsers } from "../api/searchService";
 import { getCurrentUser } from "../api/userService";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
     // Edit State
     const [isEditing, setIsEditing] = useState(false);
-    const [editName, setEditName] = useState("");
+    const [formData, setFormData] = useState({ name: "", description: "" });
     const [editImage, setEditImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
 
@@ -27,8 +28,8 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
 
     useEffect(() => {
         if (group) {
-            setEditName(group.name);
-            setPreviewImage(group.imageUrl ? (group.imageUrl.startsWith("http") ? group.imageUrl : `http://localhost:8081${group.imageUrl}`) : null);
+            setFormData({ name: group.name, description: group.description || "" });
+            setPreviewImage(group.imageUrl ? (group.imageUrl.startsWith("http") ? group.imageUrl : `${API_BASE_URL}${group.imageUrl}`) : null);
         }
     }, [group]);
 
@@ -68,7 +69,7 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
     const handleUpdateGroup = async (e) => {
         e.preventDefault();
         try {
-            await import("../api/chatService").then(module => module.updateGroup(groupId, editName, editImage));
+            await updateGroup(groupId, formData.name, editImage);
             setIsEditing(false);
             loadGroup();
             if (onUpdate) onUpdate();
@@ -150,10 +151,10 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
                                 <div className="mb-4 relative inline-block">
                                     <div className="w-24 h-24 rounded-full mx-auto bg-gray-200 overflow-hidden relative border-2 border-blue-500">
                                         {previewImage ? (
-                                            <img src={previewImage} className="w-full h-full object-cover" />
+                                            <img src={previewImage} className="w-full h-full object-cover" alt="Group preview" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-400">
-                                                {editName.substring(0, 1).toUpperCase()}
+                                                {formData.name.substring(0, 1).toUpperCase()}
                                             </div>
                                         )}
                                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
@@ -165,8 +166,8 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
                                     </div>
                                 </div>
                                 <input
-                                    value={editName}
-                                    onChange={e => setEditName(e.target.value)}
+                                    value={formData.name}
+                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     className="border rounded px-2 py-1 text-center font-bold text-lg dark:bg-gray-700 dark:text-white dark:border-gray-600 mb-2 w-full"
                                     placeholder="Group Name"
                                     autoFocus
@@ -180,8 +181,9 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
                             <>
                                 <div className="w-24 h-24 rounded-full bg-blue-100 dark:bg-blue-900 mx-auto flex items-center justify-center text-3xl font-bold text-blue-600 dark:text-blue-300 mb-2 overflow-hidden relative">
                                     {group.imageUrl ? (
-                                        <img src={group.imageUrl.startsWith("http") ? group.imageUrl : `http://localhost:8081${group.imageUrl}`}
-                                            className="w-full h-full object-cover" />
+                                        <img src={group.imageUrl.startsWith("http") ? group.imageUrl : `${API_BASE_URL}${group.imageUrl}`}
+                                            className="w-full h-full object-cover"
+                                            alt={group.name} />
                                     ) : (
                                         group.name.substring(0, 1).toUpperCase()
                                     )}
@@ -233,10 +235,10 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
                                             >
                                                 <img
                                                     src={u.profileImageUrl
-                                                        ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `http://localhost:8081${u.profileImageUrl}`)
+                                                        ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `${API_BASE_URL}${u.profileImageUrl}`)
                                                         : `https://ui-avatars.com/api/?name=${u.username}&background=random`}
-                                                    className="w-6 h-6 rounded-full"
                                                     alt={u.username}
+                                                    className="w-8 h-8 rounded-full object-cover"
                                                 />
                                                 <span className="text-sm dark:text-white">{u.username}</span>
                                             </div>
@@ -252,7 +254,7 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
                                     <div className="flex items-center gap-3">
                                         <img
                                             src={p.profileImageUrl
-                                                ? (p.profileImageUrl.startsWith("http") ? p.profileImageUrl : `http://localhost:8081${p.profileImageUrl}`)
+                                                ? (p.profileImageUrl.startsWith("http") ? p.profileImageUrl : `${API_BASE_URL}${p.profileImageUrl}`)
                                                 : `https://ui-avatars.com/api/?name=${p.username}&background=random`}
                                             className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-600"
                                             alt={p.username}

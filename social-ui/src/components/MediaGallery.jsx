@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../api/config";
 
 export default function MediaGallery({ images }) {
     const [selectedImage, setSelectedImage] = useState(null);
 
     if (!images || images.length === 0) return null;
 
-    const fullImages = images.map(img => `http://localhost:8081${img}`);
+    const fullImages = images.map(img => img.startsWith("http") ? img : `${API_BASE_URL}${img}`);
 
     const renderGrid = () => {
         const count = fullImages.length;

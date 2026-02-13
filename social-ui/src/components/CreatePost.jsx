@@ -27,7 +27,8 @@ export default function CreatePost({ onPost, extraData = {} }) {
                 extraData.groupId,
                 showPoll ? pollQuestion : null,
                 showPoll ? pollOptions.filter(o => o.trim()) : null,
-                showPoll ? pollDuration : null
+                showPoll ? pollDuration : null,
+                extraData.sharedPostId
             );
 
             // Reset form
@@ -78,6 +79,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
                 className="w-full border rounded p-2 text-sm mb-2 resize-none outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                 rows="3"
                 placeholder="What's on your mind?"
+                aria-label="Post content"
                 value={content}
                 onChange={e => setContent(e.target.value)}
             />
@@ -88,6 +90,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
                     <input
                         type="text"
                         placeholder="Ask a question..."
+                        aria-label="Poll question"
                         className="w-full border-b bg-transparent p-2 mb-2 text-sm focus:border-blue-500 outline-none dark:text-gray-100 dark:border-gray-500"
                         value={pollQuestion}
                         onChange={e => setPollQuestion(e.target.value)}
@@ -98,6 +101,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
                                 <input
                                     type="text"
                                     placeholder={`Option ${idx + 1}`}
+                                    aria-label={`Poll option ${idx + 1}`}
                                     className="flex-1 border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     value={opt}
                                     onChange={e => handleOptionChange(idx, e.target.value)}
@@ -107,6 +111,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
                                         type="button"
                                         onClick={() => removeOption(idx)}
                                         className="text-red-400 hover:text-red-500"
+                                        aria-label={`Remove option ${idx + 1}`}
                                     >×</button>
                                 )}
                             </div>
@@ -138,10 +143,12 @@ export default function CreatePost({ onPost, extraData = {} }) {
                             multiple
                             className="hidden"
                             onChange={e => setFiles([...e.target.files])}
+                            aria-label="Upload images"
                         />
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
+                        <span className="sr-only">Add Image</span>
                     </label>
 
                     {/* Poll Toggle */}
@@ -150,8 +157,10 @@ export default function CreatePost({ onPost, extraData = {} }) {
                         onClick={() => setShowPoll(!showPoll)}
                         className={`p-2 rounded-full transition-colors ${showPoll ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/30' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                         title="Create Poll"
+                        aria-label={showPoll ? "Remove poll" : "Create a poll"}
+                        aria-pressed={showPoll}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                         </svg>
                     </button>
@@ -185,6 +194,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
                                 type="button"
                                 onClick={() => removeFile(i)}
                                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                aria-label={`Remove image ${i + 1}`}
                             >
                                 ×
                             </button>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { createGroup } from "../api/chatService";
 import { searchUsers } from "../api/searchService";
+import { API_BASE_URL } from "../api/config";
 
 export default function GroupCreationModal({ onClose, onCreate }) {
     const [name, setName] = useState("");
@@ -107,7 +109,7 @@ export default function GroupCreationModal({ onClose, onCreate }) {
                                     >
                                         <img
                                             src={u.profileImageUrl
-                                                ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `http://localhost:8081${u.profileImageUrl}`)
+                                                ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `${API_BASE_URL}${u.profileImageUrl}`)
                                                 : `https://ui-avatars.com/api/?name=${u.username}&background=random`}
                                             className="w-8 h-8 rounded-full object-cover"
                                             alt={u.username}

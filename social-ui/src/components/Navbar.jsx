@@ -110,24 +110,27 @@ export default function Navbar() {
                     <div className="hidden md:flex flex-1 justify-center items-center px-8 gap-8">
 
                         {/* Search Bar */}
-                        <form onSubmit={submitSearch} className="relative w-full max-w-xs group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                        <form onSubmit={submitSearch} className="relative w-full max-w-xs group" role="search">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} aria-hidden="true" />
                             <input
                                 className="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500/50 transition-all dark:text-white placeholder-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 focus:bg-white dark:focus:bg-gray-800"
                                 placeholder="Search users..."
+                                aria-label="Search users"
                                 value={q}
                                 onChange={e => setQ(e.target.value)}
                             />
                         </form>
 
                         {/* Nav Icons */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" role="navigation" aria-label="Main Navigation">
                             <button
                                 onClick={() => navigate("/feed")}
                                 className={`p-2 rounded-xl transition-all relative group ${isActive('/feed') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                 title="Feed"
+                                aria-label="Feed"
+                                aria-current={isActive('/feed') ? 'page' : undefined}
                             >
-                                <Home size={24} strokeWidth={isActive('/feed') ? 2.5 : 2} />
+                                <Home size={24} strokeWidth={isActive('/feed') ? 2.5 : 2} aria-hidden="true" />
                                 {isActive('/feed') && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full mb-1"></span>}
                             </button>
 
@@ -135,24 +138,30 @@ export default function Navbar() {
                                 onClick={() => navigate("/inbox")}
                                 className={`p-2 rounded-xl transition-all relative group ${isActive('/inbox') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                 title="Inbox"
+                                aria-label="Inbox"
+                                aria-current={isActive('/inbox') ? 'page' : undefined}
                             >
-                                <MessageCircle size={24} strokeWidth={isActive('/inbox') ? 2.5 : 2} />
+                                <MessageCircle size={24} strokeWidth={isActive('/inbox') ? 2.5 : 2} aria-hidden="true" />
                             </button>
 
                             <button
                                 onClick={() => navigate("/explore")}
                                 className={`p-2 rounded-xl transition-all text-sm font-medium ${isActive('/explore') ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                 title="Explore Trending"
+                                aria-label="Explore Trending"
+                                aria-current={isActive('/explore') ? 'page' : undefined}
                             >
-                                🔥
+                                <span aria-hidden="true">🔥</span>
                             </button>
 
                             <button
                                 onClick={() => navigate("/groups")}
                                 className={`p-2 rounded-xl transition-all relative group ${isActive('/groups') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                 title="Communities"
+                                aria-label="Communities"
+                                aria-current={isActive('/groups') ? 'page' : undefined}
                             >
-                                <Users size={24} strokeWidth={isActive('/groups') ? 2.5 : 2} />
+                                <Users size={24} strokeWidth={isActive('/groups') ? 2.5 : 2} aria-hidden="true" />
                             </button>
 
                             {(userRole === 'ADMIN' || userRole === 'MODERATOR') && (
@@ -160,8 +169,10 @@ export default function Navbar() {
                                     onClick={() => navigate("/admin")}
                                     className={`p-2 rounded-xl transition-all text-sm font-medium ${isActive('/admin') ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                     title="Admin Dashboard"
+                                    aria-label="Admin Dashboard"
+                                    aria-current={isActive('/admin') ? 'page' : undefined}
                                 >
-                                    🛡️
+                                    <span aria-hidden="true">🛡️</span>
                                 </button>
                             )}
 
@@ -171,8 +182,11 @@ export default function Navbar() {
                                     onClick={() => setShowNotifications(!showNotifications)}
                                     className={`p-2 rounded-xl transition-all relative group ${showNotifications ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                     title="Notifications"
+                                    aria-label={`Notifications ${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+                                    aria-haspopup="true"
+                                    aria-expanded={showNotifications}
                                 >
-                                    <Bell size={24} strokeWidth={showNotifications ? 2.5 : 2} />
+                                    <Bell size={24} strokeWidth={showNotifications ? 2.5 : 2} aria-hidden="true" />
                                     {unreadCount > 0 && (
                                         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white font-bold shadow-sm ring-2 ring-white dark:ring-gray-900">
                                             {unreadCount > 99 ? '99+' : unreadCount}
@@ -198,7 +212,7 @@ export default function Navbar() {
 
                         <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
-                        <UserMenu username={username} avatarUrl={avatarUrl} logout={logout} />
+                        <UserMenu user={{ sub: username }} avatarUrl={avatarUrl} />
                     </div>
 
                 </div>

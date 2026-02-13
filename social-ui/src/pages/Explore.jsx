@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import LikeButton from "../components/LikeButton";
 import CommentList from "../components/CommentList";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from '../api/config';
 
 export default function Explore() {
     const [posts, setPosts] = useState([]);
@@ -98,7 +99,7 @@ export default function Explore() {
                                 {p.images.map((img, idx) => (
                                     <img
                                         key={idx}
-                                        src={`http://localhost:8081${img}`}
+                                        src={img.startsWith("http") ? img : `${API_BASE_URL}${img}`}
                                         alt={`post image ${idx + 1}`}
                                         className={`rounded-lg object-cover border border-gray-100 dark:border-gray-700 ${p.images.length === 1 ? 'max-h-96 w-full' : 'h-48 w-full'}`}
                                     />

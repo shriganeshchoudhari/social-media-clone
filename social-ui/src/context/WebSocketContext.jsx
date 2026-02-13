@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { API_BASE_URL } from '../api/config';
 import { getNotifications, markAllRead } from '../api/notificationService';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -10,8 +11,8 @@ const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [stompClient, setStompClient] = useState(null);
     const token = localStorage.getItem("token");
-    const clientRef = React.useRef(null);
 
     // Initial Fetch
     useEffect(() => {
@@ -25,13 +26,15 @@ export const WebSocketProvider = ({ children }) => {
     useEffect(() => {
         if (!token) return;
 
-        const socket = new SockJS('http://localhost:8081/ws');
-        const stompClient = new Client({
+        const socket = new SockJS(`${API_BASE_URL}/ws`);
+        const client = new Client({
             webSocketFactory: () => socket,
             connectHeaders: { Authorization: `Bearer ${token}` },
             debug: (str) => console.log(str),
             onConnect: () => {
-                stompClient.subscribe('/user/queue/notifications', (message) => {
+                setStompClient(client);
+
+                client.subscribe('/user/queue/notifications', (message) => {
                     const notification = JSON.parse(message.body);
 
                     // Update State
@@ -50,18 +53,28 @@ export const WebSocketProvider = ({ children }) => {
                     });
                 });
             },
+            onDisconnect: () => {
+                setStompClient(null);
+            }
         });
 
-        stompClient.activate();
-        clientRef.current = stompClient;
+        client.activate();
 
         return () => {
-            if (clientRef.current) {
-                clientRef.current.deactivate();
-                clientRef.current = null;
-            }
+            client.deactivate();
         };
     }, [token]);
+
+    const sendCallSignal = (signal) => {
+        if (stompClient && stompClient.connected) {
+            stompClient.publish({
+                destination: '/app/call/signal',
+                body: JSON.stringify(signal)
+            });
+        } else {
+            console.error("Cannot send signal, stomp client not connected");
+        }
+    };
 
     const markNotificationAsRead = (id) => {
         setNotifications(prev => prev.map(n => {
@@ -81,7 +94,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     return (
-        <WebSocketContext.Provider value={{ notifications, unreadCount, clearNotifications, markNotificationAsRead, stompClient: clientRef.current }}>
+        <WebSocketContext.Provider value={{ notifications, unreadCount, clearNotifications, markNotificationAsRead, stompClient, sendCallSignal }}>
             <Toaster />
             {children}
         </WebSocketContext.Provider>

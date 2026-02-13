@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { getGroup, updateGroup } from "../api/chatService";
+import api from "../api/axios"; // Keep for member operations not in chatService yet
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
+import { API_BASE_URL } from "../api/config";
 
 export default function GroupSettings() {
     const { id } = useParams();
@@ -24,7 +26,7 @@ export default function GroupSettings() {
 
     const loadGroup = async () => {
         try {
-            const res = await api.get(`/groups/${id}`);
+            const res = await getGroup(id);
             const g = res.data;
             setGroup(g);
             setName(g.name);
@@ -38,14 +40,8 @@ export default function GroupSettings() {
                 return;
             }
 
-            // Load members - Backend needs endpoint!
-            // Wait, I didn't add GET /members to controller.
-            // I added removeMember and changeRole logic, but no List Members endpoint in Controller.
-            // Task: "Manage Members" implies listing them. 
-            // GroupDetails returns 'memberCount'.
-            // I need to add GET /api/groups/{id}/members to GroupController.
-            // Let's assume I'll add it.
             try {
+                // Fetch members
                 const mRes = await api.get(`/groups/${id}/members`);
                 setMembers(mRes.data);
             } catch (e) {
@@ -62,7 +58,7 @@ export default function GroupSettings() {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            await api.put(`/groups/${id}`, { name, description, privacy });
+            await updateGroup(id, { name, description, privacy });
             alert("Group updated!");
         } catch (err) {
             alert("Update failed");
@@ -146,8 +142,7 @@ export default function GroupSettings() {
                                                 <img
                                                     src={(() => {
                                                         if (group.coverImageUrl.startsWith("http")) return group.coverImageUrl;
-                                                        const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8081";
-                                                        const baseUrl = apiBase.endsWith('/api') ? apiBase.slice(0, -4) : apiBase;
+                                                        const baseUrl = API_BASE_URL;
                                                         return baseUrl + group.coverImageUrl;
                                                     })()}
                                                     alt="Cover"
@@ -196,7 +191,7 @@ export default function GroupSettings() {
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
                                                 {member.profileImageUrl ? (
-                                                    <img src={member.profileImageUrl} alt={member.username} className="w-full h-full object-cover" />
+                                                    <img src={member.profileImageUrl.startsWith("http") ? member.profileImageUrl : `${API_BASE_URL}${member.profileImageUrl}`} alt={member.username} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-gray-500 font-bold">
                                                         {member.username[0].toUpperCase()}
@@ -209,8 +204,6 @@ export default function GroupSettings() {
                                             </div>
                                         </div>
 
-                                        {/* Actions (cannot act on self or creator technically, but safer to check id) */}
-                                        {/* Ideally verify current user is Admin (checked in loadGroup) */}
                                         <div className="flex gap-2">
                                             {member.role === 'MEMBER' && (
                                                 <button

@@ -1,40 +1,43 @@
 import { useEffect } from "react";
 import SockJS from "sockjs-client";
-import { over } from "stompjs";
+import { Client } from "@stomp/stompjs";
+import { API_BASE_URL } from "../api/config";
 
 export default function useNotificationSocket(userId, onMessage) {
 
     useEffect(() => {
         if (!userId) return;
 
-        // Use SockJS which handles the fallback
-        const socket = new SockJS("http://localhost:8081/ws");
-        const stompClient = over(socket);
-
-        // Disable debug logs to keep console clean
-        stompClient.debug = () => { };
-
-        stompClient.connect({}, () => {
-            stompClient.subscribe(
-                `/topic/user/${userId}`,
-                (msg) => {
-                    if (msg.body) {
-                        try {
-                            const notification = JSON.parse(msg.body);
-                            onMessage(notification);
-                        } catch (e) {
-                            console.error("Failed to parse WS message", msg.body);
+        const socket = new SockJS(`${API_BASE_URL}/ws`);
+        const stompClient = new Client({
+            webSocketFactory: () => socket,
+            // debug: (str) => console.log(str),
+            onConnect: () => {
+                stompClient.subscribe(
+                    `/topic/user/${userId}`,
+                    (msg) => {
+                        if (msg.body) {
+                            try {
+                                const notification = JSON.parse(msg.body);
+                                onMessage(notification);
+                            } catch (e) {
+                                console.error("Failed to parse WS message", msg.body);
+                            }
                         }
                     }
-                }
-            );
-        }, (err) => {
-            console.error("WS Error:", err);
+                );
+            },
+            onStompError: (frame) => {
+                console.error('Broker reported error: ' + frame.headers['message']);
+                console.error('Additional details: ' + frame.body);
+            },
         });
+
+        stompClient.activate();
 
         return () => {
             if (stompClient && stompClient.connected) {
-                stompClient.disconnect();
+                stompClient.deactivate();
             }
         };
     }, [userId]);

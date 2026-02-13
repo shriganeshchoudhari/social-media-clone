@@ -18,6 +18,8 @@ import useChatSocket from "../hooks/useChatSocket";
 import VerificationBadge from "../components/VerificationBadge";
 import VoiceMessage from "../components/VoiceMessage";
 import GroupDetailsModal from "../components/GroupDetailsModal";
+import { useCall } from "../context/CallContext";
+import { API_BASE_URL } from "../api/config";
 
 export default function ChatPage() {
     const { username, groupId } = useParams();
@@ -32,11 +34,14 @@ export default function ChatPage() {
 
     const [group, setGroup] = useState(null);
     const [showGroupDetails, setShowGroupDetails] = useState(false);
+    const { startCall } = useCall();
 
     // Voice Recording
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
+    const lastTypedRef = useRef(0);
+    const typingTimeoutRef = useRef(null);
 
     // ... (refs)
 
@@ -429,7 +434,7 @@ export default function ChatPage() {
                                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold overflow-hidden relative">
                                     {group.imageUrl ? (
                                         <img
-                                            src={group.imageUrl.startsWith("http") ? group.imageUrl : `http://localhost:8081${group.imageUrl}`}
+                                            src={group.imageUrl.startsWith("http") ? group.imageUrl : `${API_BASE_URL}${group.imageUrl}`}
                                             className="w-full h-full object-cover"
                                             alt={group.name}
                                         />
@@ -448,20 +453,31 @@ export default function ChatPage() {
                                 </div>
                             </div>
                         ) : otherUser ? (
-                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${otherUser.username}`)}>
-                                <img
-                                    src={otherUser.profileImageUrl
-                                        ? (otherUser.profileImageUrl.startsWith("http") ? otherUser.profileImageUrl : `http://localhost:8081${otherUser.profileImageUrl}`)
-                                        : `https://ui-avatars.com/api/?name=${otherUser.username}&background=random`}
-                                    alt={otherUser.username}
-                                    className="w-10 h-10 rounded-full object-cover"
-                                />
-                                <div>
-                                    <h2 className="font-bold text-gray-900 dark:text-white flex items-center gap-1">
-                                        {otherUser.username}
-                                        {otherUser.verified && <VerificationBadge className="w-4 h-4" />}
-                                    </h2>
+                            <div className="flex items-center gap-3 md:gap-4">
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${otherUser.username}`)}>
+                                    <img
+                                        src={otherUser.profileImageUrl
+                                            ? (otherUser.profileImageUrl.startsWith("http") ? otherUser.profileImageUrl : `${API_BASE_URL}${otherUser.profileImageUrl}`)
+                                            : `https://ui-avatars.com/api/?name=${otherUser.username}&background=random`}
+                                        alt={otherUser.username}
+                                        className="w-10 h-10 rounded-full object-cover"
+                                    />
+                                    <div>
+                                        <h2 className="font-bold text-gray-900 dark:text-white flex items-center gap-1">
+                                            {otherUser.username}
+                                            {otherUser.verified && <VerificationBadge className="w-4 h-4" />}
+                                        </h2>
+                                    </div>
                                 </div>
+                                <button
+                                    onClick={() => startCall(otherUser.username)}
+                                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors"
+                                    title="Voice/Video Call"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 3.75L18 6m0 0l2.25 2.25M18 6l2.25-2.25M18 6l-2.25 2.25m1.5 13.5c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 015.25 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 00-.38 1.21 12.035 12.035 0 007.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293c.271-.363.734-.527 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 01-2.25 2.25h-2.25z" />
+                                    </svg>
+                                </button>
                             </div>
                         ) : (
                             <div className="flex items-center gap-3">
@@ -481,7 +497,7 @@ export default function ChatPage() {
                                 {!isSelf && (
                                     <img
                                         src={m.senderProfileImage
-                                            ? (m.senderProfileImage.startsWith("http") ? m.senderProfileImage : `http://localhost:8081${m.senderProfileImage}`)
+                                            ? (m.senderProfileImage.startsWith("http") ? m.senderProfileImage : `${API_BASE_URL}${m.senderProfileImage}`)
                                             : `https://ui-avatars.com/api/?name=${m.sender}&background=random`}
                                         alt={m.sender}
                                         className="w-8 h-8 rounded-full object-cover mb-1 border border-gray-200 dark:border-gray-700 shadow-sm"
@@ -494,11 +510,11 @@ export default function ChatPage() {
                                     }`}>
                                     {!isSelf && groupId && <p className="text-[10px] text-gray-400 mb-1">{m.sender}</p>}
 
-                                    {m.imageUrl && <img src={`http://localhost:8081${m.imageUrl}`} className="rounded mb-2 max-w-full" />}
+                                    {m.imageUrl && <img src={`${API_BASE_URL}${m.imageUrl}`} className="rounded mb-2 max-w-full" />}
 
                                     {m.voiceUrl && (
                                         <div className="mb-2">
-                                            <VoiceMessage src={`http://localhost:8081${m.voiceUrl}`} />
+                                            <VoiceMessage src={`${API_BASE_URL}${m.voiceUrl}`} />
                                         </div>
                                     )}
 

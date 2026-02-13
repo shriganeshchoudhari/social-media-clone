@@ -55,7 +55,7 @@ public class PostService {
         @org.springframework.transaction.annotation.Transactional
         public PostResponse createPost(String username, String content,
                         java.util.List<org.springframework.web.multipart.MultipartFile> images, Long groupId,
-                        String pollQuestion, List<String> pollOptions, Integer pollDurationDays) {
+                        String pollQuestion, List<String> pollOptions, Integer pollDurationDays, Long sharedPostId) {
 
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -66,12 +66,23 @@ public class PostService {
                                         .orElseThrow(() -> new RuntimeException("Group not found"));
                 }
 
+                Post sharedPost = null;
+                if (sharedPostId != null) {
+                        sharedPost = postRepository.findById(sharedPostId)
+                                        .orElseThrow(() -> new RuntimeException("Shared post not found"));
+                        // If sharing a post that is already a share, share the original
+                        if (sharedPost.getSharedPost() != null) {
+                                sharedPost = sharedPost.getSharedPost();
+                        }
+                }
+
                 LinkPreviewService.LinkMetadata linkMetadata = linkPreviewService.extractLinkMetadata(content);
 
                 Post.PostBuilder postBuilder = Post.builder()
                                 .content(content)
                                 .author(user)
-                                .group(group);
+                                .group(group)
+                                .sharedPost(sharedPost);
 
                 if (linkMetadata != null) {
                         postBuilder.linkUrl(linkMetadata.url())
@@ -189,7 +200,8 @@ public class PostService {
                                 post.getLinkTitle(),
                                 post.getLinkDescription(),
                                 post.getLinkImage(),
-                                mapToPollResponse(post.getPoll(), null));
+                                mapToPollResponse(post.getPoll(), null),
+                                post.getSharedPost() != null ? mapToResponsePublic(post.getSharedPost()) : null);
         }
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -345,7 +357,8 @@ public class PostService {
                                 post.getLinkTitle(),
                                 post.getLinkDescription(),
                                 post.getLinkImage(),
-                                mapToPollResponse(post.getPoll(), currentUser));
+                                mapToPollResponse(post.getPoll(), currentUser),
+                                post.getSharedPost() != null ? mapToResponse(post.getSharedPost(), currentUser) : null);
         }
 
         @org.springframework.transaction.annotation.Transactional

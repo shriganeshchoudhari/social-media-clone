@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { searchUsers } from "../api/searchService";
+import { API_BASE_URL } from "../api/config";
 import { searchPosts } from "../api/postService";
 import { searchGroups } from "../api/groupService";
 import Layout from "../components/Layout";
@@ -126,10 +127,10 @@ export default function Search() {
                                 <Link to={`/profile/${u.username}`}>
                                     <img
                                         src={u.profileImageUrl
-                                            ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `http://localhost:8081${u.profileImageUrl}`)
+                                            ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `${API_BASE_URL}${u.profileImageUrl}`)
                                             : `https://ui-avatars.com/api/?name=${u.username}&background=random`}
                                         alt={u.username}
-                                        className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                                        className="w-10 h-10 rounded-full object-cover"
                                     />
                                 </Link>
                                 <div>

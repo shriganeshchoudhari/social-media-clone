@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProfile, toggleFollow, toggleBlock, getFollowers, getFollowing } from "../api/profileService";
+import { useCall } from "../context/CallContext";
 import { getPostsByUser } from "../api/postService";
+import { API_BASE_URL } from "../api/config";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
 import VerificationBadge from "../components/VerificationBadge";
@@ -13,6 +15,7 @@ export default function Profile() {
     const [posts, setPosts] = useState([]);
     const postsRef = useRef(null);
     const [error, setError] = useState(null);
+    const { startCall } = useCall();
 
     const scrollToPosts = () => {
         postsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -141,7 +144,7 @@ export default function Profile() {
                         <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-md shrink-0">
                             {profile.profileImageUrl ? (
                                 <img
-                                    src={`http://localhost:8081${profile.profileImageUrl}`}
+                                    src={`${API_BASE_URL}${profile.profileImageUrl}`}
                                     alt={profile.username}
                                     className="w-full h-full object-cover"
                                 />
@@ -201,6 +204,12 @@ export default function Profile() {
                             Message
                         </button>
                         <button
+                            onClick={() => startCall(profile.username)}
+                            className="flex-1 md:flex-none px-6 py-2 rounded font-medium transition-colors bg-purple-600 text-white hover:bg-purple-700"
+                        >
+                            Call
+                        </button>
+                        <button
                             onClick={() => toggleBlock(profile.username).then(() => window.location.reload())}
                             className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-700"
                         >
@@ -250,7 +259,7 @@ export default function Profile() {
                         <div key={post.id} className="relative aspect-square group cursor-pointer"
                             onClick={() => setSelected(post)}>
                             {post.images && post.images.length > 0 ? (
-                                <img src={`http://localhost:8081${post.images[0]}`} alt="Post" className="w-full h-full object-cover rounded shadow-sm hover:opacity-90 transition-opacity" />
+                                <img src={`${API_BASE_URL}${post.images[0]}`} alt="Post" className="w-full h-full object-cover rounded shadow-sm hover:opacity-90 transition-opacity" />
                             ) : (
                                 <div className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center text-gray-400 p-2 text-xs text-center border-2 border-dashed border-gray-200 dark:border-gray-600">
                                     <span className="line-clamp-3">{post.content}</span>
@@ -299,7 +308,7 @@ export default function Profile() {
                                 selected.images.map((img, i) => (
                                     <img
                                         key={i}
-                                        src={`http://localhost:8081${img}`}
+                                        src={`${API_BASE_URL}${img}`}
                                         className="w-full rounded-lg shadow-md"
                                         alt={`Post image ${i + 1}`}
                                     />
@@ -316,7 +325,7 @@ export default function Profile() {
                                 <button
                                     onClick={() => {
                                         // Simple report for now
-                                        fetch(`http://localhost:8081/api/moderation/posts/${selected.id}/report?reason=Spam`, {
+                                        fetch(`${API_BASE_URL}/api/moderation/posts/${selected.id}/report?reason=Spam`, {
                                             method: 'POST',
                                             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                                         }).then(() => alert('Reported'));

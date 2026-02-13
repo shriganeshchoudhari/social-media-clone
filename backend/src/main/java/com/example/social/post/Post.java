@@ -48,6 +48,10 @@ public class Post {
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private com.example.social.poll.Poll poll;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shared_post_id")
+    private Post sharedPost;
+
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -62,7 +66,7 @@ public class Post {
             List<com.example.social.comment.Comment> comments, List<com.example.social.like.PostLike> likes,
             List<SavedPost> savedBy, User author, com.example.social.group.Group group, LocalDateTime createdAt,
             String linkUrl, String linkTitle, String linkDescription, String linkImage,
-            com.example.social.poll.Poll poll) {
+            com.example.social.poll.Poll poll, Post sharedPost) {
         this.id = id;
         this.content = content;
         this.imageUrl = imageUrl;
@@ -78,6 +82,7 @@ public class Post {
         this.linkDescription = linkDescription;
         this.linkImage = linkImage;
         this.poll = poll;
+        this.sharedPost = sharedPost;
     }
 
     // Getters
@@ -304,7 +309,22 @@ public class Post {
 
         public Post build() {
             return new Post(id, content, imageUrl, images, comments, likes, savedBy, author, group, createdAt, linkUrl,
-                    linkTitle, linkDescription, linkImage, poll);
+                    linkTitle, linkDescription, linkImage, poll, sharedPost);
         }
+
+        public PostBuilder sharedPost(Post sharedPost) {
+            this.sharedPost = sharedPost;
+            return this;
+        }
+
+        private Post sharedPost;
+    }
+
+    public Post getSharedPost() {
+        return sharedPost;
+    }
+
+    public void setSharedPost(Post sharedPost) {
+        this.sharedPost = sharedPost;
     }
 }
