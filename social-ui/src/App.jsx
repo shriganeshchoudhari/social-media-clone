@@ -22,7 +22,7 @@ import CallOverlay from "./components/CallOverlay";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <CallOverlay />
       <Routes>
         <Route

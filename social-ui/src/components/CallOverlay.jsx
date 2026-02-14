@@ -2,7 +2,21 @@ import React from 'react';
 import { useCall } from '../context/CallContext';
 
 export default function CallOverlay() {
-    const { callState, targetUser, isCaller, acceptCall, endCall, localVideoRef, remoteVideoRef } = useCall();
+    const { callState, targetUser, endCall, acceptCall, localStream, remoteStream } = useCall();
+    const localVideoRef = React.useRef(null);
+    const remoteVideoRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (localVideoRef.current && localStream) {
+            localVideoRef.current.srcObject = localStream;
+        }
+    }, [localStream, callState]);
+
+    React.useEffect(() => {
+        if (remoteVideoRef.current && remoteStream) {
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream, callState]);
 
     if (callState === 'IDLE') return null;
 
@@ -48,7 +62,7 @@ export default function CallOverlay() {
                             playsInline
                             className="w-full h-full object-contain"
                         />
-                        {!remoteVideoRef.current?.srcObject && callState === 'CONNECTED' && (
+                        {!remoteStream && callState === 'CONNECTED' && (
                             <div className="absolute text-white opacity-50">Waiting for video...</div>
                         )}
                     </div>

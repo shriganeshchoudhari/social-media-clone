@@ -1,6 +1,9 @@
 spring:
+  application:
+    name: social-media
   flyway:
     locations: classpath:db/migration,classpath:db/seed
+
   
   # MongoDB configuration
   data:
@@ -34,4 +37,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+  port: 8081
 

@@ -26,7 +26,7 @@ const SharedPostPreview = ({ post }) => {
                 <span className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</span>
             </div>
             <div className="text-sm text-gray-800 dark:text-gray-200 mb-2">
-                <RichText text={post.content} />
+                <RichText text={post.content} disableLinks={true} />
             </div>
             {post.images && post.images.length > 0 && (
                 <div className="h-40 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">

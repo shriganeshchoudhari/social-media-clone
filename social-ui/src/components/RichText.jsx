@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function RichText({ text }) {
+export default function RichText({ text, disableLinks = false }) {
     if (!text) return null;
 
     // Regex to match:
@@ -23,6 +23,13 @@ export default function RichText({ text }) {
 
                 if (part.startsWith("@")) {
                     const username = part.substring(1);
+                    if (disableLinks) {
+                        return (
+                            <span key={i} className="text-blue-600 dark:text-blue-400 font-medium">
+                                {part}
+                            </span>
+                        );
+                    }
                     return (
                         <Link
                             key={i}
@@ -47,6 +54,13 @@ export default function RichText({ text }) {
                     let href = part;
                     if (part.startsWith("www")) {
                         href = `https://${part}`;
+                    }
+                    if (disableLinks) {
+                        return (
+                            <span key={i} className="text-blue-600 dark:text-blue-400 break-all">
+                                {part}
+                            </span>
+                        );
                     }
                     return (
                         <a

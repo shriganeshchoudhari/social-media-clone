@@ -26,15 +26,24 @@ public class StoryController {
     }
 
     @GetMapping
-    public List<Story> getFeedStories(Authentication authentication) {
-        return storyService.getFeedStories(authentication.getName());
+    public java.util.List<StoryResponse> getFeedStories(Authentication authentication) {
+        try {
+            return storyService.getFeedStories(authentication.getName()).stream()
+                    .map(StoryResponse::fromEntity)
+                    .collect(java.util.stream.Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Debug Error: " + e.getMessage() + " | Cause: " + e.getCause());
+        }
     }
 
     @GetMapping("/users/{userId}")
-    public List<Story> getUserStories(@PathVariable Long userId) {
+    public java.util.List<StoryResponse> getUserStories(@PathVariable Long userId) {
         // Need to fetch username from ID to reuse service method, or overload service
         User user = userRepository.findById(userId).orElseThrow();
-        return storyService.getUserStories(user.getUsername());
+        return storyService.getUserStories(user.getUsername()).stream()
+                .map(StoryResponse::fromEntity)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @PostMapping("/{storyId}/view")

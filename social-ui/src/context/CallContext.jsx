@@ -12,8 +12,7 @@ export const CallProvider = ({ children }) => {
     const [localStream, setLocalStream] = useState(null);
 
     const pcRef = useRef(null);
-    const localVideoRef = useRef(null);
-    const remoteVideoRef = useRef(null);
+
 
     // ICE Servers (STUN only for dev/demo)
     const rtcConfig = {
@@ -38,24 +37,32 @@ export const CallProvider = ({ children }) => {
 
     // Audio Synthesis for Ringtone
     const playRingtone = (type) => {
-        if (!audioCtxRef.current) {
+        if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
             audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
         }
         const ctx = audioCtxRef.current;
-        if (ctx.state === 'suspended') ctx.resume();
 
-        stopRingtone();
+        if (ctx.state === 'suspended') {
+            ctx.resume().catch(err => console.error("Failed to resume audio context", err));
+        }
+
+        stopRingtone(false); // Stop any existing interval, but keep context open
 
         const playTone = (freq, type, duration) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration);
-            osc.stop(ctx.currentTime + duration);
+            if (!ctx || ctx.state === 'closed') return;
+            try {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration);
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.error("Audio generation error", e);
+            }
         };
 
         if (type === 'incoming') {
@@ -74,20 +81,20 @@ export const CallProvider = ({ children }) => {
         }
     };
 
-    const stopRingtone = () => {
+    const stopRingtone = (closeContext = false) => {
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
-        if (audioCtxRef.current) {
+        if (closeContext && audioCtxRef.current) {
             audioCtxRef.current.close().then(() => {
                 audioCtxRef.current = null;
-            });
+            }).catch(e => console.error("Error closing audio context", e));
         }
     };
 
     useEffect(() => {
-        return () => stopRingtone();
+        return () => stopRingtone(true);
     }, []);
 
     const createPeerConnection = () => {
@@ -108,9 +115,6 @@ export const CallProvider = ({ children }) => {
         pc.ontrack = (event) => {
             console.log("Remote track received", event.streams[0]);
             setRemoteStream(event.streams[0]);
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = event.streams[0];
-            }
         };
 
         pc.onconnectionstatechange = () => {
@@ -224,12 +228,7 @@ export const CallProvider = ({ children }) => {
             setLocalStream(null);
         }
 
-        if (localVideoRef.current) {
-            localVideoRef.current.srcObject = null;
-        }
-        if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = null;
-        }
+
 
         setCallState('IDLE');
         setTargetUser(null);
@@ -245,8 +244,7 @@ export const CallProvider = ({ children }) => {
             startCall,
             acceptCall,
             endCall,
-            localVideoRef,
-            remoteVideoRef,
+            localStream,
             remoteStream
         }}>
             {children}

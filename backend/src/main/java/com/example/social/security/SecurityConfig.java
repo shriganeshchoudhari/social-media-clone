@@ -21,10 +21,11 @@ public class SecurityConfig {
         private final RestAccessDeniedHandler accessDeniedHandler;
 
         @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                        org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource) throws Exception {
 
                 http
-                                .cors(withDefaults())
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                                 .csrf(csrf -> csrf.disable())
                                 .headers(headers -> headers
                                                 .contentSecurityPolicy(

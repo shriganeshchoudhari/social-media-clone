@@ -31,6 +31,12 @@ export default function Settings() {
 
     useEffect(() => {
         loadProfile();
+
+        return () => {
+            if (previewUrl && previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
     }, []);
 
     const loadProfile = async () => {
@@ -178,9 +184,20 @@ export default function Settings() {
 
                         {/* Avatar Section */}
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 relative">
                                 {previewUrl ? (
-                                    <img src={previewUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
+                                    <img
+                                        src={previewUrl}
+                                        alt="Avatar Preview"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            // Fallback to initial
+                                            const fallback = profile.username ? profile.username[0].toUpperCase() : "?";
+                                            e.target.parentNode.innerText = fallback;
+                                            e.target.parentNode.className += " flex items-center justify-center text-gray-400 text-2xl";
+                                        }}
+                                    />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
                                         {profile.username ? profile.username[0].toUpperCase() : "?"}

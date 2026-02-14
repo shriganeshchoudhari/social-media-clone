@@ -26,7 +26,7 @@ public class Story {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @org.hibernate.annotations.Formula("(SELECT COUNT(*) FROM story_views sv WHERE sv.story_id = id)")
+    @Transient
     private long viewCount;
 
     @PrePersist
