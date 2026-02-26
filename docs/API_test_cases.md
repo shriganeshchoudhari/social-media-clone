@@ -20,15 +20,15 @@ This document specifies the standard API tests executed to ensure the backend en
   - **Failure**: Return 401 Unauthorized for bad credentials.
 
 ### Users
-- `GET /users/profile` :
+- `GET /users/me` :
   - **Success**: Must pass `Authorization` header. Verify matching `username`.
   - **Failure**: Return 401 Unauthorized without token.
 
 ### Posts
-- `POST /posts` :
+- `POST /posts` (multipart/form-data) :
   - **Pre-requisite**: Login to get token.
   - **Success**: Return 201. Must contain text/image URL.
-- `GET /posts` :
+- `GET /posts/feed` :
   - **Success**: Return 200. Validate pagination (`page`, `size`, `totalElements`).
 
 ### Groups
@@ -36,3 +36,13 @@ This document specifies the standard API tests executed to ensure the backend en
   - **Success**: Create group name and type. Return 201 Created.
 - `GET /groups/{id}/members` :
   - **Success**: Must reflect the user who just created the group as an ADMIN member. Return 200 OK.
+
+### Chat & Events (Real-Time Communication)
+- `POST /chat/send/{username}` :
+  - **Success**: Send a text message; receive HTTP 200/201 confirming queueing or delivery.
+- `GET /chat/inbox` :
+  - **Success**: Get a list of active conversation threads (HTTP 200).
+- `POST /chat/group/create` :
+  - **Success**: Create a multi-user chat room; receive group ID.
+- `POST /events` :
+  - **Success**: Schedule a new event with a description; Return 201.

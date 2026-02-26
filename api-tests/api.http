@@ -1,0 +1,301 @@
+### Social Media Clone API Tests
+### Uses REST Client extension format for VS Code / IntelliJ
+
+@baseUrl = http://localhost:8080/api
+@adminEmail = admin@example.com
+@adminPassword = admin
+@userEmail = testuser@example.com
+@userPassword = password123
+@authToken = {{authToken}}
+@adminToken = {{adminToken}}
+@postId = {{postId}}
+@commentId = {{commentId}}
+@groupId = {{groupId}}
+@chatGroupId = {{chatGroupId}}
+@eventId = {{eventId}}
+
+### ============================================================================
+### AUTHENTICATION
+### ============================================================================
+
+### [Positive] Register a new user
+# @name registerUser
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "api_testUser",
+    "email": "api_testuser@example.com",
+    "password": "password123",
+    "bio": "I am a test user"
+}
+
+### [Negative] Register with existing email
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "api_testUser2",
+    "email": "api_testuser@example.com",
+    "password": "password123"
+}
+
+### [Positive] Login as user
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "api_testuser@example.com",
+    "password": "password123"
+}
+
+> {%
+    client.global.set("authToken", response.body.token);
+%}
+
+### [Negative] Login with wrong password
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "api_testuser@example.com",
+    "password": "wrongpassword"
+}
+
+### [Positive] Login as Admin (Assuming admin exists from seed)
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "admin"
+}
+
+> {%
+    client.global.set("adminToken", response.body.token);
+%}
+
+### ============================================================================
+### USER PROFILE
+### ============================================================================
+
+### [Positive] Get current user profile
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+
+### [Negative] Get current user profile without token
+GET {{baseUrl}}/users/me
+
+### [Positive] Update user profile
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="bio"
+
+Updated bio via API test
+------Boundary--
+
+### [Positive] Search Users
+GET {{baseUrl}}/users/search?q=api_testUser
+Authorization: Bearer {{authToken}}
+
+### ============================================================================
+### POSTS 
+### ============================================================================
+
+### [Positive] Create a new Post
+# @name createPost
+POST {{baseUrl}}/posts
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="content"
+
+This is a test post from API tests!
+------Boundary--
+
+> {%
+    client.global.set("postId", response.body.id);
+%}
+
+### [Negative] Create a Post with empty content
+POST {{baseUrl}}/posts
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="content"
+
+
+------Boundary--
+
+### [Positive] Get Feed
+GET {{baseUrl}}/posts/feed?page=0&size=10
+Authorization: Bearer {{authToken}}
+
+### [Positive] Like a Post
+POST {{baseUrl}}/posts/{{postId}}/like
+Authorization: Bearer {{authToken}}
+
+### [Positive] Unlike a Post
+POST {{baseUrl}}/posts/{{postId}}/like
+Authorization: Bearer {{authToken}}
+
+### [Positive] Add a Comment
+# @name addComment
+POST {{baseUrl}}/posts/{{postId}}/comments
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "content": "Great post!"
+}
+
+> {%
+    client.global.set("commentId", response.body.id);
+%}
+
+### [Positive] Get Comments for Post
+GET {{baseUrl}}/posts/{{postId}}/comments
+Authorization: Bearer {{authToken}}
+
+### [Negative] Delete a Post (Not Owner)
+# Login as Admin to get a different token, try to delete user's post as user? 
+# Using a fake user token would be better, but we will rely on admin. Let's assume standard user can't delete another user's post.
+DELETE {{baseUrl}}/posts/{{postId}}
+Authorization: Bearer {{adminToken}}
+
+### ============================================================================
+### GROUPS
+### ============================================================================
+
+### [Positive] Create a Community Group
+# @name createGroup
+POST {{baseUrl}}/groups
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "API Test Community",
+    "description": "A community created for API testing",
+    "type": "COMMUNITY_GROUP"
+}
+
+> {%
+    client.global.set("groupId", response.body.id);
+%}
+
+### [Positive] Get Group Details
+GET {{baseUrl}}/groups/{{groupId}}
+Authorization: Bearer {{authToken}}
+
+### [Positive] List all groups
+GET {{baseUrl}}/groups
+Authorization: Bearer {{authToken}}
+
+### [Positive] Join a Group
+POST {{baseUrl}}/groups/{{groupId}}/join
+Authorization: Bearer {{adminToken}}
+
+### [Positive] Get Group Members
+GET {{baseUrl}}/groups/{{groupId}}/members
+Authorization: Bearer {{authToken}}
+
+### ============================================================================
+### STORIES
+### ============================================================================
+
+### [Positive] Create a Story
+# @name uploadStory
+POST {{baseUrl}}/stories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "mediaUrl": "https://example.com/story.png"
+}
+
+### [Positive] Get Story Feed
+GET {{baseUrl}}/stories/feed
+Authorization: Bearer {{authToken}}
+
+### ============================================================================
+### CHAT & EVENTS
+### ============================================================================
+
+### [Positive] Send a Direct Message
+# @name sendDirectMessage
+POST {{baseUrl}}/chat/send/admin
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "content": "Hello admin!"
+}
+
+### [Positive] Get User Inbox
+GET {{baseUrl}}/chat/inbox
+Authorization: Bearer {{authToken}}
+
+### [Positive] Create a Chat Group
+# @name createChatGroup
+POST {{baseUrl}}/chat/group/create
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Test Chat Group"
+}
+
+> {%
+    client.global.set("chatGroupId", response.body.id);
+%}
+
+### [Positive] Send message to a Chat Group
+POST {{baseUrl}}/chat/group/{{chatGroupId}}/send
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "content": "Hello Chat Group!"
+}
+
+### [Positive] Get messages from Chat Group
+GET {{baseUrl}}/chat/group/{{chatGroupId}}/messages
+Authorization: Bearer {{authToken}}
+
+### [Positive] Create an Event
+# @name createEvent
+POST {{baseUrl}}/events
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "title": "API Test Event",
+    "description": "Event created via API test"
+}
+
+> {%
+    client.global.set("eventId", response.body.id);
+%}
+
+### [Positive] Join an Event
+POST {{baseUrl}}/events/{{eventId}}/join
+Authorization: Bearer {{adminToken}}
+
+### ============================================================================
+### ADMIN & MODERATION
+### ============================================================================
+
+### [Positive] Admin gets all reported content 
+GET {{baseUrl}}/admin/reports
+Authorization: Bearer {{adminToken}}
+
+### [Negative] Normal user tries to get reported content
+GET {{baseUrl}}/admin/reports
+Authorization: Bearer {{authToken}}

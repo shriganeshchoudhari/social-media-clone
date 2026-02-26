@@ -14,14 +14,14 @@ All endpoints except registration and login require a valid JWT token.
 ## 3. Core REST Endpoints
 
 ### Users
-- `GET /api/users/profile` : Get current user's profile.
-- `GET /api/users/{id}` : Get profile of a specific user.
-- `PUT /api/users/profile` : Update user profile.
-- `GET /api/search?q={query}` : Search for users, groups, or posts.
+- `GET /api/users/me` : Get current user's profile.
+- `GET /api/users/{username}` : Get profile of a specific user by username.
+- `PUT /api/users/me` : Update user profile (consumes multipart/form-data).
+- `GET /api/users/search?q={query}` : Search for users.
 
 ### Posts
-- `GET /api/posts` : Retrieve a paginated feed of posts.
-- `POST /api/posts` : Create a new post.
+- `GET /api/posts/feed` : Retrieve a paginated feed of posts.
+- `POST /api/posts` : Create a new post (consumes multipart/form-data).
 - `DELETE /api/posts/{id}` : Delete a post (owner/admin only).
 - `POST /api/posts/{id}/like` : Like or unlike a post.
 - `GET /api/posts/{id}/comments` : Retrieve comments for a post.
@@ -36,6 +36,18 @@ All endpoints except registration and login require a valid JWT token.
 ### Stories
 - `POST /api/stories` : Upload a new story.
 - `GET /api/stories/feed` : Get active stories from followed users.
+
+### Chat & Events
+- `POST /api/chat/send/{username}` : Send a direct text message to a user.
+- `POST /api/chat/send/{username}/image` : Send an image message to a user.
+- `GET /api/chat/inbox` : Retrieve the user's active chat threads.
+- `POST /api/chat/group/create` : Create a new multi-user chat group.
+- `POST /api/chat/group/{groupId}/send` : Broadcast a message to a chat group.
+- `GET /api/chat/group/{groupId}/messages` : Retrieve message history for a chat group.
+- `POST /api/chat/group/{groupId}/add` : Add a user to an existing chat group.
+- `POST /api/events` : Create a new event.
+- `POST /api/events/{eventId}/join` : RSVP/Join a specific event.
+- `GET /api/events/group/{groupId}` : List events associated with a specific group.
 
 ### Real-Time WebSockets
 - **Endpoint**: `/ws` (SockJS/STOMP)
