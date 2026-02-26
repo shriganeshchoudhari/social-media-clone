@@ -20,16 +20,22 @@ public class StoryController {
     @PostMapping
     public Story createStory(
             @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "pollQuestion", required = false) String pollQuestion,
+            @RequestParam(value = "pollOptions", required = false) List<String> pollOptions,
             Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow();
-        return storyService.createStory(user, file);
+        return storyService.createStory(user, file, pollQuestion, pollOptions);
     }
 
     @GetMapping
     public java.util.List<StoryResponse> getFeedStories(Authentication authentication) {
         try {
-            return storyService.getFeedStories(authentication.getName()).stream()
-                    .map(StoryResponse::fromEntity)
+            String username = authentication.getName();
+            return storyService.getFeedStories(username).stream()
+                    .map(story -> {
+                        Long votedOptionId = storyService.getUserVoteForStory(story.getId(), username);
+                        return StoryResponse.fromEntity(story, votedOptionId);
+                    })
                     .collect(java.util.stream.Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,11 +44,14 @@ public class StoryController {
     }
 
     @GetMapping("/users/{userId}")
-    public java.util.List<StoryResponse> getUserStories(@PathVariable Long userId) {
-        // Need to fetch username from ID to reuse service method, or overload service
+    public java.util.List<StoryResponse> getUserStories(@PathVariable Long userId, Authentication authentication) {
         User user = userRepository.findById(userId).orElseThrow();
+        String username = authentication.getName();
         return storyService.getUserStories(user.getUsername()).stream()
-                .map(StoryResponse::fromEntity)
+                .map(story -> {
+                    Long votedOptionId = storyService.getUserVoteForStory(story.getId(), username);
+                    return StoryResponse.fromEntity(story, votedOptionId);
+                })
                 .collect(java.util.stream.Collectors.toList());
     }
 
@@ -54,5 +63,11 @@ public class StoryController {
     @GetMapping("/{storyId}/viewers")
     public List<StoryViewerResponse> getStoryViewers(@PathVariable Long storyId, Authentication authentication) {
         return storyService.getStoryViewers(storyId, authentication.getName());
+    }
+
+    @PostMapping("/{storyId}/poll/{optionId}")
+    public StoryPollVote voteStory(@PathVariable Long storyId, @PathVariable Long optionId,
+            Authentication authentication) {
+        return storyService.voteStoryPoll(storyId, optionId, authentication.getName());
     }
 }

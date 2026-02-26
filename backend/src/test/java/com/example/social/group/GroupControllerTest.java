@@ -44,7 +44,7 @@ public class GroupControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     void createGroup_ShouldReturn200() throws Exception {
-        GroupRequest request = new GroupRequest("Test Group", "Description", "PUBLIC");
+        GroupRequest request = new GroupRequest("Test Group", "Description", "Standard Rules", "PUBLIC");
 
         mockMvc.perform(post("/api/groups")
                 .contentType(MediaType.APPLICATION_JSON)

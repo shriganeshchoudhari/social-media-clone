@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import api from "../api/axios";
+import { useState, useEffect } from 'react';
+import { getGroupEvents, createEvent, deleteEvent } from "../api/eventService";
 
 export default function GroupEvents({ groupId, isMember, isAdmin }) {
     const [events, setEvents] = useState([]);
@@ -19,8 +19,9 @@ export default function GroupEvents({ groupId, isMember, isAdmin }) {
 
     const loadEvents = async () => {
         try {
-            const res = await api.get(`/groups/${groupId}/events`);
-            setEvents(res.data);
+            const res = await getGroupEvents(groupId);
+            // res.data might be a Page, so check content
+            setEvents(res.data.content || res.data);
             setLoading(false);
         } catch (err) {
             console.error("Failed to load events", err);
@@ -31,17 +32,19 @@ export default function GroupEvents({ groupId, isMember, isAdmin }) {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            await api.post(`/groups/${groupId}/events`, {
+            await createEvent({
                 title,
                 description,
                 startTime,
-                location
+                location,
+                groupId // Ensure backend expects this in body or handle via separate param
             });
             setShowCreateModal(false);
             resetForm();
             loadEvents();
             alert("Event created!");
         } catch (err) {
+            console.error(err);
             alert(err.response?.data?.message || "Failed to create event");
         }
     };
@@ -49,7 +52,7 @@ export default function GroupEvents({ groupId, isMember, isAdmin }) {
     const handleDelete = async (eventId) => {
         if (!window.confirm("Delete this event?")) return;
         try {
-            await api.delete(`/groups/events/${eventId}`);
+            await deleteEvent(eventId);
             loadEvents();
         } catch (err) {
             alert("Failed to delete event");

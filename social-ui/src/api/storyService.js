@@ -14,9 +14,20 @@ export const getUserStories = (userId) => {
 };
 
 // Upload a new story
-export const createStory = (file) => {
+export const createStory = (file, pollData = null) => {
     const formData = new FormData();
     formData.append('file', file);
+
+    if (pollData) {
+        if (pollData.question) {
+            formData.append('pollQuestion', pollData.question);
+        }
+        if (pollData.options && pollData.options.length > 0) {
+            pollData.options.forEach(opt => {
+                formData.append('pollOptions', opt);
+            });
+        }
+    }
 
     return api.post(API_URL, formData, {
         headers: {
@@ -33,4 +44,9 @@ export const viewStory = (storyId) => {
 // Get viewers (owner only)
 export const getStoryViewers = (storyId) => {
     return api.get(`${API_URL}/${storyId}/viewers`);
+};
+
+// Vote on a poll
+export const voteStory = (storyId, optionId) => {
+    return api.post(`${API_URL}/${storyId}/poll/${optionId}`);
 };

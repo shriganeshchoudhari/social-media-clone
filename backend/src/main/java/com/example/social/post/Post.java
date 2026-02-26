@@ -2,9 +2,13 @@ package com.example.social.post;
 
 import com.example.social.user.User;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -18,6 +22,8 @@ public class Post {
     private String content;
 
     private String imageUrl;
+
+    private String videoUrl;
 
     // Link Preview Metadata
     private String linkUrl;
@@ -52,6 +58,11 @@ public class Post {
     @JoinColumn(name = "shared_post_id")
     private Post sharedPost;
 
+    @ElementCollection
+    @CollectionTable(name = "post_hashtags", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "hashtag")
+    private Set<String> hashtags = new HashSet<>();
+
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -66,10 +77,11 @@ public class Post {
             List<com.example.social.comment.Comment> comments, List<com.example.social.like.PostLike> likes,
             List<SavedPost> savedBy, User author, com.example.social.group.Group group, LocalDateTime createdAt,
             String linkUrl, String linkTitle, String linkDescription, String linkImage,
-            com.example.social.poll.Poll poll, Post sharedPost) {
+            com.example.social.poll.Poll poll, Post sharedPost, String videoUrl, Set<String> hashtags) {
         this.id = id;
         this.content = content;
         this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
         this.images = images != null ? images : new ArrayList<>();
         this.comments = comments != null ? comments : new ArrayList<>();
         this.likes = likes != null ? likes : new ArrayList<>();
@@ -83,6 +95,7 @@ public class Post {
         this.linkImage = linkImage;
         this.poll = poll;
         this.sharedPost = sharedPost;
+        this.hashtags = hashtags != null ? hashtags : new HashSet<>();
     }
 
     // Getters
@@ -126,6 +139,10 @@ public class Post {
         return createdAt;
     }
 
+    public Set<String> getHashtags() {
+        return hashtags;
+    }
+
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -165,6 +182,10 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setHashtags(Set<String> hashtags) {
+        this.hashtags = hashtags;
     }
 
     // Link Getters
@@ -231,6 +252,8 @@ public class Post {
         private String linkDescription;
         private String linkImage;
         private com.example.social.poll.Poll poll;
+        private String videoUrl;
+        private Set<String> hashtags = new HashSet<>();
 
         public PostBuilder id(Long id) {
             this.id = id;
@@ -307,9 +330,19 @@ public class Post {
             return this;
         }
 
+        public PostBuilder videoUrl(String videoUrl) {
+            this.videoUrl = videoUrl;
+            return this;
+        }
+
+        public PostBuilder hashtags(Set<String> hashtags) {
+            this.hashtags = hashtags;
+            return this;
+        }
+
         public Post build() {
             return new Post(id, content, imageUrl, images, comments, likes, savedBy, author, group, createdAt, linkUrl,
-                    linkTitle, linkDescription, linkImage, poll, sharedPost);
+                    linkTitle, linkDescription, linkImage, poll, sharedPost, videoUrl, hashtags);
         }
 
         public PostBuilder sharedPost(Post sharedPost) {
@@ -326,5 +359,13 @@ public class Post {
 
     public void setSharedPost(Post sharedPost) {
         this.sharedPost = sharedPost;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

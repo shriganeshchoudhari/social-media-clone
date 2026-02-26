@@ -36,13 +36,15 @@ public class PostController {
     public PostResponse createPost(
             @Parameter(description = "Post content text") @RequestParam("content") String content,
             @Parameter(description = "Optional images (max 10MB each)") @RequestParam(value = "images", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> images,
+            @Parameter(description = "Optional video (max 50MB)") @RequestParam(value = "video", required = false) org.springframework.web.multipart.MultipartFile video,
             @Parameter(description = "Optional group ID to post in") @RequestParam(value = "groupId", required = false) Long groupId,
             @Parameter(description = "Optional Poll Question") @RequestParam(value = "pollQuestion", required = false) String pollQuestion,
             @Parameter(description = "Optional Poll Options") @RequestParam(value = "pollOptions", required = false) java.util.List<String> pollOptions,
             @Parameter(description = "Optional Poll Duration in Days") @RequestParam(value = "pollDurationDays", required = false) Integer pollDurationDays,
             @Parameter(description = "Optional Shared Post ID") @RequestParam(value = "sharedPostId", required = false) Long sharedPostId,
             Authentication authentication) {
-        return postService.createPost(authentication.getName(), content, images, groupId, pollQuestion, pollOptions,
+        return postService.createPost(authentication.getName(), content, images, video, groupId, pollQuestion,
+                pollOptions,
                 pollDurationDays, sharedPostId);
     }
 

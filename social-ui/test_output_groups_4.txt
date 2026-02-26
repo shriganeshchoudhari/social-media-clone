@@ -1,0 +1,51 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+[1A[2K[chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+Registering alice_622374 and bob_622374...
+
+[1A[2KTesting Community Group Creation...
+
+[1A[2KCommunity Group Verified.
+
+[1A[2KTesting Chat Group Creation...
+
+[1A[2K  1) [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).not.[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator:  locator('h2:has-text("Create New Group")')
+    Expected: not visible
+    Received: visible
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "not toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('h2:has-text("Create New Group")')[22m
+    [2m    9 × locator resolved to <h2 class="font-bold text-lg dark:text-white">Create New Group</h2>[22m
+    [2m      - unexpected value "visible"[22m
+
+
+      91 |
+      92 |     // Expected: Stay on Inbox (modal closes) and group appears
+    > 93 |     await expect(page1.locator('h2:has-text("Create New Group")')).not.toBeVisible();
+         |                                                                        ^
+      94 |     await expect(page1.locator(`h3:has-text("${chatGroupName}")`)).toBeVisible();
+      95 |
+      96 |     // Enter the chat
+        at F:\DEVOPS\social-media-clone\social-ui\tests\groups_and_chat.spec.js:93:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation 

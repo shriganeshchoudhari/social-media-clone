@@ -18,7 +18,7 @@ public class GroupEvent {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
+    private com.example.social.group.Group group;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizer_id", nullable = false)
@@ -47,7 +47,8 @@ public class GroupEvent {
     public GroupEvent() {
     }
 
-    public GroupEvent(Long id, Group group, User organizer, String title, String description, LocalDateTime startTime,
+    public GroupEvent(Long id, com.example.social.group.Group group, User organizer, String title,
+            String description, LocalDateTime startTime,
             LocalDateTime endTime, String location, LocalDateTime createdAt) {
         this.id = id;
         this.group = group;
@@ -69,11 +70,11 @@ public class GroupEvent {
         this.id = id;
     }
 
-    public Group getGroup() {
+    public com.example.social.group.Group getGroup() {
         return group;
     }
 
-    public void setGroup(Group group) {
+    public void setGroup(com.example.social.group.Group group) {
         this.group = group;
     }
 
@@ -140,7 +141,7 @@ public class GroupEvent {
 
     public static class GroupEventBuilder {
         private Long id;
-        private Group group;
+        private com.example.social.group.Group group;
         private User organizer;
         private String title;
         private String description;
@@ -154,7 +155,7 @@ public class GroupEvent {
             return this;
         }
 
-        public GroupEventBuilder group(Group group) {
+        public GroupEventBuilder group(com.example.social.group.Group group) {
             this.group = group;
             return this;
         }

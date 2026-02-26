@@ -18,6 +18,11 @@ public class GlobalExceptionHandler {
                 Map.of("error", error, "exception", ex.getClass().getName(), "cause", cause));
     }
 
+    @ExceptionHandler(ContentViolationException.class)
+    public ResponseEntity<?> handleContentViolation(ContentViolationException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
     @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatus(org.springframework.web.server.ResponseStatusException ex) {
         return ResponseEntity.status(ex.getStatusCode()).body(Map.of("error", ex.getReason()));

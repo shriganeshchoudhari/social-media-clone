@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getGroup, updateGroup } from "../api/chatService";
+import { getGroup, updateGroup, deleteGroup } from "../api/groupService";
 import api from "../api/axios"; // Keep for member operations not in chatService yet
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
@@ -17,6 +17,7 @@ export default function GroupSettings() {
     // Form states
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
+    const [rules, setRules] = useState("");
     const [privacy, setPrivacy] = useState("PUBLIC");
 
     useEffect(() => {
@@ -31,7 +32,8 @@ export default function GroupSettings() {
             setGroup(g);
             setName(g.name);
             setDescription(g.description);
-            setPrivacy(g.privacy);
+            setRules(g.rules || "");
+            setPrivacy(g.isPublic ? 'PUBLIC' : 'PRIVATE');
 
             // Check admin
             if (g.role !== 'ADMIN') {
@@ -58,7 +60,11 @@ export default function GroupSettings() {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            await updateGroup(id, { name, description, privacy });
+            await updateGroup(id, {
+                name,
+                description,
+                isPublic: privacy === 'PUBLIC'
+            });
             alert("Group updated!");
         } catch (err) {
             alert("Update failed");
@@ -68,7 +74,7 @@ export default function GroupSettings() {
     const handleDelete = async () => {
         if (!window.confirm("Are you sure? This cannot be undone.")) return;
         try {
-            await api.delete(`/groups/${id}`);
+            await deleteGroup(id);
             alert("Group deleted");
             navigate("/groups");
         } catch (err) {
@@ -116,6 +122,15 @@ export default function GroupSettings() {
                                             value={description}
                                             onChange={e => setDescription(e.target.value)}
                                             className="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium dark:text-gray-300">Rules</label>
+                                        <textarea
+                                            value={rules}
+                                            onChange={e => setRules(e.target.value)}
+                                            className="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white h-32"
+                                            placeholder="Group rules..."
                                         />
                                     </div>
                                     <div>

@@ -124,7 +124,8 @@ public class UserService {
 
     @Transactional
     @CacheEvict(value = "userProfiles", key = "#username")
-    public User updateProfile(String username, String bio, MultipartFile avatar, List<String> interests) {
+    public User updateProfile(String username, String bio, MultipartFile avatar, MultipartFile banner, String website,
+            List<String> interests) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         // Update bio
@@ -132,10 +133,21 @@ public class UserService {
             user.setBio(bio);
         }
 
+        // Update website
+        if (website != null) {
+            user.setWebsite(website);
+        }
+
         // Update avatar
         if (avatar != null && !avatar.isEmpty()) {
             String url = fileStorageService.storeFile(avatar);
             user.setProfileImageUrl(url);
+        }
+
+        // Update banner
+        if (banner != null && !banner.isEmpty()) {
+            String url = fileStorageService.storeFile(banner);
+            user.setBannerImage(url);
         }
 
         // Update interests
@@ -185,6 +197,8 @@ public class UserService {
                 target.getUsername(),
                 target.getBio(),
                 target.getProfileImageUrl(),
+                target.getBannerImage(),
+                target.getWebsite(),
                 followersCount,
                 followingCount,
                 postCount,
@@ -257,6 +271,21 @@ public class UserService {
         User user = getUserByUsername(username);
         user.setBannedUntil(null);
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<com.example.social.user.dto.UserSearchResponse> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+        return userRepository
+                .findByUsernameContainingIgnoreCase(query, org.springframework.data.domain.PageRequest.of(0, 10))
+                .stream()
+                .map(u -> new com.example.social.user.dto.UserSearchResponse(
+                        u.getUsername(),
+                        u.getBio(),
+                        u.getProfileImageUrl()))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Transactional

@@ -13,7 +13,9 @@ export default function Settings() {
         email: "",
         bio: "",
         isPrivate: false,
-        interests: [] // ensure interests is initialized
+        interests: [], // ensure interests is initialized
+        website: "",
+        bannerImage: ""
     });
 
     const [passwords, setPasswords] = useState({
@@ -29,12 +31,18 @@ export default function Settings() {
     const [avatarFile, setAvatarFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
 
+    const [bannerFile, setBannerFile] = useState(null);
+    const [bannerPreviewUrl, setBannerPreviewUrl] = useState(null);
+
     useEffect(() => {
         loadProfile();
 
         return () => {
             if (previewUrl && previewUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(previewUrl);
+            }
+            if (bannerPreviewUrl && bannerPreviewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(bannerPreviewUrl);
             }
         };
     }, []);
@@ -55,10 +63,15 @@ export default function Settings() {
                 bio: user.bio || "",
                 isPrivate: user.isPrivate || false,
                 interests: interests || [],
-                profileImageUrl: user.profileImageUrl
+                profileImageUrl: user.profileImageUrl,
+                bannerImage: user.bannerImage,
+                website: user.website || ""
             });
             if (user.profileImageUrl) {
                 setPreviewUrl(user.profileImageUrl.startsWith("http") ? user.profileImageUrl : `${API_BASE_URL}${user.profileImageUrl}`);
+            }
+            if (user.bannerImage) {
+                setBannerPreviewUrl(user.bannerImage.startsWith("http") ? user.bannerImage : `${API_BASE_URL}${user.bannerImage}`);
             }
         } catch (err) {
             setMessage({ type: "error", text: "Failed to load profile" });
@@ -75,17 +88,23 @@ export default function Settings() {
         }
     };
 
+    const handleBannerChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setBannerFile(file);
+            setBannerPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            // Pass profile AND avatarFile to the service
-            await updateProfile(profile, avatarFile);
+            // Pass profile AND files to the service
+            // We need to update updateProfile to handle extra args or an object
+            await updateProfile(profile, avatarFile, bannerFile);
             setMessage({ type: "success", text: "Profile updated successfully" });
 
-            // Refresh profile to get the new avatar URL from backend if needed, 
-            // though we already have the local preview.
-            // Let's reload to be safe and ensure backend persistence.
             setTimeout(loadProfile, 500);
         } catch (err) {
             console.error(err);
@@ -182,6 +201,37 @@ export default function Settings() {
                     <h2 className="text-xl font-semibold mb-4 dark:text-white">Profile Settings</h2>
                     <form onSubmit={handleProfileUpdate} className="space-y-4">
 
+                        {/* Banner Section */}
+                        <div className="mb-4">
+                            <div className="w-full h-32 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 relative mb-2">
+                                {bannerPreviewUrl ? (
+                                    <img
+                                        src={bannerPreviewUrl}
+                                        alt="Banner Preview"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => e.target.style.display = 'none'}
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                        No Banner
+                                    </div>
+                                )}
+                            </div>
+                            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Banner Image</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleBannerChange}
+                                className="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300
+                                "
+                            />
+                        </div>
+
                         {/* Avatar Section */}
                         <div className="flex items-center gap-4 mb-4">
                             <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 relative">
@@ -227,6 +277,17 @@ export default function Settings() {
                                 onChange={e => setProfile({ ...profile, bio: e.target.value })}
                                 className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 rows="3"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Website</label>
+                            <input
+                                type="text"
+                                value={profile.website || ""}
+                                onChange={e => setProfile({ ...profile, website: e.target.value })}
+                                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="https://example.com"
                             />
                         </div>
 

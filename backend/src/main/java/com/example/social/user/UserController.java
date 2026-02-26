@@ -49,9 +49,11 @@ public class UserController {
     public User updateProfile(
             @Parameter(description = "User bio") @RequestParam(required = false) String bio,
             @Parameter(description = "Profile avatar image") @RequestParam(required = false) MultipartFile avatar,
+            @Parameter(description = "Profile banner image") @RequestParam(required = false) MultipartFile banner,
+            @Parameter(description = "User website URL") @RequestParam(required = false) String website,
             @Parameter(description = "User interests/tags") @RequestParam(required = false) java.util.List<String> interests,
             Authentication auth) {
-        return userService.updateProfile(auth.getName(), bio, avatar, interests);
+        return userService.updateProfile(auth.getName(), bio, avatar, banner, website, interests);
     }
 
     @PostMapping("/me/change-password")
@@ -90,5 +92,12 @@ public class UserController {
     @PostMapping("/{username}/verify")
     public void verifyUser(@PathVariable String username) {
         userService.verifyUser(username);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search users", description = "Search users by username")
+    public java.util.List<com.example.social.user.dto.UserSearchResponse> search(
+            @Parameter(description = "Search query") @RequestParam String q) {
+        return userService.searchUsers(q);
     }
 }

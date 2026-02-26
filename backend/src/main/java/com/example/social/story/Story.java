@@ -29,6 +29,9 @@ public class Story {
     @Transient
     private long viewCount;
 
+    @OneToOne(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
+    private StoryPoll poll;
+
     @PrePersist
     void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -98,6 +101,14 @@ public class Story {
         this.viewCount = viewCount;
     }
 
+    public StoryPoll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(StoryPoll poll) {
+        this.poll = poll;
+    }
+
     // Builder
     public static StoryBuilder builder() {
         return new StoryBuilder();
@@ -110,6 +121,7 @@ public class Story {
         private LocalDateTime createdAt;
         private LocalDateTime expiresAt;
         private long viewCount;
+        private StoryPoll poll;
 
         public StoryBuilder id(Long id) {
             this.id = id;
@@ -141,8 +153,18 @@ public class Story {
             return this;
         }
 
+        public StoryBuilder poll(StoryPoll poll) {
+            this.poll = poll;
+            return this;
+        }
+
         public Story build() {
-            return new Story(id, user, imageUrl, createdAt, expiresAt, viewCount);
+            Story story = new Story(id, user, imageUrl, createdAt, expiresAt, viewCount);
+            if (poll != null) {
+                story.setPoll(poll);
+                poll.setStory(story);
+            }
+            return story;
         }
     }
 }

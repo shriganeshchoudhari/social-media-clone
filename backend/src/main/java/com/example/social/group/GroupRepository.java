@@ -12,4 +12,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     @Query("SELECT g FROM SocialGroup g WHERE lower(g.name) LIKE lower(concat('%', :query, '%'))")
     List<Group> searchGroups(String query);
+
+    @Query("SELECT m.group FROM GroupMember m WHERE m.user.username = :username")
+    List<Group> findByMemberUsername(String username);
 }

@@ -19,15 +19,40 @@ public class StoryService {
     private final FileStorageService fileStorageService;
     private final UserRepository userRepository;
     private final StoryViewRepository storyViewRepository;
+    private final StoryPollVoteRepository storyPollVoteRepository;
+    private final StoryPollRepository storyPollRepository;
 
     @Transactional
     public Story createStory(User user, MultipartFile file) {
+        return createStory(user, file, null, null);
+    }
+
+    @Transactional
+    public Story createStory(User user, MultipartFile file, String pollQuestion, List<String> pollOptions) {
         String imageUrl = fileStorageService.storeFile(file);
 
         Story story = Story.builder()
                 .user(user)
                 .imageUrl(imageUrl)
-                .build(); // onCreate will set times
+                .build();
+
+        if (pollQuestion != null && !pollQuestion.isBlank() && pollOptions != null && !pollOptions.isEmpty()) {
+            StoryPoll poll = StoryPoll.builder()
+                    .question(pollQuestion)
+                    .story(story)
+                    .build();
+
+            List<StoryPollOption> options = new java.util.ArrayList<>();
+            for (String optText : pollOptions) {
+                options.add(StoryPollOption.builder()
+                        .text(optText)
+                        .poll(poll)
+                        .voteCount(0)
+                        .build());
+            }
+            poll.setOptions(options);
+            story.setPoll(poll);
+        }
 
         return storyRepository.save(story);
     }
@@ -37,6 +62,22 @@ public class StoryService {
         LocalDateTime now = LocalDateTime.now();
         // Global Story Feed to match Global Post Feed
         return storyRepository.findAllActiveStories(now);
+    }
+
+    // Helper to get vote status
+    @Transactional(readOnly = true)
+    public Long getUserVoteForStory(Long storyId, String username) {
+        Story story = storyRepository.findById(storyId).orElse(null);
+        if (story == null || story.getPoll() == null)
+            return null;
+
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null)
+            return null;
+
+        return storyPollVoteRepository.findByPollAndUser(story.getPoll(), user)
+                .map(vote -> vote.getOption().getId())
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -103,5 +144,41 @@ public class StoryService {
                         view.getViewer().getProfileImageUrl(),
                         view.getViewedAt()))
                 .toList();
+    }
+
+    @Transactional
+    public StoryPollVote voteStoryPoll(Long storyId, Long optionId, String username) {
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new RuntimeException("Story not found"));
+
+        if (story.getPoll() == null) {
+            throw new RuntimeException("Story has no poll");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if already voted
+        if (storyPollVoteRepository.existsByPollAndUser(story.getPoll(), user)) {
+            throw new RuntimeException("Already voted");
+        }
+
+        // Find option
+        StoryPollOption option = story.getPoll().getOptions().stream()
+                .filter(opt -> opt.getId().equals(optionId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Option not found"));
+
+        // Increment count
+        option.setVoteCount(option.getVoteCount() + 1);
+
+        // Save vote
+        StoryPollVote vote = StoryPollVote.builder()
+                .poll(story.getPoll())
+                .user(user)
+                .option(option)
+                .build();
+
+        return storyPollVoteRepository.save(vote);
     }
 }

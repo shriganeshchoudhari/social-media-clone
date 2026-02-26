@@ -18,6 +18,14 @@ public class ChatGroup {
 
     private String imageUrl;
 
+    @Column(length = 1000)
+    private String description;
+
+    private boolean isPublic = false;
+
+    @Column(length = 2000)
+    private String rules;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
 
@@ -66,6 +74,30 @@ public class ChatGroup {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean publicGroup) {
+        isPublic = publicGroup;
+    }
+
+    public String getRules() {
+        return rules;
+    }
+
+    public void setRules(String rules) {
+        this.rules = rules;
     }
 
     public User getCreator() {

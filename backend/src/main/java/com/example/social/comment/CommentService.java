@@ -15,20 +15,24 @@ public class CommentService {
         private final PostRepository postRepository;
         private final com.example.social.user.UserRepository userRepository;
         private final com.example.social.notification.NotificationService notificationService;
+        private final com.example.social.common.ContentModerationService contentModerationService;
 
         public CommentService(
                         CommentRepository commentRepository,
                         PostRepository postRepository,
                         com.example.social.user.UserRepository userRepository,
-                        com.example.social.notification.NotificationService notificationService) {
+                        com.example.social.notification.NotificationService notificationService,
+                        com.example.social.common.ContentModerationService contentModerationService) {
                 this.commentRepository = commentRepository;
                 this.postRepository = postRepository;
                 this.userRepository = userRepository;
                 this.notificationService = notificationService;
+                this.contentModerationService = contentModerationService;
         }
 
         @Transactional
         public CommentResponse addComment(String username, Long postId, CreateCommentRequest request) {
+                contentModerationService.validateContent(request.content());
 
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("User not found"));

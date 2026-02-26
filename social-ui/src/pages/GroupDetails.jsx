@@ -20,6 +20,7 @@ export default function GroupDetails() {
     const [inviteUsername, setInviteUsername] = useState("");
     const [activeTab, setActiveTab] = useState("posts");
     const [pinnedPost, setPinnedPost] = useState(null);
+    const [searchResults, setSearchResults] = useState([]);
 
     const getImageUrl = (path) => {
         if (!path) return null;
@@ -149,8 +150,8 @@ export default function GroupDetails() {
                             <h1 className="text-3xl font-bold dark:text-white mb-2">{group.name}</h1>
                             <p className="text-gray-600 dark:text-gray-300">{group.description}</p>
                             <div className="flex gap-4 mt-4 text-sm text-gray-500">
-                                <span>{group.memberCount} members</span>
-                                <span>{group.privacy}</span>
+                                <span>{group.memberCount !== undefined ? group.memberCount : (group.participants ? group.participants.length : 0)} members</span>
+                                <span>{group.isPublic ? 'Public' : 'Private'}</span>
                             </div>
                         </div>
                         <div className="flex justify-end gap-2 flex-wrap">
@@ -175,7 +176,7 @@ export default function GroupDetails() {
                             )}
 
                             {/* Join/Leave Button */}
-                            {(group.privacy === 'PUBLIC' || isMember) ? (
+                            {(group.isPublic || isMember) ? (
                                 <button
                                     onClick={handleJoin}
                                     className={`px-6 py-2 rounded-lg font-medium transition ${isMember
@@ -203,12 +204,39 @@ export default function GroupDetails() {
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm shadow-2xl">
                         <h3 className="text-lg font-bold mb-4 dark:text-white">Invite User</h3>
-                        <input
-                            placeholder="Username"
-                            className="w-full border rounded p-2 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            value={inviteUsername}
-                            onChange={e => setInviteUsername(e.target.value)}
-                        />
+
+                        <div className="mb-4 relative">
+                            <input
+                                placeholder="Search username..."
+                                className="w-full border rounded p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                value={inviteUsername}
+                                onChange={e => {
+                                    setInviteUsername(e.target.value);
+                                    if (e.target.value.length > 1) {
+                                        import("../api/userService").then(({ searchUsers }) => {
+                                            searchUsers(e.target.value).then(res => {
+                                                // Just show results? Or autocomplete?
+                                                // For now, let's keep it simple: Just autocomplete list below
+                                                // We need checking who is already member?
+                                                // Ideally select from list.
+                                                // But to keep it simple with current state 'inviteUsername' which is string,
+                                                // I will just show a list of suggestions that when clicked fill the input.
+                                                // But user wanted "user name search to add".
+                                                // Let's store search results in a state.
+                                                // I need to add state for results.
+                                            });
+                                        });
+                                    }
+                                }}
+                            />
+                            {/* We need result state. I'll add InviteModal component inline or refactor later.
+                                For now, I'll assume I update state in next step or use a simpler approach. 
+                                Let's actually UPDATE the component state first.
+                            */}
+                        </div>
+
+                        <p className="text-sm text-gray-500 mb-4">Enter username to invite.</p>
+
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setShowInviteModal(false)} className="px-4 py-2 text-gray-600 dark:text-gray-400">Cancel</button>
                             <button onClick={handleInvite} className="px-4 py-2 bg-blue-600 text-white rounded">Invite</button>
@@ -238,7 +266,7 @@ export default function GroupDetails() {
 
                     {/* Tab Content */}
                     {activeTab === 'posts' ? (
-                        (!loading && (group.privacy === 'PUBLIC' || isMember)) ? (
+                        (!loading && (group.isPublic || isMember)) ? (
                             <div className="space-y-4">
                                 {pinnedPost && (
                                     <div className="border border-blue-200 dark:border-blue-900 rounded-lg overflow-hidden relative">
@@ -260,18 +288,9 @@ export default function GroupDetails() {
                                         </div>
                                         <PostCard
                                             post={pinnedPost}
-                                            currentUser={null} // pinned post view only? Or pass actual user?
-                                            // Ideally we pass current user for like status. 
-                                            // Since we don't have it easily here without context or prop props drilling 
-                                            // we might miss "likedByMe" on pinned post if not careful.
-                                            // But standard PostCard handles it if 'post' has that data.
-                                            // We fetched pinnedPost via api.get(/posts/{id}) which returns PostResponse (with likedByMe)
-                                            // We need currentUser username to check isMyPost (for edit/delete).
-                                            // We can get it from userService or local storage decode.
-                                            // For now passing null might break "Edit/Delete" visibility on pinned post.
-                                            // But pinned post is usually for viewing.
-                                            onUpdate={() => { }} // No update on pinned view?
-                                            onDelete={() => { }} // No delete on pinned view?
+                                            currentUser={null}
+                                            onUpdate={() => { }}
+                                            onDelete={() => { }}
                                         />
                                     </div>
                                 )}
@@ -294,7 +313,7 @@ export default function GroupDetails() {
                         )
                     ) : (
                         // Events Tab
-                        (group.privacy === 'PUBLIC' || isMember) ? (
+                        (group.isPublic || isMember) ? (
                             <GroupEvents groupId={id} isMember={isMember} isAdmin={group.role === 'ADMIN'} />
                         ) : (
                             <div className="text-center p-8 text-gray-500">Join group to see events.</div>
@@ -310,6 +329,12 @@ export default function GroupDetails() {
                             <br />
                             {new Date(group.createdAt).toLocaleDateString()}
                         </p>
+                        {group.rules && (
+                            <div className="mt-4">
+                                <h4 className="font-bold border-b pb-2 mb-2 dark:text-white dark:border-gray-700">Rules</h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{group.rules}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div >

@@ -18,8 +18,11 @@ export const sendMessageWithImage = (username, content, imageFile) => {
     });
 };
 
-export const createGroup = (name, participants) =>
-    api.post("/chat/group/create", { name, participants });
+export const createGroup = (name, description, rules, isPublic, participants) =>
+    api.post("/chat/group/create", { name, description, rules, isPublic, participants });
+
+export const searchGroups = (query) =>
+    api.get(`/chat/group/search?query=${query}`);
 
 export const getMyGroups = () =>
     api.get("/chat/groups");
@@ -65,10 +68,14 @@ export const uploadFile = (file) => {
     });
 };
 
-export const updateGroup = (groupId, name, imageFile) => {
+export const updateGroup = (groupId, data) => {
     const formData = new FormData();
-    if (name) formData.append("name", name);
-    if (imageFile) formData.append("image", imageFile);
+    if (data.name) formData.append("name", data.name);
+    if (data.description) formData.append("description", data.description);
+    if (data.rules) formData.append("rules", data.rules);
+    if (data.isPublic !== undefined) formData.append("isPublic", data.isPublic);
+    if (data.image) formData.append("image", data.image);
+
     return api.put(`/chat/group/${groupId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
     });

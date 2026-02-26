@@ -1,11 +1,15 @@
 import api from "./axios";
 
-export const createPost = async (content, imageFiles, groupId, pollQuestion, pollOptions, pollDurationDays, sharedPostId) => {
+export const createPost = async (content, imageFiles, videoFile, groupId, pollQuestion, pollOptions, pollDurationDays, sharedPostId) => {
     const formData = new FormData();
     formData.append("content", content);
 
     if (imageFiles && imageFiles.length > 0) {
         imageFiles.forEach(file => formData.append("images", file));
+    }
+
+    if (videoFile) {
+        formData.append("video", videoFile);
     }
 
     if (groupId) {
@@ -20,9 +24,6 @@ export const createPost = async (content, imageFiles, groupId, pollQuestion, pol
     }
     if (pollDurationDays) {
         formData.append("pollDurationDays", pollDurationDays);
-    }
-    if (groupId) {
-        formData.append("groupId", groupId);
     }
     if (sharedPostId) {
         formData.append("sharedPostId", sharedPostId);
@@ -61,3 +62,6 @@ export const getSavedPosts = (page = 0) =>
 
 export const searchPosts = (query, page = 0, size = 10) =>
     api.get(`/posts/search?q=${query}&page=${page}&size=${size}`);
+
+export const getTrendingTopics = () =>
+    api.get("/trending");

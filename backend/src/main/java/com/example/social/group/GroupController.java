@@ -63,6 +63,11 @@ public class GroupController {
         return groupService.getAllGroups(auth.getName());
     }
 
+    @GetMapping("/my")
+    public List<GroupResponse> getMyGroups(Authentication auth) {
+        return groupService.getMyGroups(auth.getName());
+    }
+
     @GetMapping("/search")
     public List<GroupResponse> searchGroups(@RequestParam String q, Authentication auth) {
         return groupService.searchGroups(q, auth.getName());

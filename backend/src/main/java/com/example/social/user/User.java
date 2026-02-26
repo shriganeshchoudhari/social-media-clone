@@ -30,6 +30,11 @@ public class User {
 
     private String profileImageUrl;
 
+    private String bannerImage;
+
+    @Column(length = 100)
+    private String website;
+
     private LocalDateTime createdAt;
 
     @JsonProperty("isPrivate")
@@ -62,6 +67,7 @@ public class User {
     }
 
     public User(Long id, String username, String email, String password, String bio, String profileImageUrl,
+            String bannerImage, String website,
             LocalDateTime createdAt, boolean isPrivate, int tokenVersion, boolean isBanned, String role,
             int warningCount, LocalDateTime bannedUntil, boolean verified) {
         this.id = id;
@@ -70,6 +76,8 @@ public class User {
         this.password = password;
         this.bio = bio;
         this.profileImageUrl = profileImageUrl;
+        this.bannerImage = bannerImage;
+        this.website = website;
         this.createdAt = createdAt;
         this.isPrivate = isPrivate;
         this.tokenVersion = tokenVersion;
@@ -103,6 +111,14 @@ public class User {
 
     public String getProfileImageUrl() {
         return profileImageUrl;
+    }
+
+    public String getBannerImage() {
+        return bannerImage;
+    }
+
+    public String getWebsite() {
+        return website;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -163,6 +179,14 @@ public class User {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public void setBannerImage(String bannerImage) {
+        this.bannerImage = bannerImage;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -207,6 +231,8 @@ public class User {
         private String password;
         private String bio;
         private String profileImageUrl;
+        private String bannerImage;
+        private String website;
         private LocalDateTime createdAt;
         private boolean isPrivate = false;
         private int tokenVersion = 0;
@@ -286,9 +312,35 @@ public class User {
             return this;
         }
 
+        public UserBuilder bannerImage(String bannerImage) {
+            this.bannerImage = bannerImage;
+            return this;
+        }
+
+        public UserBuilder website(String website) {
+            this.website = website;
+            return this;
+        }
+
         public User build() {
-            return new User(id, username, email, password, bio, profileImageUrl, createdAt, isPrivate, tokenVersion,
+            return new User(id, username, email, password, bio, profileImageUrl, bannerImage, website, createdAt,
+                    isPrivate, tokenVersion,
                     isBanned, role, warningCount, bannedUntil, verified);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            User user = (User) o;
+            return id != null && id.equals(user.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return getClass().hashCode();
         }
     }
 }

@@ -11,4 +11,7 @@ public interface ChatGroupRepository extends JpaRepository<ChatGroup, Long> {
 
     @Query("SELECT g FROM ChatGroup g JOIN g.participants p WHERE p = :user")
     List<ChatGroup> findByParticipant(@Param("user") User user);
+
+    @Query("SELECT g FROM ChatGroup g WHERE LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%')) AND g.isPublic = true")
+    List<ChatGroup> searchPublicGroups(@Param("name") String name);
 }

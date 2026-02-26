@@ -31,9 +31,9 @@ export default function Inbox() {
         load();
     }, []);
 
-    const handleCreateGroup = async (name, participants) => {
+    const handleCreateGroup = async (name, description, rules, isPublic, participants) => {
         try {
-            await createGroup(name, participants);
+            await createGroup(name, description, rules, isPublic, participants);
             setShowCreateGroupModal(false);
             load();
         } catch (e) {

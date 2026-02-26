@@ -41,7 +41,7 @@ public class FeatureIntegrationTest {
         }
 
         // 2. Update Profile -> Should trigger MongoDB Log, Redis Evict, Elastic Sync
-        userService.updateProfile(username, "New Bio for Integration Test", null, null);
+        userService.updateProfile(username, "New Bio for Integration Test", null, null, null, null);
 
         // Wait for Async processes (Logs, Elastic Sync)
         Thread.sleep(2000);
@@ -71,5 +71,7 @@ public class FeatureIntegrationTest {
         // but ensuring it doesn't fail is a good start)
         ProfileResponse p2 = userService.getProfile(username, username);
         assertThat(p1.bio()).isEqualTo(p2.bio());
+
     }
+
 }

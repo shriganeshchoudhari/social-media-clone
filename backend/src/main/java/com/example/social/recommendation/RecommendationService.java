@@ -94,8 +94,10 @@ public class RecommendationService {
                                     post.getSharedPost().getLinkDescription(),
                                     post.getSharedPost().getLinkImage(),
                                     null,
+                                    null,
                                     null)
-                                    : null);
+                                    : null,
+                            post.getVideoUrl());
                 });
     }
 }

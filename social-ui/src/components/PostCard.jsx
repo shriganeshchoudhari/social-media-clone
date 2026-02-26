@@ -33,6 +33,15 @@ const SharedPostPreview = ({ post }) => {
                     <img src={post.images[0]} alt="Shared content" className="w-full h-full object-cover" />
                 </div>
             )}
+            {post.videoUrl && (
+                <div className="rounded-md overflow-hidden bg-black mt-2">
+                    <video
+                        src={`${API_BASE_URL}${post.videoUrl}`}
+                        className="w-full max-h-60 object-contain"
+                        controls
+                    />
+                </div>
+            )}
         </div>
     );
 };
@@ -333,6 +342,18 @@ export default function PostCard({ post, currentUser, onDelete, onUpdate, menuAc
             )}
 
             <MediaGallery images={post.images} />
+
+            {post.videoUrl && (
+                <div className="mt-3 rounded-lg overflow-hidden bg-black shadow-sm">
+                    <video
+                        src={`${API_BASE_URL}${post.videoUrl}`}
+                        className="w-full max-h-[500px] object-contain mx-auto"
+                        controls
+                        poster={`${API_BASE_URL}${post.videoUrl}#t=0.1`} // Simple trick for poster
+                        preload="metadata"
+                    />
+                </div>
+            )}
 
             <div className="flex justify-between items-center mt-2">
                 <LikeButton

@@ -15,10 +15,32 @@ public class StoryResponse {
     private Long userId;
     private String username;
     private String userProfileImage;
-    private long viewCount;
+    private Long viewCount;
+    private PollResponse poll;
 
     public static StoryResponse fromEntity(Story story) {
+        return fromEntity(story, null);
+    }
+
+    public static StoryResponse fromEntity(Story story, Long userVotedOptionId) {
         User user = story.getUser();
+
+        PollResponse pollResponse = null;
+        if (story.getPoll() != null) {
+            pollResponse = PollResponse.builder()
+                    .id(story.getPoll().getId())
+                    .question(story.getPoll().getQuestion())
+                    .options(story.getPoll().getOptions().stream()
+                            .map(opt -> PollOptionResponse.builder()
+                                    .id(opt.getId())
+                                    .text(opt.getText())
+                                    .voteCount(opt.getVoteCount())
+                                    .build())
+                            .collect(java.util.stream.Collectors.toList()))
+                    .userVotedOptionId(userVotedOptionId)
+                    .build();
+        }
+
         return StoryResponse.builder()
                 .id(story.getId())
                 .imageUrl(story.getImageUrl())
@@ -28,6 +50,24 @@ public class StoryResponse {
                 .username(user.getUsername())
                 .userProfileImage(user.getProfileImageUrl())
                 .viewCount(story.getViewCount())
+                .poll(pollResponse)
                 .build();
+    }
+
+    @Data
+    @Builder
+    public static class PollResponse {
+        private Long id;
+        private String question;
+        private java.util.List<PollOptionResponse> options;
+        private Long userVotedOptionId;
+    }
+
+    @Data
+    @Builder
+    public static class PollOptionResponse {
+        private Long id;
+        private String text;
+        private long voteCount;
     }
 }

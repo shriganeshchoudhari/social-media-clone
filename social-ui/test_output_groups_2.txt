@@ -1,0 +1,63 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+[1A[2K[chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+Registering alice_371772 and bob_371772...
+
+[1A[2KTesting Community Group Creation...
+
+[1A[2K  1) [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation 
+
+    [31mTest timeout of 90000ms exceeded.[39m
+
+    Error: page.click: Test ended.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Create Group")')[22m
+    [2m    - locator resolved to 2 elements. Proceeding with the first one: <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">+ Create Group</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">…</div> from <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">…</div> from <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    154 × waiting for element to be visible, enabled and stable[22m
+    [2m        - element is visible, enabled and stable[22m
+    [2m        - scrolling into view if needed[22m
+    [2m        - done scrolling[22m
+    [2m        - <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">…</div> from <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">…</div> subtree intercepts pointer events[22m
+    [2m      - retrying click action[22m
+    [2m        - waiting 500ms[22m
+
+
+      52 |
+      53 |     // Create
+    > 54 |     await page1.click('button:has-text("Create Group")');
+         |                 ^
+      55 |
+      56 |     // Expected: Redirect to /groups/<id>
+      57 |     await expect(page1).toHaveURL(/\/groups\/\d+/);
+        at F:\DEVOPS\social-media-clone\social-ui\tests\groups_and_chat.spec.js:54:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation 

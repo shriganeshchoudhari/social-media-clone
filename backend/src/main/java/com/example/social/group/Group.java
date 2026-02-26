@@ -21,6 +21,9 @@ public class Group {
     @Column(length = 500)
     private String description;
 
+    @Column(length = 1000)
+    private String rules;
+
     @Enumerated(EnumType.STRING)
     private GroupPrivacy privacy = GroupPrivacy.PUBLIC;
 
@@ -50,11 +53,13 @@ public class Group {
     public Group() {
     }
 
-    public Group(Long id, String name, String description, GroupPrivacy privacy, User creator, String coverImageUrl,
+    public Group(Long id, String name, String description, String rules, GroupPrivacy privacy, User creator,
+            String coverImageUrl,
             com.example.social.post.Post pinnedPost, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.rules = rules;
         this.privacy = privacy != null ? privacy : GroupPrivacy.PUBLIC;
         this.creator = creator;
         this.coverImageUrl = coverImageUrl;
@@ -85,6 +90,14 @@ public class Group {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getRules() {
+        return rules;
+    }
+
+    public void setRules(String rules) {
+        this.rules = rules;
     }
 
     public GroupPrivacy getPrivacy() {
@@ -136,6 +149,7 @@ public class Group {
         private Long id;
         private String name;
         private String description;
+        private String rules;
         private GroupPrivacy privacy = GroupPrivacy.PUBLIC;
         private User creator;
         private String coverImageUrl;
@@ -154,6 +168,11 @@ public class Group {
 
         public GroupBuilder description(String description) {
             this.description = description;
+            return this;
+        }
+
+        public GroupBuilder rules(String rules) {
+            this.rules = rules;
             return this;
         }
 
@@ -183,7 +202,7 @@ public class Group {
         }
 
         public Group build() {
-            return new Group(id, name, description, privacy, creator, coverImageUrl, pinnedPost, createdAt);
+            return new Group(id, name, description, rules, privacy, creator, coverImageUrl, pinnedPost, createdAt);
         }
     }
 }

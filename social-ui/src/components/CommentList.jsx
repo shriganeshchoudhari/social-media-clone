@@ -93,15 +93,20 @@ export default function CommentList({ postId }) {
             const res = await addComment(postId, content, parentId);
 
             // replace temp with real comment
+            // replace temp with real comment
             setComments(prev =>
                 prev.map(c => c.id === tempComment.id ? res.data : c)
             );
-        } catch {
+        } catch (error) {
             // rollback
             setComments(prev =>
                 prev.filter(c => c.id !== tempComment.id)
             );
-            alert("Failed to add comment");
+            if (error.response && error.response.data && error.response.data.error) {
+                alert(error.response.data.error);
+            } else {
+                alert("Failed to add comment");
+            }
         }
     };
 

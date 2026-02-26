@@ -316,10 +316,14 @@ public class ChatService {
         }
 
         @org.springframework.transaction.annotation.Transactional
-        public com.example.social.chat.dto.ChatGroupResponse createGroup(String name, String creatorUsername,
+        public com.example.social.chat.dto.ChatGroupResponse createGroup(String name, String description, String rules,
+                        boolean isPublic, String creatorUsername,
                         List<String> participantUsernames) {
                 User creator = userRepository.findByUsername(creatorUsername).orElseThrow();
                 ChatGroup group = new ChatGroup(name, creator);
+                group.setDescription(description);
+                group.setRules(rules);
+                group.setPublic(isPublic);
 
                 for (String username : participantUsernames) {
                         userRepository.findByUsername(username).ifPresent(group.getParticipants()::add);
@@ -329,10 +333,21 @@ public class ChatService {
                 return toDto(saved);
         }
 
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
+        public List<com.example.social.chat.dto.ChatGroupResponse> searchPublicGroups(String query) {
+                return chatGroupRepository.searchPublicGroups(query)
+                                .stream()
+                                .map(this::toDto)
+                                .toList();
+        }
+
         private com.example.social.chat.dto.ChatGroupResponse toDto(ChatGroup group) {
                 return new com.example.social.chat.dto.ChatGroupResponse(
                                 group.getId(),
                                 group.getName(),
+                                group.getDescription(),
+                                group.getRules(),
+                                group.isPublic(),
                                 group.getImageUrl(),
                                 group.getCreatedAt(),
                                 group.getParticipants().stream()
@@ -564,8 +579,9 @@ public class ChatService {
         }
 
         @org.springframework.transaction.annotation.Transactional
-        public com.example.social.chat.dto.ChatGroupResponse updateGroup(Long groupId, String name,
-                        org.springframework.web.multipart.MultipartFile image, String username) {
+        public com.example.social.chat.dto.ChatGroupResponse updateGroup(Long groupId, String name, String description,
+                        String rules, Boolean isPublic, org.springframework.web.multipart.MultipartFile image,
+                        String username) {
                 ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
                 User user = userRepository.findByUsername(username).orElseThrow();
 
@@ -575,6 +591,18 @@ public class ChatService {
 
                 if (name != null && !name.isBlank()) {
                         group.setName(name);
+                }
+
+                if (description != null) {
+                        group.setDescription(description);
+                }
+
+                if (rules != null) {
+                        group.setRules(rules);
+                }
+
+                if (isPublic != null) {
+                        group.setPublic(isPublic);
                 }
 
                 if (image != null && !image.isEmpty()) {

@@ -24,6 +24,7 @@ public class PostService {
         private final LinkPreviewService linkPreviewService;
         private final com.example.social.poll.PollVoteRepository pollVoteRepository;
         private final com.example.social.notification.NotificationService notificationService;
+        private final com.example.social.common.ContentModerationService contentModerationService;
 
         public PostService(
                         PostRepository postRepository,
@@ -37,7 +38,8 @@ public class PostService {
                         com.example.social.group.GroupRepository groupRepository,
                         LinkPreviewService linkPreviewService,
                         com.example.social.poll.PollVoteRepository pollVoteRepository,
-                        com.example.social.notification.NotificationService notificationService) {
+                        com.example.social.notification.NotificationService notificationService,
+                        com.example.social.common.ContentModerationService contentModerationService) {
                 this.postRepository = postRepository;
                 this.userRepository = userRepository;
                 this.postLikeRepository = postLikeRepository;
@@ -50,12 +52,17 @@ public class PostService {
                 this.linkPreviewService = linkPreviewService;
                 this.pollVoteRepository = pollVoteRepository;
                 this.notificationService = notificationService;
+                this.contentModerationService = contentModerationService;
         }
 
         @org.springframework.transaction.annotation.Transactional
         public PostResponse createPost(String username, String content,
-                        java.util.List<org.springframework.web.multipart.MultipartFile> images, Long groupId,
+                        java.util.List<org.springframework.web.multipart.MultipartFile> images,
+                        org.springframework.web.multipart.MultipartFile video,
+                        Long groupId,
                         String pollQuestion, List<String> pollOptions, Integer pollDurationDays, Long sharedPostId) {
+
+                contentModerationService.validateContent(content);
 
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -82,7 +89,13 @@ public class PostService {
                                 .content(content)
                                 .author(user)
                                 .group(group)
-                                .sharedPost(sharedPost);
+                                .sharedPost(sharedPost)
+                                .hashtags(extractHashtags(content));
+
+                if (video != null && !video.isEmpty()) {
+                        String videoUrl = fileStorageService.storeFile(video);
+                        postBuilder.videoUrl(videoUrl);
+                }
 
                 if (linkMetadata != null) {
                         postBuilder.linkUrl(linkMetadata.url())
@@ -201,7 +214,8 @@ public class PostService {
                                 post.getLinkDescription(),
                                 post.getLinkImage(),
                                 mapToPollResponse(post.getPoll(), null),
-                                post.getSharedPost() != null ? mapToResponsePublic(post.getSharedPost()) : null);
+                                post.getSharedPost() != null ? mapToResponsePublic(post.getSharedPost()) : null,
+                                post.getVideoUrl());
         }
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -358,7 +372,8 @@ public class PostService {
                                 post.getLinkDescription(),
                                 post.getLinkImage(),
                                 mapToPollResponse(post.getPoll(), currentUser),
-                                post.getSharedPost() != null ? mapToResponse(post.getSharedPost(), currentUser) : null);
+                                post.getSharedPost() != null ? mapToResponse(post.getSharedPost(), currentUser) : null,
+                                post.getVideoUrl());
         }
 
         @org.springframework.transaction.annotation.Transactional
@@ -390,7 +405,10 @@ public class PostService {
                         throw new RuntimeException("Not authorized to edit this post");
                 }
 
+                contentModerationService.validateContent(content);
+
                 post.setContent(content);
+                post.setHashtags(extractHashtags(content));
                 Post saved = postRepository.save(post);
 
                 return mapToResponse(saved, post.getAuthor());
@@ -466,5 +484,30 @@ public class PostService {
                                 poll.isClosed(),
                                 totalVotes,
                                 userVotedOptionId);
+        }
+
+        private java.util.Set<String> extractHashtags(String content) {
+                if (content == null || content.isBlank()) {
+                        return new java.util.HashSet<>();
+                }
+                java.util.Set<String> tags = new java.util.HashSet<>();
+                java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("#(\\w+)").matcher(content);
+                while (matcher.find()) {
+                        tags.add(matcher.group(1));
+                }
+                return tags;
+        }
+
+        @org.springframework.transaction.annotation.Transactional(readOnly = true)
+        public List<com.example.social.trending.TrendingTopicDTO> getTrendingHashtags() {
+                // Look back 48 hours for trending topics
+                java.time.LocalDateTime since = java.time.LocalDateTime.now().minusHours(48);
+                Pageable top10 = PageRequest.of(0, 10);
+
+                return postRepository.findTrendingHashtags(since, top10).stream()
+                                .map(result -> new com.example.social.trending.TrendingTopicDTO(
+                                                (String) result[0],
+                                                (Long) result[1]))
+                                .toList();
         }
 }

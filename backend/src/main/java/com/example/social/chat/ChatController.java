@@ -63,7 +63,15 @@ public class ChatController {
     public com.example.social.chat.dto.ChatGroupResponse createGroup(
             @RequestBody com.example.social.chat.dto.CreateGroupRequest request,
             Authentication auth) {
-        return chatService.createGroup(request.name(), auth.getName(), request.participants());
+        return chatService.createGroup(request.name(), request.description(), request.rules(), request.isPublic(),
+                auth.getName(), request.participants());
+    }
+
+    @GetMapping("/group/search")
+    public List<com.example.social.chat.dto.ChatGroupResponse> searchGroups(
+            @RequestParam String query,
+            Authentication auth) {
+        return chatService.searchPublicGroups(query);
     }
 
     @PostMapping("/group/{groupId}/send")
@@ -128,9 +136,12 @@ public class ChatController {
     public com.example.social.chat.dto.ChatGroupResponse updateGroup(
             @PathVariable Long groupId,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String rules,
+            @RequestParam(required = false) Boolean isPublic,
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile image,
             Authentication auth) {
-        return chatService.updateGroup(groupId, name, image, auth.getName());
+        return chatService.updateGroup(groupId, name, description, rules, isPublic, image, auth.getName());
     }
 
     @PostMapping("/group/{groupId}/leave")

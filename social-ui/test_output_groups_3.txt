@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+[1A[2K[chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+Registering alice_554595 and bob_554595...
+
+[1A[2KTesting Community Group Creation...
+
+[1A[2K  1) [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=2 members')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=2 members')[22m
+
+
+      64 |     // Verify Member Count (Should be 2: Alice + Bob)
+      65 |     // "2 members" text
+    > 66 |     await expect(page1.locator('text=2 members')).toBeVisible();
+         |                                                   ^
+      67 |     console.log("Community Group Verified.");
+      68 |
+      69 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\groups_and_chat.spec.js:66:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\groups_and_chat-Verify-Com-6c9b0-oup-and-Chat-Group-creation-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation 

@@ -138,91 +138,54 @@ export default function Profile() {
         <Layout>
             <Navbar />
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-4 transition-colors duration-200">
-                <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1 flex items-center gap-4">
-                        {/* Avatar */}
-                        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-md shrink-0">
-                            {profile.profileImageUrl ? (
-                                <img
-                                    src={`${API_BASE_URL}${profile.profileImageUrl}`}
-                                    alt={profile.username}
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold">
-                                    {profile.username[0].toUpperCase()}
-                                </div>
-                            )}
-                        </div>
-
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                                {profile.username}
-                                {profile.verified && <VerificationBadge className="w-6 h-6" />}
-                            </h2>
-                            <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                                {profile.bio || "No bio available"}
-                            </p>
-                        </div>
-                    </div>
+                {/* Banner */}
+                <div className="h-32 md:h-48 bg-gray-200 dark:bg-gray-700 rounded-t-lg overflow-hidden relative">
+                    {profile.bannerImage ? (
+                        <img
+                            src={`${API_BASE_URL}${profile.bannerImage}`}
+                            alt="Banner"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-r from-blue-400 to-purple-500 opacity-75"></div>
+                    )}
                 </div>
 
-                <div className="flex justify-around md:justify-start gap-4 md:gap-6 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 text-gray-700 dark:text-gray-300">
-                    <button onClick={scrollToPosts} className="hover:text-blue-600 transition-colors flex flex-col md:flex-row items-center gap-1">
-                        <span className="font-bold text-gray-900 dark:text-white">{profile.postCount}</span> posts
-                    </button>
-                    <button onClick={openFollowers} className="hover:text-blue-600 transition-colors flex flex-col md:flex-row items-center gap-1">
-                        <span className="font-bold text-gray-900 dark:text-white">{profile.followersCount}</span> followers
-                    </button>
-                    <button onClick={openFollowing} className="hover:text-blue-600 transition-colors flex flex-col md:flex-row items-center gap-1">
-                        <span className="font-bold text-gray-900 dark:text-white">{profile.followingCount}</span> following
-                    </button>
-                </div>
+                <div className="px-6 pb-6 relative">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1 flex flex-col md:flex-row items-center md:items-end gap-4 -mt-12">
+                            {/* Avatar */}
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-md shrink-0 z-10">
+                                {profile.profileImageUrl ? (
+                                    <img
+                                        src={`${API_BASE_URL}${profile.profileImageUrl}`}
+                                        alt={profile.username}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold bg-white dark:bg-gray-800">
+                                        {profile.username[0].toUpperCase()}
+                                    </div>
+                                )}
+                            </div>
 
-                {isMe ? (
-                    <button
-                        onClick={() => navigate("/settings")}
-                        className="w-full md:w-auto px-6 py-2 rounded font-medium transition-colors bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    >
-                        Edit Profile
-                    </button>
-                ) : (
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            onClick={() => toggleFollow(profile.username).then(load)}
-                            className={`flex-1 md:flex-none px-6 py-2 rounded font-medium transition-colors ${profile.following
-                                ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
-                                }`}
-                        >
-                            {profile.following ? "Unfollow" : "Follow"}
-                        </button>
-                        <button
-                            onClick={() => navigate(`/chat/${profile.username}`)}
-                            className="flex-1 md:flex-none px-6 py-2 rounded font-medium transition-colors bg-green-600 text-white hover:bg-green-700"
-                        >
-                            Message
-                        </button>
-                        <button
-                            onClick={() => startCall(profile.username)}
-                            className="flex-1 md:flex-none px-6 py-2 rounded font-medium transition-colors bg-purple-600 text-white hover:bg-purple-700"
-                        >
-                            Call
-                        </button>
-                        <button
-                            onClick={() => toggleBlock(profile.username).then(() => window.location.reload())}
-                            className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-700"
-                        >
-                            Block
-                        </button>
+                            <div className="text-center md:text-left mt-2 md:mt-0 md:mb-2">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center justify-center md:justify-start gap-2">
+                                    {profile.username}
+                                    {profile.verified && <VerificationBadge className="w-6 h-6" />}
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap text-sm">
+                                    {profile.bio || "No bio available"}
+                                </p>
+                                {profile.website && (
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 text-sm hover:underline block mt-1">
+                                        🔗 {profile.website.replace(/^https?:\/\//, '')}
+                                    </a>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                )}
 
-            </div>
-
-            {/* Tabs (Only if isMe) */}
-            {isMe && (
-                <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm px-4">
                     <button
                         className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 ${activeTab === "posts"
                             ? "border-blue-500 text-blue-600 dark:text-blue-400"
@@ -242,7 +205,9 @@ export default function Profile() {
                         Saved
                     </button>
                 </div>
-            )}
+            </div>
+
+
 
             {/* Privacy / Posts Section */}
             {/* Privacy / Posts / Saved Section */}

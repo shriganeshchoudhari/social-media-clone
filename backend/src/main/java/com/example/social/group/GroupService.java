@@ -35,6 +35,7 @@ public class GroupService {
             PostRepository postRepository,
             com.example.social.notification.NotificationService notificationService,
             com.example.social.group.event.GroupEventRepository groupEventRepository) {
+
         this.groupRepository = groupRepository;
         this.groupMemberRepository = groupMemberRepository;
         this.groupInvitationRepository = groupInvitationRepository;
@@ -51,6 +52,7 @@ public class GroupService {
         Group group = Group.builder()
                 .name(request.name())
                 .description(request.description())
+                .rules(request.rules())
                 .privacy(Group.GroupPrivacy.valueOf(request.privacy()))
                 .creator(creator)
                 .build();
@@ -80,6 +82,14 @@ public class GroupService {
     public List<GroupResponse> searchGroups(String query, String username) {
         User user = userService.getUserByUsername(username);
         return groupRepository.searchGroups(query).stream()
+                .map(g -> mapToResponse(g, user))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<GroupResponse> getMyGroups(String username) {
+        User user = userService.getUserByUsername(username);
+        return groupRepository.findByMemberUsername(username).stream()
                 .map(g -> mapToResponse(g, user))
                 .collect(Collectors.toList());
     }
@@ -336,6 +346,7 @@ public class GroupService {
                 group.getId(),
                 group.getName(),
                 group.getDescription(),
+                group.getRules(),
                 group.getPrivacy().name(),
                 group.getCreator().getUsername(),
                 count,
@@ -427,7 +438,7 @@ public class GroupService {
         Group group = getGroupEntity(groupId);
 
         // Check ownership
-        if (!group.getCreator().equals(user)) {
+        if (!group.getCreator().getId().equals(user.getId())) {
             // Or allow ADMIN? For now strict owner or check admin role
             GroupMember member = groupMemberRepository.findByGroupAndUser(group, user)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member"));
@@ -438,6 +449,7 @@ public class GroupService {
 
         group.setName(request.name());
         group.setDescription(request.description());
+        group.setRules(request.rules());
         group.setPrivacy(Group.GroupPrivacy.valueOf(request.privacy()));
 
         group = groupRepository.save(group);
@@ -449,13 +461,14 @@ public class GroupService {
         User user = userService.getUserByUsername(username);
         Group group = getGroupEntity(groupId);
 
-        if (!group.getCreator().equals(user)) {
+        if (!group.getCreator().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the creator can delete the group");
         }
 
         // Manual Cascade Delete
         postRepository.deleteByGroup(group);
         groupEventRepository.deleteByGroup(group);
+
         groupInvitationRepository.deleteByGroup(group);
         groupMemberRepository.deleteByGroup(group);
 
@@ -475,7 +488,7 @@ public class GroupService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only admins can remove members");
         }
 
-        if (targetUser.equals(group.getCreator())) {
+        if (targetUser.getId().equals(group.getCreator().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot remove the creator");
         }
 

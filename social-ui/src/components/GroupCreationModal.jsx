@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createGroup } from "../api/chatService";
+// import { createGroup } from "../api/chatService";
 import { searchUsers } from "../api/searchService";
 import { API_BASE_URL } from "../api/config";
 
@@ -9,6 +9,10 @@ export default function GroupCreationModal({ onClose, onCreate }) {
     const [results, setResults] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const [description, setDescription] = useState("");
+    const [rules, setRules] = useState("");
+    const [isPublic, setIsPublic] = useState(false);
 
     useEffect(() => {
         if (!query.trim()) {
@@ -21,7 +25,8 @@ export default function GroupCreationModal({ onClose, onCreate }) {
             searchUsers(query)
                 .then(res => {
                     // Filter out already selected users
-                    const all = res.data.content || [];
+                    const data = res.data;
+                    const all = Array.isArray(data) ? data : (data.content || []);
                     setResults(all.filter(u => !selectedUsers.find(s => s.username === u.username)));
                 })
                 .catch(err => console.error(err))
@@ -45,7 +50,7 @@ export default function GroupCreationModal({ onClose, onCreate }) {
         if (!name.trim()) return alert("Group name is required");
         if (selectedUsers.length === 0) return alert("Select at least one member");
 
-        onCreate(name, selectedUsers.map(u => u.username));
+        onCreate(name, description, rules, isPublic, selectedUsers.map(u => u.username));
     };
 
     return (
@@ -72,6 +77,42 @@ export default function GroupCreationModal({ onClose, onCreate }) {
                             className="w-full border rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="e.g. Weekend Trip"
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Description
+                        </label>
+                        <textarea
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            className="w-full border rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="What's this group about?"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Rules
+                        </label>
+                        <textarea
+                            value={rules}
+                            onChange={e => setRules(e.target.value)}
+                            className="w-full border rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Group rules..."
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={isPublic}
+                            onChange={e => setIsPublic(e.target.checked)}
+                            className="w-4 h-4"
+                        />
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Public Group (Anyone can search and join)
+                        </label>
                     </div>
 
                     <div>

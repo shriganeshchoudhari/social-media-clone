@@ -1,12 +1,17 @@
 import api from "./axios";
 
-export const updateProfile = (profile, avatarFile) => {
+export const updateProfile = (profile, avatarFile, bannerFile) => {
     const form = new FormData();
 
     if (profile.bio !== null && profile.bio !== undefined) {
         form.append("bio", profile.bio);
     }
 
+    if (profile.website !== null && profile.website !== undefined) {
+        form.append("website", profile.website);
+    }
+
+    // Append interests individually (Spring MVC expects list)
     if (profile.interests && profile.interests.length > 0) {
         profile.interests.forEach(interest => {
             form.append("interests", interest);
@@ -15,6 +20,10 @@ export const updateProfile = (profile, avatarFile) => {
 
     if (avatarFile) {
         form.append("avatar", avatarFile);
+    }
+
+    if (bannerFile) {
+        form.append("banner", bannerFile);
     }
 
     return api.put("/users/me", form, {
@@ -42,3 +51,6 @@ export const togglePrivacy = () =>
 
 export const deleteAccount = () =>
     api.delete("/users/me");
+
+export const searchUsers = (query) =>
+    api.get(`/users/search?q=${query}`).then(res => res.data);

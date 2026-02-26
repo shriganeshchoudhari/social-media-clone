@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { API_BASE_URL } from '../api/config';
-import { viewStory } from '../api/storyService';
+import { viewStory, voteStory } from '../api/storyService';
 import StoryViewList from './StoryViewList';
 
 export default function StoryViewer({ stories, onClose, currentUser }) {
@@ -14,9 +14,15 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
     const currentStory = stories[currentIndex];
     const [realtimeViewCount, setRealtimeViewCount] = useState(currentStory.viewCount || 0);
 
-    // Reset local count when story changes
+    // Poll state
+    const [votedOptionId, setVotedOptionId] = useState(currentStory.poll?.userVotedOptionId || null);
+    const [pollOptions, setPollOptions] = useState(currentStory.poll?.options || []);
+
+    // Reset local state when story changes
     useEffect(() => {
         setRealtimeViewCount(currentStory.viewCount || 0);
+        setVotedOptionId(currentStory.poll?.userVotedOptionId || null);
+        setPollOptions(currentStory.poll?.options || []);
     }, [currentIndex, currentStory]);
 
     const isOwner = currentUser === currentStory.user.username;
@@ -74,6 +80,27 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
         }
     };
 
+    const handleVote = async (optionId) => {
+        if (votedOptionId) return; // Already voted
+        setPaused(true);
+        try {
+            await voteStory(currentStory.id, optionId);
+            setVotedOptionId(optionId);
+
+            // Update local counts
+            setPollOptions(prev => prev.map(opt => {
+                if (opt.id === optionId) {
+                    return { ...opt, voteCount: opt.voteCount + 1 };
+                }
+                return opt;
+            }));
+        } catch (err) {
+            console.error("Failed to vote", err);
+        } finally {
+            setPaused(false);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center p-4">
             <button
@@ -116,7 +143,7 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
 
                 {/* Image */}
                 <div
-                    className="flex-1 flex items-center justify-center bg-black"
+                    className="flex-1 flex items-center justify-center bg-black relative"
                     onMouseDown={() => setPaused(true)}
                     onMouseUp={() => setPaused(false)}
                     onTouchStart={() => setPaused(true)}
@@ -127,6 +154,55 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
                         alt="Story"
                         className="max-h-full max-w-full object-contain"
                     />
+
+                    {/* Poll Overlay */}
+                    {currentStory.poll && (
+                        <div
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 max-w-xs bg-white rounded-xl p-4 shadow-2xl z-20"
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onTouchStart={(e) => e.stopPropagation()}
+                        >
+                            <h3 className="text-center font-bold text-lg mb-4 text-gray-900">{currentStory.poll.question}</h3>
+                            <div className="space-y-2">
+                                {pollOptions.map(opt => {
+                                    const totalVotes = pollOptions.reduce((acc, curr) => acc + curr.voteCount, 0);
+                                    const percent = totalVotes > 0 ? Math.round((opt.voteCount / totalVotes) * 100) : 0;
+                                    const isVoted = votedOptionId === opt.id;
+
+                                    return (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => handleVote(opt.id)}
+                                            disabled={!!votedOptionId}
+                                            className={`relative w-full p-3 rounded-lg overflow-hidden border-2 transition-all ${votedOptionId
+                                                    ? (isVoted ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50")
+                                                    : "border-gray-200 hover:bg-gray-50 bg-white"
+                                                }`}
+                                        >
+                                            {/* Progress Bar Background */}
+                                            {votedOptionId && (
+                                                <div
+                                                    className={`absolute top-0 left-0 bottom-0 transition-all duration-500 ${isVoted ? "bg-blue-100" : "bg-gray-200"}`}
+                                                    style={{ width: `${percent}%`, zIndex: 0 }}
+                                                />
+                                            )}
+
+                                            <div className="relative z-10 flex justify-between items-center w-full">
+                                                <span className={`font-medium ${isVoted ? "text-blue-700" : "text-gray-800"}`}>
+                                                    {opt.text}
+                                                </span>
+                                                {votedOptionId && (
+                                                    <span className="text-sm font-bold text-gray-600">
+                                                        {percent}%
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* View Count (Owner Only) */}

@@ -3,6 +3,9 @@ import api from "./axios";
 export const getAllGroups = () =>
     api.get("/groups");
 
+export const getMyGroups = () =>
+    api.get("/groups/my");
+
 export const getGroup = (id) =>
     api.get(`/groups/${id}`);
 
@@ -35,6 +38,12 @@ export const acceptInvitation = (id) =>
 
 export const rejectInvitation = (id) =>
     api.post(`/groups/invitations/${id}/reject`);
+
+export const updateGroup = (id, data) =>
+    api.put(`/groups/${id}`, data);
+
+export const deleteGroup = (id) =>
+    api.delete(`/groups/${id}`);
 
 export const getMyInvitations = () =>
     api.get("/groups/invitations/my");

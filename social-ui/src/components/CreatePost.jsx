@@ -5,6 +5,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState([]);
+    const [videoFile, setVideoFile] = useState(null);
     const [showPoll, setShowPoll] = useState(false);
     const [pollQuestion, setPollQuestion] = useState("");
     const [pollOptions, setPollOptions] = useState(["", ""]);
@@ -13,7 +14,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
     const submit = async (e) => {
         e.preventDefault();
         // Validation
-        if (!content.trim() && files.length === 0 && !pollQuestion.trim()) return;
+        if (!content.trim() && files.length === 0 && !videoFile && !pollQuestion.trim()) return;
         if (showPoll && (!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2)) {
             alert("Please provide a question and at least 2 options for the poll.");
             return;
@@ -24,6 +25,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
             await createPost(
                 content,
                 files,
+                videoFile,
                 extraData.groupId,
                 showPoll ? pollQuestion : null,
                 showPoll ? pollOptions.filter(o => o.trim()) : null,
@@ -34,13 +36,18 @@ export default function CreatePost({ onPost, extraData = {} }) {
             // Reset form
             setContent("");
             setFiles([]);
+            setVideoFile(null);
             setShowPoll(false);
             setPollQuestion("");
             setPollOptions(["", ""]);
             onPost(); // refresh feed
         } catch (error) {
             console.error("Failed to create post", error);
-            alert("Failed to create post");
+            if (error.response && error.response.data && error.response.data.error) {
+                alert(error.response.data.error);
+            } else {
+                alert("Failed to create post");
+            }
         } finally {
             setLoading(false);
         }
@@ -64,8 +71,6 @@ export default function CreatePost({ onPost, extraData = {} }) {
 
     const removeOption = (index) => {
         if (pollOptions.length > 2) {
-            setFiles(prev => prev.filter((_, i) => i !== index)); // Wait copy paste error?
-            // Fix:
             setPollOptions(prev => prev.filter((_, i) => i !== index));
         }
     };
@@ -144,11 +149,31 @@ export default function CreatePost({ onPost, extraData = {} }) {
                             className="hidden"
                             onChange={e => setFiles([...e.target.files])}
                             aria-label="Upload images"
+                            disabled={videoFile !== null}
                         />
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
                         <span className="sr-only">Add Image</span>
+                    </label>
+
+                    {/* Video Upload */}
+                    <label className="cursor-pointer text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" title="Add Video">
+                        <input
+                            type="file"
+                            accept="video/*"
+                            className="hidden"
+                            onChange={e => {
+                                setVideoFile(e.target.files[0]);
+                                setFiles([]); // Clear images if video selected
+                            }}
+                            aria-label="Upload video"
+                            disabled={files.length > 0}
+                        />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        <span className="sr-only">Add Video</span>
                     </label>
 
                     {/* Poll Toggle */}
@@ -170,10 +195,15 @@ export default function CreatePost({ onPost, extraData = {} }) {
                             {files.length} image{files.length > 1 ? 's' : ''} selected
                         </span>
                     )}
+                    {videoFile && (
+                        <span className="text-xs text-purple-600 dark:text-purple-400">
+                            1 video selected
+                        </span>
+                    )}
                 </div>
 
                 <button
-                    disabled={(!content.trim() && files.length === 0 && !pollQuestion.trim()) || loading}
+                    disabled={(!content.trim() && files.length === 0 && !videoFile && !pollQuestion.trim()) || loading}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm disabled:opacity-50 transition-colors font-medium"
                 >
                     {loading ? "Posting..." : "Post"}
@@ -200,6 +230,25 @@ export default function CreatePost({ onPost, extraData = {} }) {
                             </button>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Video Preview */}
+            {videoFile && (
+                <div className="relative group mt-3 inline-block">
+                    <video
+                        src={URL.createObjectURL(videoFile)}
+                        className="w-40 h-24 object-cover rounded border border-gray-200 dark:border-gray-600"
+                        controls
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setVideoFile(null)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                        aria-label="Remove video"
+                    >
+                        ×
+                    </button>
                 </div>
             )}
         </form>

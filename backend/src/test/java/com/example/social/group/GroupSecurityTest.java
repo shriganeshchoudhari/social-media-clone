@@ -53,7 +53,7 @@ public class GroupSecurityTest {
     @Test
     void testPrivateGroupSecurityFlow() throws Exception {
         // 1. Owner creates Private Group
-        GroupRequest createRequest = new GroupRequest("Private Club", "Secret", "PRIVATE");
+        GroupRequest createRequest = new GroupRequest("Private Club", "Secret", "No rules", "PRIVATE");
         MvcResult createResult = mockMvc.perform(post("/api/groups")
                 .with(user("owner"))
                 .contentType(MediaType.APPLICATION_JSON)
