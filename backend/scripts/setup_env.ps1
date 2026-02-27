@@ -13,7 +13,7 @@ if (-not $isAdmin) {
     Write-Host "ERROR: This script must be run as Administrator!" -ForegroundColor Red
     Write-Host "Please right-click this file and select 'Run with PowerShell as Administrator'" -ForegroundColor Yellow
     Write-Host ""
-    Read-Host "Press Enter to exit"
+    
     exit 1
 }
 
@@ -167,4 +167,146 @@ else {
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
-Read-Host "Press Enter to exit"
+
+
+# MongoDB Database Setup Script
+Write-Host "Setting up MongoDB database for social media application..." -ForegroundColor Cyan
+Write-Host ""
+
+# Create database and collection
+$mongoCommands = @"
+use social_mongo
+db.createCollection('user_activity_logs')
+db.user_activity_logs.createIndex({ userId: 1, timestamp: -1 })
+db.user_activity_logs.createIndex({ username: 1 })
+print('Database social_mongo created successfully')
+print('Collection user_activity_logs created with indexes')
+exit
+"@
+
+# Save commands to temp file
+$tempFile = [System.IO.Path]::GetTempFileName()
+$mongoCommands | Out-File -FilePath $tempFile -Encoding UTF8
+
+Write-Host "Creating MongoDB database and collections..." -ForegroundColor Yellow
+
+# Execute MongoDB commands
+try {
+    $result = mongosh --quiet --file $tempFile
+    Write-Host $result -ForegroundColor Green
+    Write-Host ""
+    Write-Host "✅ MongoDB database setup complete!" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Error setting up MongoDB database" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+} finally {
+    Remove-Item $tempFile -ErrorAction SilentlyContinue
+}
+
+Write-Host ""
+Write-Host "Verifying database creation..." -ForegroundColor Yellow
+
+# Verify
+$verifyCommands = @"
+use social_mongo
+db.getCollectionNames()
+exit
+"@
+
+$tempFile2 = [System.IO.Path]::GetTempFileName()
+$verifyCommands | Out-File -FilePath $tempFile2 -Encoding UTF8
+
+try {
+    $collections = mongosh --quiet --file $tempFile2
+    Write-Host "Collections in social_mongo:" -ForegroundColor Cyan
+    Write-Host $collections -ForegroundColor White
+} catch {
+    Write-Host "Could not verify collections" -ForegroundColor Yellow
+} finally {
+    Remove-Item $tempFile2 -ErrorAction SilentlyContinue
+}
+
+# Disable Elasticsearch Security for Local Development
+# This script modifies the Elasticsearch configuration to disable security
+
+Write-Host "Disabling Elasticsearch Security for Local Development..." -ForegroundColor Cyan
+Write-Host ""
+
+# Find Elasticsearch installation directory
+$esPath = "C:\ProgramData\chocolatey\lib\elasticsearch\tools\elasticsearch-9.2.5"
+if (-not (Test-Path $esPath)) {
+    $esPath = "C:\elasticsearch"
+}
+
+if (-not (Test-Path $esPath)) {
+    Write-Host "❌ Elasticsearch installation not found" -ForegroundColor Red
+    Write-Host "Please specify the correct path" -ForegroundColor Yellow
+    exit 1
+}
+
+$configFile = Join-Path $esPath "config\elasticsearch.yml"
+
+if (-not (Test-Path $configFile)) {
+    Write-Host "❌ elasticsearch.yml not found at: $configFile" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Found Elasticsearch config: $configFile" -ForegroundColor Green
+Write-Host ""
+
+# Backup original config
+$backupFile = "$configFile.backup"
+if (-not (Test-Path $backupFile)) {
+    Copy-Item $configFile $backupFile
+    Write-Host "✅ Created backup: $backupFile" -ForegroundColor Green
+}
+
+# Read current config
+$config = Get-Content $configFile
+
+# Check if security is already disabled
+if ($config -match "xpack.security.enabled:\s*false") {
+    Write-Host "✅ Security is already disabled" -ForegroundColor Green
+} else {
+    # Add security disable setting
+    Write-Host "Adding security disable setting..." -ForegroundColor Yellow
+    
+    $newConfig = @"
+# Disable security for local development
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+xpack.security.http.ssl.enabled: false
+xpack.security.transport.ssl.enabled: false
+
+"@
+    
+    $newConfig + ($config -join "`n") | Set-Content $configFile
+    Write-Host "✅ Security disabled in configuration" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "Restarting Elasticsearch service..." -ForegroundColor Yellow
+
+try {
+    net stop elasticsearch-service-x64
+    Start-Sleep -Seconds 2
+    net start elasticsearch-service-x64
+    Write-Host "✅ Elasticsearch service restarted" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Please restart Elasticsearch service manually" -ForegroundColor Yellow
+}
+
+Write-Host ""
+Write-Host "Waiting for Elasticsearch to start..." -ForegroundColor Yellow
+Start-Sleep -Seconds 10
+
+# Test connection
+Write-Host "Testing connection..." -ForegroundColor Yellow
+try {
+    $response = Invoke-WebRequest -Uri "http://localhost:9200" -UseBasicParsing
+    Write-Host "✅ Elasticsearch is accessible!" -ForegroundColor Green
+    Write-Host $response.Content -ForegroundColor White
+} catch {
+    Write-Host "❌ Elasticsearch is not accessible" -ForegroundColor Red
+    Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+}
