@@ -196,7 +196,7 @@ export default function ChatPage() {
         if (unreadMessages.length > 0) {
             unreadMessages.forEach(m => {
                 if (groupId) sendRead(m.sender, m.id, groupId);
-                else sendRead(myUsername, m.id);
+                else sendRead(m.sender, m.id);
             });
 
             // Optimistic update
