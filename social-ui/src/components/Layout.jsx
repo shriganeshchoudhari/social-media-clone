@@ -8,13 +8,13 @@ export default function Layout({ children }) {
     const hideSidebar = isChatPage || location.pathname === '/login' || location.pathname === '/register';
 
     return (
-        <div className={`min-h-screen bg-gray-100 dark:bg-gray-900 pt-16 transition-colors duration-200 ${isChatPage ? '' : 'pb-16 md:pb-0'}`}>
+        <div className={`${isChatPage ? 'h-screen overflow-hidden' : 'min-h-screen'} bg-gray-100 dark:bg-gray-900 pt-16 transition-colors duration-200 ${isChatPage ? '' : 'pb-16 md:pb-0'}`}>
             <div className={`mx-auto ${isChatPage ? 'max-w-5xl h-[calc(100vh-64px)]' : 'max-w-5xl p-4'}`}>
 
-                <div className={`grid grid-cols-1 ${!hideSidebar ? 'lg:grid-cols-4' : ''} gap-6`}>
+                <div className={`grid grid-cols-1 ${!hideSidebar ? 'lg:grid-cols-4' : ''} gap-6 ${isChatPage ? 'h-full' : ''}`}>
 
                     {/* Main Content */}
-                    <div className={`${!hideSidebar ? 'lg:col-span-3' : 'w-full'} ${isChatPage ? 'h-full' : ''}`}>
+                    <div className={`${!hideSidebar ? 'lg:col-span-3' : 'w-full'} ${isChatPage ? 'h-full flex-1 overflow-hidden' : ''}`}>
                         {children}
                     </div>
 
