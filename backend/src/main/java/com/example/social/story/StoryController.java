@@ -28,6 +28,7 @@ public class StoryController {
     }
 
     @GetMapping
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public java.util.List<StoryResponse> getFeedStories(Authentication authentication) {
         try {
             String username = authentication.getName();
@@ -44,6 +45,7 @@ public class StoryController {
     }
 
     @GetMapping("/users/{userId}")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public java.util.List<StoryResponse> getUserStories(@PathVariable Long userId, Authentication authentication) {
         User user = userRepository.findById(userId).orElseThrow();
         String username = authentication.getName();
