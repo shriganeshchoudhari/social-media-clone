@@ -162,10 +162,13 @@ export default function ChatPage() {
             }
         } else if (event.type === "READ") {
             setMessages(prev => prev.map(m => {
-                if (m.id === event.payload.messageId) {
-                    // For 1-on-1, just mark isRead
-                    if (!groupId) return { ...m, isRead: true };
-
+                if (!groupId) {
+                    // For 1-on-1, if the active chat user sent the read receipt,
+                    // mark all messages sent by us as read, bypassing fake ID issues.
+                    if (event.payload.receiver === username && m.sender === myUsername) {
+                        return { ...m, isRead: true };
+                    }
+                } else if (m.id === event.payload.messageId) {
                     // For Group, add to readBy list
                     const reader = event.payload.receiver; // In READ event, receiver field is used for readerUsername
                     const existingReadBy = m.readBy || [];
@@ -539,9 +542,9 @@ export default function ChatPage() {
                                             {isSelf && (
                                                 <span className="ml-1 text-xs">
                                                     {m.isRead ? (
-                                                        <span title="Read" className="text-blue-500">✓✓</span>
+                                                        <span title="Read" className="text-blue-200 dark:text-blue-100 drop-shadow-sm font-bold">✓✓</span>
                                                     ) : (
-                                                        <span title="Sent" className="text-gray-400">✓</span>
+                                                        <span title="Sent" className="text-blue-100 opacity-80 decoration-transparent">✓</span>
                                                     )}
                                                 </span>
                                             )}
