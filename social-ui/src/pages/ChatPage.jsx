@@ -36,12 +36,21 @@ export default function ChatPage() {
     const [showGroupDetails, setShowGroupDetails] = useState(false);
     const { startCall } = useCall();
 
-    // Voice Recording
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const lastTypedRef = useRef(0);
     const typingTimeoutRef = useRef(null);
+
+    // Scroll to bottom logic
+    const messagesEndRef = useRef(null);
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, isTyping]);
 
     // ... (refs)
 
@@ -593,6 +602,7 @@ export default function ChatPage() {
                             </div>
                         </div>
                     )}
+                    <div ref={messagesEndRef} />
                 </div>
 
                 {/* Input / Recording Area */}
