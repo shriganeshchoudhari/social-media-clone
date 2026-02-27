@@ -36,10 +36,16 @@ export default function StoryBar({ currentUser }) {
         if (!storyList) return;
         const groups = {};
         storyList.forEach(story => {
-            const username = story.user.username;
+            const username = story.username;
+            if (!username) return; // safeguard
+
             if (!groups[username]) {
                 groups[username] = {
-                    user: story.user,
+                    user: {
+                        id: story.userId,
+                        username: story.username,
+                        profileImageUrl: story.userProfileImage
+                    },
                     stories: []
                 };
             }
@@ -109,26 +115,32 @@ export default function StoryBar({ currentUser }) {
                 </div>
 
                 {/* Story Items */}
-                {Object.values(groupedStories).map((group, index) => (
-                    <div
-                        key={group.user.id}
-                        className="flex flex-col items-center min-w-[72px] cursor-pointer"
-                        onClick={() => openViewer(group.user.username)}
-                    >
-                        <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600 hover:scale-105 transition-transform">
-                            <div className="w-full h-full rounded-full border-2 border-white dark:border-gray-800 overflow-hidden bg-gray-200">
-                                <img
-                                    src={group.user.profileImageUrl || `https://ui-avatars.com/api/?name=${group.user.username}&background=random`}
-                                    alt={group.user.username}
-                                    className="w-full h-full object-cover"
-                                />
+                {Object.values(groupedStories)
+                    .sort((a, b) => {
+                        if (a.user.username === currentUser) return -1;
+                        if (b.user.username === currentUser) return 1;
+                        return 0; // maintain original relative order otherwise or sort by newest
+                    })
+                    .map((group, index) => (
+                        <div
+                            key={group.user.id}
+                            className="flex flex-col items-center min-w-[72px] cursor-pointer"
+                            onClick={() => openViewer(group.user.username)}
+                        >
+                            <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600 hover:scale-105 transition-transform">
+                                <div className="w-full h-full rounded-full border-2 border-white dark:border-gray-800 overflow-hidden bg-gray-200">
+                                    <img
+                                        src={group.user.profileImageUrl || `https://ui-avatars.com/api/?name=${group.user.username}&background=random`}
+                                        alt={group.user.username}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
                             </div>
+                            <span className="text-xs mt-2 text-gray-700 dark:text-gray-300 font-medium truncate w-16 text-center">
+                                {group.user.username === currentUser ? 'Your Story' : group.user.username}
+                            </span>
                         </div>
-                        <span className="text-xs mt-2 text-gray-700 dark:text-gray-300 font-medium truncate w-16 text-center">
-                            {group.user.username === currentUser ? 'Your Story' : group.user.username}
-                        </span>
-                    </div>
-                ))}
+                    ))}
             </div>
 
             {/* Creation Modal */}

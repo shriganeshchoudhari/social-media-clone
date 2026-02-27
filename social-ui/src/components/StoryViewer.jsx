@@ -25,7 +25,7 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
         setPollOptions(currentStory.poll?.options || []);
     }, [currentIndex, currentStory]);
 
-    const isOwner = currentUser === currentStory.user.username;
+    const isOwner = currentUser === currentStory.username;
 
     // Image helper
     const getImageUrl = (url) => {
@@ -128,13 +128,13 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
                 <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white">
                         <img
-                            src={currentStory.user.profileImageUrl || `https://ui-avatars.com/api/?name=${currentStory.user.username}`}
-                            alt={currentStory.user.username}
+                            src={currentStory.userProfileImage || `https://ui-avatars.com/api/?name=${currentStory.username}`}
+                            alt={currentStory.username}
                             className="w-full h-full object-cover"
                         />
                     </div>
                     <span className="text-white font-semibold text-sm shadow-black drop-shadow-md">
-                        {currentStory.user.username}
+                        {currentStory.username}
                     </span>
                     <span className="text-gray-300 text-xs shadow-black drop-shadow-md">
                         {new Date(currentStory.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -175,8 +175,8 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
                                             onClick={() => handleVote(opt.id)}
                                             disabled={!!votedOptionId}
                                             className={`relative w-full p-3 rounded-lg overflow-hidden border-2 transition-all ${votedOptionId
-                                                    ? (isVoted ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50")
-                                                    : "border-gray-200 hover:bg-gray-50 bg-white"
+                                                ? (isVoted ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50")
+                                                : "border-gray-200 hover:bg-gray-50 bg-white"
                                                 }`}
                                         >
                                             {/* Progress Bar Background */}
