@@ -134,6 +134,20 @@ export default function Profile() {
         }
     };
 
+    const handleFollowToggle = async () => {
+        try {
+            await toggleFollow(profile.username);
+            setProfile(prev => ({
+                ...prev,
+                following: !prev.following,
+                followersCount: prev.following ? prev.followersCount - 1 : prev.followersCount + 1
+            }));
+        } catch (err) {
+            console.error("Failed to toggle follow status", err);
+            alert("Failed to update follow status.");
+        }
+    };
+
     return (
         <Layout>
             <Navbar />
@@ -184,6 +198,27 @@ export default function Profile() {
                                 )}
                             </div>
                         </div>
+
+                        {/* Action Buttons */}
+                        {!isMe && (
+                            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0 shrink-0 self-end">
+                                <button
+                                    onClick={() => navigate(`/chat/${profile.username}`)}
+                                    className="px-5 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white text-gray-800 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <span>💬</span> Message
+                                </button>
+                                <button
+                                    onClick={handleFollowToggle}
+                                    className={`px-5 py-2 rounded-full font-medium transition-colors flex items-center justify-center gap-2 ${profile.following
+                                            ? "bg-gray-100 hover:bg-red-50 text-gray-800 hover:text-red-600 border border-gray-200 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                            : "bg-blue-600 hover:bg-blue-700 text-white"
+                                        }`}
+                                >
+                                    {profile.following ? "Following" : "Follow"}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <button

@@ -10,6 +10,7 @@ import PostCard from "../components/PostCard";
 import VerificationBadge from "../components/VerificationBadge";
 
 export default function Search() {
+    const navigate = useNavigate();
     const [params] = useSearchParams();
     const query = params.get("q");
 
@@ -132,23 +133,34 @@ export default function Search() {
                             key={u.username}
                             className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm flex flex-col transition-colors duration-200"
                         >
-                            <div className="flex items-center gap-3">
-                                <Link to={`/profile/${u.username}`}>
-                                    <img
-                                        src={u.profileImageUrl
-                                            ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `${API_BASE_URL}${u.profileImageUrl}`)
-                                            : `https://ui-avatars.com/api/?name=${u.username}&background=random`}
-                                        alt={u.username}
-                                        className="w-10 h-10 rounded-full object-cover"
-                                    />
-                                </Link>
-                                <div>
-                                    <Link to={`/profile/${u.username}`} className="text-lg font-bold text-gray-900 dark:text-white hover:underline">
-                                        {u.username}
-                                        {u.verified && <VerificationBadge />}
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-3">
+                                    <Link to={`/profile/${u.username}`}>
+                                        <img
+                                            src={u.profileImageUrl
+                                                ? (u.profileImageUrl.startsWith("http") ? u.profileImageUrl : `${API_BASE_URL}${u.profileImageUrl}`)
+                                                : `https://ui-avatars.com/api/?name=${u.username}&background=random`}
+                                            alt={u.username}
+                                            className="w-10 h-10 rounded-full object-cover"
+                                        />
                                     </Link>
-                                    <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{u.bio || "No bio"}</p>
+                                    <div>
+                                        <Link to={`/profile/${u.username}`} className="text-lg font-bold text-gray-900 dark:text-white hover:underline">
+                                            {u.username}
+                                            {u.verified && <VerificationBadge />}
+                                        </Link>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{u.bio || "No bio"}</p>
+                                    </div>
                                 </div>
+
+                                {u.username !== currentUser && (
+                                    <button
+                                        onClick={() => navigate(`/chat/${u.username}`)}
+                                        className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 rounded-full text-sm font-medium transition-colors shrink-0 flex items-center gap-1"
+                                    >
+                                        <span>💬</span> <span className="hidden sm:inline">Message</span>
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
