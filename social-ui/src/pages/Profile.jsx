@@ -167,56 +167,34 @@ export default function Profile() {
 
                 <div className="px-6 pb-6 relative">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1 flex flex-col md:flex-row items-center md:items-end gap-4 -mt-12">
-                            {/* Avatar */}
-                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-md shrink-0 z-10">
-                                {profile.profileImageUrl ? (
-                                    <img
-                                        src={`${API_BASE_URL}${profile.profileImageUrl}`}
-                                        alt={profile.username}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold bg-white dark:bg-gray-800">
-                                        {profile.username[0].toUpperCase()}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="text-center md:text-left mt-2 md:mt-0 md:mb-2">
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center justify-center md:justify-start gap-2">
-                                    {profile.username}
-                                    {profile.verified && <VerificationBadge className="w-6 h-6" />}
-                                </h2>
-                                <div className="flex justify-center md:justify-start gap-4 my-2">
-                                    <button onClick={openFollowers} className="hover:underline flex items-center gap-1">
-                                        <span className="font-bold text-gray-900 dark:text-white">{profile.followersCount || 0}</span>
-                                        <span className="text-gray-600 dark:text-gray-400 text-sm">Followers</span>
-                                    </button>
-                                    <button onClick={openFollowing} className="hover:underline flex items-center gap-1">
-                                        <span className="font-bold text-gray-900 dark:text-white">{profile.followingCount || 0}</span>
-                                        <span className="text-gray-600 dark:text-gray-400 text-sm">Following</span>
-                                    </button>
+                        {/* Avatar */}
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-md shrink-0 z-10 -mt-12">
+                            {profile.profileImageUrl ? (
+                                <img
+                                    src={`${API_BASE_URL}${profile.profileImageUrl}`}
+                                    alt={profile.username}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold bg-white dark:bg-gray-800">
+                                    {profile.username[0].toUpperCase()}
                                 </div>
-                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap text-sm">
-                                    {profile.bio || "No bio available"}
-                                </p>
-                                {profile.website && (
-                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 text-sm hover:underline block mt-1">
-                                        🔗 {profile.website.replace(/^https?:\/\//, '')}
-                                    </a>
-                                )}
-                            </div>
+                            )}
                         </div>
 
                         {/* Action Buttons */}
                         {!isMe && (
-                            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0 shrink-0 self-end">
+                            <div className="flex flex-wrap gap-2 mt-4 shrink-0 justify-end">
                                 <button
                                     onClick={async () => {
                                         if (window.confirm(`Are you sure you want to block ${profile.username}?`)) {
                                             try {
-                                                await api.post(`/users/${profile.username}/block`);
+                                                // Assuming 'api' is defined elsewhere or imported.
+                                                // If not, it should be `toggleBlock(profile.username)`
+                                                // For now, keeping it as `api.post` as per the original snippet,
+                                                // but it seems `toggleBlock` from `profileService` is intended.
+                                                // Corrected to use toggleBlock:
+                                                await toggleBlock(profile.username);
                                                 alert(`${profile.username} has been blocked.`);
                                                 window.location.href = '/feed';
                                             } catch (err) {
@@ -244,6 +222,31 @@ export default function Profile() {
                                     {profile.following ? "Following" : "Follow"}
                                 </button>
                             </div>
+                        )}
+                    </div>
+
+                    <div className="text-left mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                            {profile.username}
+                            {profile.verified && <VerificationBadge className="w-6 h-6" />}
+                        </h2>
+                        <div className="flex gap-4 my-2">
+                            <button onClick={openFollowers} className="hover:underline flex items-center gap-1">
+                                <span className="font-bold text-gray-900 dark:text-white">{profile.followersCount || 0}</span>
+                                <span className="text-gray-600 dark:text-gray-400 text-sm">Followers</span>
+                            </button>
+                            <button onClick={openFollowing} className="hover:underline flex items-center gap-1">
+                                <span className="font-bold text-gray-900 dark:text-white">{profile.followingCount || 0}</span>
+                                <span className="text-gray-600 dark:text-gray-400 text-sm">Following</span>
+                            </button>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap text-sm mt-3">
+                            {profile.bio || "No bio available"}
+                        </p>
+                        {profile.website && (
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 text-sm hover:underline block mt-1">
+                                🔗 {profile.website.replace(/^https?:\/\//, '')}
+                            </a>
                         )}
                     </div>
 

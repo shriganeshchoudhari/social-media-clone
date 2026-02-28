@@ -28,6 +28,7 @@ public class FollowService {
         }
 
         @Transactional
+        @org.springframework.cache.annotation.CacheEvict(value = "userProfiles", key = "#followingUsername")
         public void toggleFollow(String followerUsername, String followingUsername) {
 
                 if (followerUsername.equals(followingUsername)) {
