@@ -46,17 +46,26 @@ export default function Search() {
 
         if (activeTab === "users") {
             searchUsers(query)
-                .then(res => setUserResults(res.data.content))
+                .then(res => {
+                    const data = res.data;
+                    setUserResults(Array.isArray(data) ? data : (data?.content || []));
+                })
                 .catch(() => setError("Failed to search users."))
                 .finally(() => setLoading(false));
         } else if (activeTab === "posts") {
             searchPosts(query)
-                .then(res => setPostResults(res.data.content))
+                .then(res => {
+                    const data = res.data;
+                    setPostResults(Array.isArray(data) ? data : (data?.content || []));
+                })
                 .catch(() => setError("Failed to search posts."))
                 .finally(() => setLoading(false));
         } else if (activeTab === "groups") {
             searchGroups(query)
-                .then(res => setGroupResults(res.data))
+                .then(res => {
+                    const data = res.data;
+                    setGroupResults(Array.isArray(data) ? data : (data?.content || []));
+                })
                 .catch(() => setError("Failed to search groups."))
                 .finally(() => setLoading(false));
         }
@@ -104,13 +113,13 @@ export default function Search() {
 
                 {!loading && !error && (
                     <>
-                        {activeTab === "users" && userResults.length === 0 && (
+                        {activeTab === "users" && (!userResults || userResults.length === 0) && (
                             <p className="text-gray-500">No users found.</p>
                         )}
-                        {activeTab === "posts" && postResults.length === 0 && (
+                        {activeTab === "posts" && (!postResults || postResults.length === 0) && (
                             <p className="text-gray-500">No posts found.</p>
                         )}
-                        {activeTab === "groups" && groupResults.length === 0 && (
+                        {activeTab === "groups" && (!groupResults || groupResults.length === 0) && (
                             <p className="text-gray-500">No communities found.</p>
                         )}
                     </>
