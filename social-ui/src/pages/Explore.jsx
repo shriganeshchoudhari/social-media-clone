@@ -7,8 +7,11 @@ import CommentList from "../components/CommentList";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from '../api/config';
 
+import { getTrendingTopics } from "../api/postService";
+
 export default function Explore() {
     const [posts, setPosts] = useState([]);
+    const [trending, setTrending] = useState([]);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -23,6 +26,13 @@ export default function Explore() {
             setHasMore(!res.data.last);
             setPage(1);
             setLoading(false);
+
+            try {
+                const trendRes = await getTrendingTopics();
+                setTrending(trendRes.data);
+            } catch (err) {
+                console.error("Failed to load trending topics", err);
+            }
         };
         init();
     }, []);
@@ -75,6 +85,21 @@ export default function Explore() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">✨ Recommended for you</h2>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">Posts based on your interests</p>
             </div>
+
+            {/* Trending Topics Section */}
+            {trending.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">🔥 Trending Topics</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {trending.map((t, idx) => (
+                            <div key={idx} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 shadow-sm flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition" onClick={() => window.location.href = `/search?q=${encodeURIComponent(t.hashtag)}`}>
+                                <span className="text-blue-600 dark:text-blue-400 font-semibold">{t.hashtag}</span>
+                                <span className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{t.postCount} posts</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {posts.map((p, i) => {
                 const isLast = i === posts.length - 1;

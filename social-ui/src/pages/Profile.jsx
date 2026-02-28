@@ -188,6 +188,16 @@ export default function Profile() {
                                     {profile.username}
                                     {profile.verified && <VerificationBadge className="w-6 h-6" />}
                                 </h2>
+                                <div className="flex justify-center md:justify-start gap-4 my-2">
+                                    <button onClick={openFollowers} className="hover:underline flex items-center gap-1">
+                                        <span className="font-bold text-gray-900 dark:text-white">{profile.followersCount || 0}</span>
+                                        <span className="text-gray-600 dark:text-gray-400 text-sm">Followers</span>
+                                    </button>
+                                    <button onClick={openFollowing} className="hover:underline flex items-center gap-1">
+                                        <span className="font-bold text-gray-900 dark:text-white">{profile.followingCount || 0}</span>
+                                        <span className="text-gray-600 dark:text-gray-400 text-sm">Following</span>
+                                    </button>
+                                </div>
                                 <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap text-sm">
                                     {profile.bio || "No bio available"}
                                 </p>
@@ -203,6 +213,22 @@ export default function Profile() {
                         {!isMe && (
                             <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0 shrink-0 self-end">
                                 <button
+                                    onClick={async () => {
+                                        if (window.confirm(`Are you sure you want to block ${profile.username}?`)) {
+                                            try {
+                                                await api.post(`/users/${profile.username}/block`);
+                                                alert(`${profile.username} has been blocked.`);
+                                                window.location.href = '/feed';
+                                            } catch (err) {
+                                                alert("Failed to block user.");
+                                            }
+                                        }
+                                    }}
+                                    className="px-5 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900 dark:text-red-200 text-red-600 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <span>🚫</span> Block
+                                </button>
+                                <button
                                     onClick={() => navigate(`/chat/${profile.username}`)}
                                     className="px-5 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white text-gray-800 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
                                 >
@@ -211,8 +237,8 @@ export default function Profile() {
                                 <button
                                     onClick={handleFollowToggle}
                                     className={`px-5 py-2 rounded-full font-medium transition-colors flex items-center justify-center gap-2 ${profile.following
-                                            ? "bg-gray-100 hover:bg-red-50 text-gray-800 hover:text-red-600 border border-gray-200 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                                            : "bg-blue-600 hover:bg-blue-700 text-white"
+                                        ? "bg-gray-100 hover:bg-red-50 text-gray-800 hover:text-red-600 border border-gray-200 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                        : "bg-blue-600 hover:bg-blue-700 text-white"
                                         }`}
                                 >
                                     {profile.following ? "Following" : "Follow"}

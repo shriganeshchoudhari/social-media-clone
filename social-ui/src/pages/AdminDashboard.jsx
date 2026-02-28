@@ -217,6 +217,12 @@ export default function AdminDashboard() {
                                         {((localStorage.getItem("token") && JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role === 'ADMIN')) && (
                                             <>
                                                 <button
+                                                    onClick={() => api.post(`/users/${u.username}/verify`).then(() => alert(`Verified ${u.username}!`))}
+                                                    className="ml-2 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                                >
+                                                    Verify
+                                                </button>
+                                                <button
                                                     onClick={() => api.post(`/admin/suspend/${u.username}?days=7`).then(() => alert(`Suspended ${u.username} for 7 days`))}
                                                     className="ml-2 text-sm bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700"
                                                 >
