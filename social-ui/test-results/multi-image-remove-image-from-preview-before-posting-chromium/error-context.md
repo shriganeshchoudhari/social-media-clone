@@ -23,17 +23,18 @@
       - generic [ref=e39]:
         - button "Toggle Theme" [ref=e40] [cursor=pointer]:
           - img [ref=e41]
-        - button "P" [ref=e45] [cursor=pointer]:
-          - generic [ref=e46]: P
+        - button "R" [ref=e45] [cursor=pointer]:
+          - generic [ref=e46]: R
           - img [ref=e47]
   - generic [ref=e49]:
     - generic [ref=e52] [cursor=pointer]:
-      - img [ref=e55]
+      - button [ref=e55]
       - generic [ref=e56]: Add Story
     - generic [ref=e57]:
       - generic [ref=e58]:
-        - textbox "Post content" [ref=e59]:
+        - textbox "Post content" [active] [ref=e59]:
           - /placeholder: What's on your mind?
+          - text: Testing remove
         - generic [ref=e60]:
           - generic [ref=e61]:
             - generic "Add Image" [ref=e62] [cursor=pointer]:
@@ -44,6 +45,6 @@
               - generic [ref=e69]: Add Video
             - button "Create a poll" [ref=e70] [cursor=pointer]:
               - img [ref=e71]
-          - button "Post" [disabled] [ref=e73]
+          - button "Post" [ref=e73] [cursor=pointer]
       - generic [ref=e74]: No posts yet.
 ```

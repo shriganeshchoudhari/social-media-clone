@@ -23,27 +23,30 @@
       - generic [ref=e39]:
         - button "Toggle Theme" [ref=e40] [cursor=pointer]:
           - img [ref=e41]
-        - button "B" [ref=e45] [cursor=pointer]:
-          - generic [ref=e46]: B
+        - button "M" [ref=e45] [cursor=pointer]:
+          - generic [ref=e46]: M
           - img [ref=e47]
   - generic [ref=e49]:
     - generic [ref=e52] [cursor=pointer]:
-      - img [ref=e55]
-      - generic [ref=e56]: Add Story
-    - generic [ref=e57]:
-      - generic [ref=e58]:
-        - textbox "Post content" [ref=e59]:
+      - generic [ref=e54]:
+        - img [ref=e55]
+        - button [ref=e56]
+      - generic [ref=e57]: Add Story
+    - generic [ref=e58]:
+      - generic [ref=e59]:
+        - textbox "Post content" [active] [ref=e60]:
           - /placeholder: What's on your mind?
-        - generic [ref=e60]:
-          - generic [ref=e61]:
-            - generic "Add Image" [ref=e62] [cursor=pointer]:
-              - img [ref=e63]
-              - generic [ref=e65]: Add Image
-            - generic "Add Video" [ref=e66] [cursor=pointer]:
-              - img [ref=e67]
-              - generic [ref=e69]: Add Video
-            - button "Create a poll" [ref=e70] [cursor=pointer]:
-              - img [ref=e71]
-          - button "Post" [disabled] [ref=e73]
-      - generic [ref=e74]: No posts yet.
+          - text: Check out these 1772346356737 photos!
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic "Add Image" [ref=e63] [cursor=pointer]:
+              - img [ref=e64]
+              - generic [ref=e66]: Add Image
+            - generic "Add Video" [ref=e67] [cursor=pointer]:
+              - img [ref=e68]
+              - generic [ref=e70]: Add Video
+            - button "Create a poll" [ref=e71] [cursor=pointer]:
+              - img [ref=e72]
+          - button "Post" [ref=e74] [cursor=pointer]
+      - generic [ref=e75]: No posts yet.
 ```
