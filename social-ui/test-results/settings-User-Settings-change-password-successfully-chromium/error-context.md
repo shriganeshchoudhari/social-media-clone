@@ -1,0 +1,49 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e6]:
+  - navigation [ref=e7]:
+    - generic [ref=e9]:
+      - heading "Social" [level=1] [ref=e11] [cursor=pointer]
+      - generic [ref=e12]:
+        - search [ref=e13]:
+          - img [ref=e14]
+          - textbox "Search users" [ref=e17]:
+            - /placeholder: Search users...
+        - navigation "Main Navigation" [ref=e18]:
+          - button "Feed" [ref=e19] [cursor=pointer]:
+            - img [ref=e20]
+          - button "Inbox" [ref=e24] [cursor=pointer]:
+            - img [ref=e25]
+          - button "Explore Trending" [ref=e27] [cursor=pointer]: 🔥
+          - button "Communities" [ref=e28] [cursor=pointer]:
+            - img [ref=e29]
+          - button "Notifications" [ref=e35] [cursor=pointer]:
+            - img [ref=e36]
+      - generic [ref=e39]:
+        - button "Toggle Theme" [ref=e40] [cursor=pointer]:
+          - img [ref=e41]
+        - button "P" [ref=e45] [cursor=pointer]:
+          - generic [ref=e46]: P
+          - img [ref=e47]
+  - generic [ref=e49]:
+    - generic [ref=e52] [cursor=pointer]:
+      - img [ref=e55]
+      - generic [ref=e56]: Add Story
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - textbox "Post content" [ref=e59]:
+          - /placeholder: What's on your mind?
+        - generic [ref=e60]:
+          - generic [ref=e61]:
+            - generic "Add Image" [ref=e62] [cursor=pointer]:
+              - img [ref=e63]
+              - generic [ref=e65]: Add Image
+            - generic "Add Video" [ref=e66] [cursor=pointer]:
+              - img [ref=e67]
+              - generic [ref=e69]: Add Video
+            - button "Create a poll" [ref=e70] [cursor=pointer]:
+              - img [ref=e71]
+          - button "Post" [disabled] [ref=e73]
+      - generic [ref=e74]: No posts yet.
+```

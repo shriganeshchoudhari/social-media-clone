@@ -44,8 +44,12 @@ public class ChatService {
         @org.springframework.transaction.annotation.Transactional
         public void sendMessage(String senderUsername, String receiverUsername, String content, String voiceUrl) {
 
-                User sender = userRepository.findByUsername(senderUsername).orElseThrow();
-                User receiver = userRepository.findByUsername(receiverUsername).orElseThrow();
+                User sender = userRepository.findByUsername(senderUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + senderUsername));
+                User receiver = userRepository.findByUsername(receiverUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + receiverUsername));
 
                 if (blockRepository.existsByBlockerAndBlocked(receiver, sender)) {
                         throw new RuntimeException("You are blocked");
@@ -104,8 +108,10 @@ public class ChatService {
         public org.springframework.data.domain.Page<MessageResponse> getConversation(String me, String other, int page,
                         int size) {
 
-                User user1 = userRepository.findByUsername(me).orElseThrow();
-                User user2 = userRepository.findByUsername(other).orElseThrow();
+                User user1 = userRepository.findByUsername(me)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + me));
+                User user2 = userRepository.findByUsername(other)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + other));
 
                 // Mark messages as read
                 messageRepository.markRead(user1, user2);
@@ -138,7 +144,8 @@ public class ChatService {
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public List<com.example.social.chat.dto.ConversationResponse> inbox(String username) {
                 System.out.println("Fetching inbox for: " + username);
-                User me = userRepository.findByUsername(username).orElseThrow();
+                User me = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + username));
 
                 List<Message> messages = messageRepository.findRecentMessages(me);
                 System.out.println("Total messages found: " + messages.size());
@@ -180,8 +187,12 @@ public class ChatService {
         public void sendMessageWithImage(String senderUsername, String receiverUsername,
                         String content, org.springframework.web.multipart.MultipartFile image) {
 
-                User sender = userRepository.findByUsername(senderUsername).orElseThrow();
-                User receiver = userRepository.findByUsername(receiverUsername).orElseThrow();
+                User sender = userRepository.findByUsername(senderUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + senderUsername));
+                User receiver = userRepository.findByUsername(receiverUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + receiverUsername));
 
                 String imageUrl = null;
                 if (image != null && !image.isEmpty()) {
@@ -228,8 +239,12 @@ public class ChatService {
 
         public void sendTyping(String senderUsername, String receiverUsername, Long groupId) {
                 if (groupId != null) {
-                        ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                        User sender = userRepository.findByUsername(senderUsername).orElseThrow();
+                        ChatGroup group = chatGroupRepository.findById(groupId)
+                                        .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                        "Group not found: " + groupId));
+                        User sender = userRepository.findByUsername(senderUsername)
+                                        .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                        "User not found: " + senderUsername));
 
                         com.example.social.chat.dto.SocketEvent event = new com.example.social.chat.dto.SocketEvent(
                                         com.example.social.chat.dto.SocketEventType.TYPING,
@@ -257,11 +272,15 @@ public class ChatService {
         @org.springframework.transaction.annotation.Transactional
         public void sendReadReceipt(String readerUsername, String originalSenderUsername, Long messageId,
                         Long groupId) {
-                User reader = userRepository.findByUsername(readerUsername).orElseThrow();
+                User reader = userRepository.findByUsername(readerUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + readerUsername));
 
                 if (groupId != null) {
                         // Group Read Receipt
-                        Message message = messageRepository.findById(messageId).orElseThrow();
+                        Message message = messageRepository.findById(messageId)
+                                        .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                        "Message not found: " + messageId));
 
                         // 1. Save Read Status if not exists
                         if (messageReadStatusRepository.findByMessageAndUser(message, reader).isEmpty()) {
@@ -270,7 +289,9 @@ public class ChatService {
                         }
 
                         // 2. Broadcast to Group
-                        ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
+                        ChatGroup group = chatGroupRepository.findById(groupId)
+                                        .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                        "Group not found: " + groupId));
 
                         com.example.social.chat.dto.SocketEvent event = new com.example.social.chat.dto.SocketEvent(
                                         com.example.social.chat.dto.SocketEventType.READ,
@@ -290,7 +311,9 @@ public class ChatService {
 
                 } else {
                         // 1-on-1 Read Receipt
-                        User originalSender = userRepository.findByUsername(originalSenderUsername).orElseThrow();
+                        User originalSender = userRepository.findByUsername(originalSenderUsername)
+                                        .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                        "User not found: " + originalSenderUsername));
                         messageRepository.markRead(reader, originalSender);
 
                         // Broadcast event
@@ -308,7 +331,8 @@ public class ChatService {
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public List<com.example.social.chat.dto.ChatGroupResponse> getMyGroups(String username) {
-                User user = userRepository.findByUsername(username).orElseThrow();
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + username));
                 return chatGroupRepository.findByParticipant(user)
                                 .stream()
                                 .map(this::toDto)
@@ -319,7 +343,9 @@ public class ChatService {
         public com.example.social.chat.dto.ChatGroupResponse createGroup(String name, String description, String rules,
                         boolean isPublic, String creatorUsername,
                         List<String> participantUsernames) {
-                User creator = userRepository.findByUsername(creatorUsername).orElseThrow();
+                User creator = userRepository.findByUsername(creatorUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + creatorUsername));
                 ChatGroup group = new ChatGroup(name, creator);
                 group.setDescription(description);
                 group.setRules(rules);
@@ -370,8 +396,11 @@ public class ChatService {
 
         @org.springframework.transaction.annotation.Transactional
         public void sendGroupMessage(Long groupId, String senderUsername, String content, String voiceUrl) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                User sender = userRepository.findByUsername(senderUsername).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
+                User sender = userRepository.findByUsername(senderUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + senderUsername));
 
                 if (!group.getParticipants().contains(sender)) {
                         throw new RuntimeException("You are not a member of this group");
@@ -415,8 +444,11 @@ public class ChatService {
         @org.springframework.transaction.annotation.Transactional
         public void sendGroupMessageWithImage(Long groupId, String senderUsername, String content,
                         org.springframework.web.multipart.MultipartFile image) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                User sender = userRepository.findByUsername(senderUsername).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
+                User sender = userRepository.findByUsername(senderUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + senderUsername));
 
                 if (!group.getParticipants().contains(sender)) {
                         throw new RuntimeException("You are not a member of this group");
@@ -464,7 +496,8 @@ public class ChatService {
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public org.springframework.data.domain.Page<MessageResponse> getGroupMessages(Long groupId, int page,
                         int size) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
                 org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
                                 size);
 
@@ -492,7 +525,8 @@ public class ChatService {
 
         @org.springframework.transaction.annotation.Transactional(readOnly = true)
         public com.example.social.chat.dto.ChatGroupResponse getGroup(Long groupId) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
                 return toDto(group);
         }
 
@@ -500,8 +534,11 @@ public class ChatService {
 
         @org.springframework.transaction.annotation.Transactional
         public void addReaction(Long messageId, String username, String reactionType) {
-                Message message = messageRepository.findById(messageId).orElseThrow();
-                User user = userRepository.findByUsername(username).orElseThrow();
+                Message message = messageRepository.findById(messageId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "Message not found: " + messageId));
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + username));
 
                 // Check if already reacted
                 java.util.Optional<MessageReaction> existing = messageReactionRepository.findByMessageAndUser(message,
@@ -523,8 +560,11 @@ public class ChatService {
         // Member Management
         @org.springframework.transaction.annotation.Transactional
         public void addGroupMember(Long groupId, String adderUsername, String newMemberUsername) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                User adder = userRepository.findByUsername(adderUsername).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
+                User adder = userRepository.findByUsername(adderUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + adderUsername));
 
                 if (!group.getAdmins().contains(adder) && !group.getCreator().equals(adder)) {
                         throw new RuntimeException("Only admins can add members");
@@ -545,9 +585,14 @@ public class ChatService {
 
         @org.springframework.transaction.annotation.Transactional
         public void removeGroupMember(Long groupId, String removerUsername, String memberToRemoveUsername) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                User remover = userRepository.findByUsername(removerUsername).orElseThrow();
-                User memberToRemove = userRepository.findByUsername(memberToRemoveUsername).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
+                User remover = userRepository.findByUsername(removerUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + removerUsername));
+                User memberToRemove = userRepository.findByUsername(memberToRemoveUsername)
+                                .orElseThrow(() -> new java.util.NoSuchElementException(
+                                                "User not found: " + memberToRemoveUsername));
 
                 if (!group.getAdmins().contains(remover) && !group.getCreator().equals(remover)) {
                         throw new RuntimeException("Only admins can remove members");
@@ -561,8 +606,10 @@ public class ChatService {
 
         @org.springframework.transaction.annotation.Transactional
         public void leaveGroup(Long groupId, String username) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                User user = userRepository.findByUsername(username).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + username));
 
                 if (!group.getParticipants().contains(user)) {
                         throw new RuntimeException("You are not in this group");
@@ -582,8 +629,10 @@ public class ChatService {
         public com.example.social.chat.dto.ChatGroupResponse updateGroup(Long groupId, String name, String description,
                         String rules, Boolean isPublic, org.springframework.web.multipart.MultipartFile image,
                         String username) {
-                ChatGroup group = chatGroupRepository.findById(groupId).orElseThrow();
-                User user = userRepository.findByUsername(username).orElseThrow();
+                ChatGroup group = chatGroupRepository.findById(groupId)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("Group not found: " + groupId));
+                User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new java.util.NoSuchElementException("User not found: " + username));
 
                 if (!group.getAdmins().contains(user) && !group.getCreator().equals(user)) {
                         throw new RuntimeException("Only admins can update group details");

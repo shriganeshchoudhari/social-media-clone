@@ -69,7 +69,7 @@ test.describe('Account Management & Privacy', () => {
         await expect(page.locator('text=Secret Post content')).toBeVisible();
     });
 
-    test.only('account deletion', async ({ page }) => {
+    test('account deletion', async ({ page }) => {
         // 1. Register User C (Disposable)
         const timestamp = Date.now();
         const userC = `deleted_${timestamp}`;
