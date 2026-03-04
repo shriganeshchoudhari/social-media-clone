@@ -63,6 +63,7 @@ export default function CommentList({ postId }) {
             try {
                 const payload = JSON.parse(atob(token.split(".")[1]));
                 setCurrentUser(payload.sub);
+            // eslint-disable-next-line no-empty
             } catch (e) { }
         }
     }, []);

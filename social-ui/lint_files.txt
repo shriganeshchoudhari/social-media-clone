@@ -1,0 +1,15 @@
+F:\DEVOPS\social-media-clone\social-ui\src\__tests__\Navbar.test.jsx 1:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\components\CommentList.jsx 66:no-empty
+F:\DEVOPS\social-media-clone\social-ui\src\components\CreatePost.jsx 12:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\components\GroupDetailsModal.jsx 27:react-hooks/exhaustive-deps
+F:\DEVOPS\social-media-clone\social-ui\src\components\Navbar.jsx 21:no-unused-vars, 57:no-unused-vars, 84:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\components\NotificationDropdown.jsx 1:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\components\PostList.jsx 75:react-hooks/exhaustive-deps
+F:\DEVOPS\social-media-clone\social-ui\src\components\StoryBar.jsx 8:no-unused-vars, 9:no-unused-vars, 24:react-hooks/exhaustive-deps, 124:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\components\StoryViewer.jsx 65:react-hooks/exhaustive-deps
+F:\DEVOPS\social-media-clone\social-ui\src\context\CallContext.jsx 33:react-hooks/exhaustive-deps, 164:no-undef, 164:no-undef, 190:no-undef, 190:no-undef
+F:\DEVOPS\social-media-clone\social-ui\src\hooks\useNotificationSocket.js 43:react-hooks/exhaustive-deps
+F:\DEVOPS\social-media-clone\social-ui\src\pages\ChatPage.jsx 31:no-unused-vars, 122:react-hooks/exhaustive-deps, 331:no-unused-vars, 661:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\pages\GroupDetails.jsx 23:no-unused-vars, 23:no-unused-vars, 217:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\pages\Profile.jsx 18:no-unused-vars, 20:no-unused-vars
+F:\DEVOPS\social-media-clone\social-ui\src\pages\Settings.jsx 3:no-unused-vars, 48:react-hooks/exhaustive-deps

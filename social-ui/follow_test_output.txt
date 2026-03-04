@@ -1,0 +1,84 @@
+﻿
+Running 6 tests using 1 worker
+
+[1A[2K[1/6] [chromium] ΓÇ║ tests\follow-unfollow.spec.js:45:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_01 - Click Follow on another user profile
+[1A[2K[2/6] [chromium] ΓÇ║ tests\follow-unfollow.spec.js:66:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed
+[1A[2K  1) [chromium] ΓÇ║ tests\follow-unfollow.spec.js:66:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=Hello from userB_1772390906920').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=Hello from userB_1772390906920').first()[22m
+
+
+      75 |         // Go home
+      76 |         await page.goto(`${BASE_URL}/feed`);
+    > 77 |         await expect(page.locator(`text=Hello from ${targetUser}`).first()).toBeVisible();
+         |                                                                             ^
+      78 |     });
+      79 |
+      80 |     test('TC_FOL_03 - Click Unfollow on a followed user profile', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:77:77
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\error-context.md
+
+
+[1A[2K[3/6] [chromium] ΓÇ║ tests\follow-unfollow.spec.js:80:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_03 - Click Unfollow on a followed user profile
+[1A[2K[4/6] [chromium] ΓÇ║ tests\follow-unfollow.spec.js:91:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_04 - Follow generates a follow notification for target user
+[1A[2K  2) [chromium] ΓÇ║ tests\follow-unfollow.spec.js:91:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_04 - Follow generates a follow notification for target user 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=userA_1772390922029 followed you').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=userA_1772390922029 followed you').first()[22m
+
+
+      105 |         await page.goto(`${BASE_URL}/notifications`);
+      106 |         await expect(page.locator(`text=started following you`).first()).toBeVisible({ timeout: 5000 }).catch(async () => {
+    > 107 |             await expect(page.locator(`text=${currentUser} followed you`).first()).toBeVisible();
+          |                                                                                    ^
+      108 |         });
+      109 |     });
+      110 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:107:84
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:106:9
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-a9865-otification-for-target-user-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-a9865-otification-for-target-user-chromium\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-a9865-otification-for-target-user-chromium\error-context.md
+
+
+[1A[2K[5/6] [chromium] ΓÇ║ tests\follow-unfollow.spec.js:111:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_05 - Attempt to follow yourself
+[1A[2K[6/6] [chromium] ΓÇ║ tests\follow-unfollow.spec.js:120:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_06 - Follow a private user
+[1A[2K  2 failed
+    [chromium] ΓÇ║ tests\follow-unfollow.spec.js:66:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed 
+    [chromium] ΓÇ║ tests\follow-unfollow.spec.js:91:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_04 - Follow generates a follow notification for target user 
+  4 passed (47.6s)
+
+[36m  Serving HTML report at http://localhost:1567. Press Ctrl+C to quit.[39m

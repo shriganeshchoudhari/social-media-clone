@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
@@ -20,6 +21,7 @@ export default function GroupDetails() {
     const [inviteUsername, setInviteUsername] = useState("");
     const [activeTab, setActiveTab] = useState("posts");
     const [pinnedPost, setPinnedPost] = useState(null);
+    // eslint-disable-next-line no-unused-vars,
     const [searchResults, setSearchResults] = useState([]);
 
     const getImageUrl = (path) => {

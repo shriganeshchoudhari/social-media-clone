@@ -2,148 +2,143 @@ import { test, expect } from '@playwright/test';
 
 const BASE_URL = 'http://localhost:5173';
 
-/**
- * Follow / Unfollow Module Tests
- * - Follow another user (button toggles to Unfollow)
- * - Follower count increases on their profile
- * - Followed user's posts appear in home feed
- * - Unfollow reverts button and count
- */
-test.describe('Follow / Unfollow', () => {
+test.describe('Follow / Unfollow System', () => {
 
-    const register = async (page, username, password = 'password123') => {
+    let currentUser;
+    let targetUser;
+
+    test.beforeEach(async ({ page }) => {
+        // We need an isolated current user
+        const ts = Date.now();
+        currentUser = `userA_${ts}`;
+        targetUser = `userB_${ts}`;
+
+        // 1. Create Target User (User B)
         await page.goto(`${BASE_URL}/register`);
-        await page.getByPlaceholder('johndoe').fill(username);
-        await page.getByPlaceholder('john@example.com').fill(`${username}@test.com`);
-        await page.getByPlaceholder('••••••••').fill(password);
-        await page.getByRole('button', { name: /Register|Creating/i }).click();
-        await page.waitForURL(`${BASE_URL}/feed`);
-    };
+        await page.locator('input[placeholder="johndoe"]').fill(targetUser);
+        await page.locator('input[type="email"]').fill(`${targetUser}@example.com`);
+        await page.locator('input[type="password"]').fill('Password123!');
+        await page.getByRole('button', { name: /Register|Creating Account/i }).click();
+        await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
 
-    test('follow button toggles to Unfollow and follower count increases', async ({ browser }) => {
-        const ts = Date.now().toString().slice(-7);
-        const userA = `follow_a_${ts}`;
-        const userB = `follow_b_${ts}`;
-        const password = 'password123';
+        // Let User B create a post so it can appear in feed later
+        await page.locator('textarea[placeholder="What\'s on your mind?"]').fill(`Hello from ${targetUser}`);
+        await page.getByRole('button', { name: 'Post' }).click();
+        await expect(page.getByText(`Hello from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
+        await page.waitForTimeout(2000);
 
-        // Register User A (to be followed)
-        const ctxA = await browser.newContext();
-        const pageA = await ctxA.newPage();
-        await register(pageA, userA, password);
-        await ctxA.close();
+        // Logout User B
+        await page.evaluate(() => localStorage.clear());
 
-        // Register User B (the follower)
-        const ctxB = await browser.newContext();
-        const pageB = await ctxB.newPage();
-        await register(pageB, userB, password);
+        // 2. Create Current User (User A)
+        await page.goto(`${BASE_URL}/register`);
+        await page.locator('input[placeholder="johndoe"]').fill(currentUser);
+        await page.locator('input[type="email"]').fill(`${currentUser}@example.com`);
+        await page.locator('input[type="password"]').fill('Password123!');
+        await page.getByRole('button', { name: /Register|Creating Account/i }).click();
+        await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
+    });
 
-        // Navigate to User A's profile
-        await pageB.goto(`${BASE_URL}/profile/${userA}`);
-        await pageB.waitForTimeout(1000);
+    test.afterEach(async ({ page }) => {
+        await page.evaluate(() => localStorage.clear());
+    });
 
-        // Should show Follow button initially
-        const followBtn = pageB.locator('button:has-text("Follow")');
+    test('TC_FOL_01 - Click Follow on another user profile', async ({ page }) => {
+        // Go to target profile
+        await page.goto(`${BASE_URL}/profile/${targetUser}`);
+
+        // Initial state: Button says Follow
+        const followBtn = page.getByRole('button', { name: /^Follow$/i });
         await expect(followBtn).toBeVisible();
-
-        // Get follower count before
-        const followerCountEl = pageB.locator('text=/\\d+ Follower/i').first();
-        const countBefore = await followerCountEl.textContent().catch(() => '0');
 
         // Click Follow
         await followBtn.click();
-        await pageB.waitForTimeout(1000);
+        // State updates to Following
+        await expect(page.getByRole('button', { name: /^Following$/i })).toBeVisible({ timeout: 5000 });
 
-        // Button should now say Unfollow
-        await expect(pageB.locator('button:has-text("Unfollow")')).toBeVisible();
-
-        // Count should increase
-        const countAfter = await followerCountEl.textContent().catch(() => '1');
-        console.log(`Follower count before: ${countBefore}, after: ${countAfter}`);
-
-        await ctxB.close();
+        // Follower count should be 1 (since target user was fresh)
+        // Wait for UI to update (React state)
+        await expect(page.locator('button', { hasText: /1\s*Followers/i })).toBeVisible({ timeout: 5000 });
     });
 
-    test('followed user posts appear in home feed', async ({ browser }) => {
-        const ts = Date.now().toString().slice(-7);
-        const creator = `feed_creator_${ts}`;
-        const follower = `feed_follower_${ts}`;
-        const password = 'password123';
+    test('TC_FOL_02 - Followed users posts now appear in home feed', async ({ page }) => {
+        // Follow target
+        await page.goto(`${BASE_URL}/profile/${targetUser}`);
+        await page.getByRole('button', { name: /^Follow$/i }).click();
+        await expect(page.getByRole('button', { name: /^Following$/i })).toBeVisible({ timeout: 5000 });
 
-        // Register creator and create a unique post
-        const creatorCtx = await browser.newContext();
-        const creatorPage = await creatorCtx.newPage();
-        await register(creatorPage, creator, password);
-
-        const uniquePost = `Unique post for follow feed test ${ts}`;
-        await creatorPage.getByPlaceholder("What's on your mind?").fill(uniquePost);
-        await creatorPage.getByRole('button', { name: 'Post' }).click();
-        await expect(creatorPage.locator(`text=${uniquePost}`)).toBeVisible();
-        await creatorCtx.close();
-
-        // Register follower
-        const followerCtx = await browser.newContext();
-        const followerPage = await followerCtx.newPage();
-        await register(followerPage, follower, password);
-
-        // Follower visits creator's profile and follows
-        await followerPage.goto(`${BASE_URL}/profile/${creator}`);
-        await followerPage.waitForTimeout(1000);
-
-        const followBtn = followerPage.locator('button:has-text("Follow")');
-        if (await followBtn.isVisible()) {
-            await followBtn.click();
-            await followerPage.waitForTimeout(1500);
-        }
-
-        // Go to home feed and verify creator's post is visible
-        await followerPage.goto(`${BASE_URL}/feed`);
-        await followerPage.waitForTimeout(2000);
-        await expect(followerPage.locator(`text=${uniquePost}`)).toBeVisible();
-
-        await followerCtx.close();
+        // Go home
+        await page.goto(`${BASE_URL}/feed`);
+        await expect(page.getByText(`Hello from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
     });
 
-    test('unfollow reverts button and removes posts from feed', async ({ browser }) => {
-        const ts = Date.now().toString().slice(-7);
-        const creator = `unfollow_creator_${ts}`;
-        const follower = `unfollow_follower_${ts}`;
-        const password = 'password123';
+    test('TC_FOL_03 - Click Unfollow on a followed user profile', async ({ page }) => {
+        // First Follow
+        await page.goto(`${BASE_URL}/profile/${targetUser}`);
+        await page.getByRole('button', { name: /^Follow$/i }).click();
+        await expect(page.getByRole('button', { name: /^Following$/i })).toBeVisible({ timeout: 5000 });
 
-        // Register creator with a unique post
-        const creatorCtx = await browser.newContext();
-        const creatorPage = await creatorCtx.newPage();
-        await register(creatorPage, creator, password);
+        // Now Unfollow
+        await page.getByRole('button', { name: /^Following$/i }).click();
+        await expect(page.getByRole('button', { name: /^Follow$/i })).toBeVisible({ timeout: 5000 });
+    });
 
-        const uniquePost = `Post to disappear after unfollow ${ts}`;
-        await creatorPage.getByPlaceholder("What's on your mind?").fill(uniquePost);
-        await creatorPage.getByRole('button', { name: 'Post' }).click();
-        await expect(creatorPage.locator(`text=${uniquePost}`)).toBeVisible();
-        await creatorCtx.close();
+    test('TC_FOL_04 - Follow generates a follow notification for target user', async ({ page }) => {
+        // User A follows User B
+        await page.goto(`${BASE_URL}/profile/${targetUser}`);
+        await page.getByRole('button', { name: /^Follow$/i }).click();
+        await expect(page.getByRole('button', { name: /^Following$/i })).toBeVisible({ timeout: 5000 });
 
-        // Register follower, follow creator
-        const followerCtx = await browser.newContext();
-        const followerPage = await followerCtx.newPage();
-        await register(followerPage, follower, password);
+        // Switch back to User B to check notification
+        await page.evaluate(() => localStorage.clear());
+        await page.goto(`${BASE_URL}/login`);
+        await page.locator('input[placeholder="johndoe"]').fill(targetUser);
+        await page.locator('input[type="password"]').fill('Password123!');
+        await page.getByRole('button', { name: /Login|Logging in/i }).click();
+        await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
 
-        await followerPage.goto(`${BASE_URL}/profile/${creator}`);
-        await followerPage.waitForTimeout(1000);
+        await page.goto(`${BASE_URL}/notifications`);
+        await expect(page.getByText(`${currentUser} followed you`).first()).toBeVisible({ timeout: 5000 });
+    });
 
-        const followBtn = followerPage.locator('button:has-text("Follow")');
-        if (await followBtn.isVisible()) {
-            await followBtn.click();
-            await followerPage.waitForTimeout(1000);
-        }
+    test('TC_FOL_05 - Attempt to follow yourself', async ({ page }) => {
+        await page.goto(`${BASE_URL}/profile/${currentUser}`);
+        const followBtn = page.getByRole('button', { name: /^Follow$/i });
+        const followingBtn = page.getByRole('button', { name: /^Following$/i });
+        // According to AC, button should not be visible
+        await expect(followBtn).toBeHidden();
+        await expect(followingBtn).toBeHidden();
+    });
 
-        // Now unfollow
-        const unfollowBtn = followerPage.locator('button:has-text("Unfollow")');
-        if (await unfollowBtn.isVisible()) {
-            await unfollowBtn.click();
-            await followerPage.waitForTimeout(1000);
-        }
+    test('TC_FOL_06 - Follow a private user', async ({ page }) => {
+        // Target User setup: make them private first
+        // Need to login as Target User and toggle privacy
+        await page.evaluate(() => localStorage.clear());
+        await page.goto(`${BASE_URL}/login`);
+        await page.locator('input[placeholder="johndoe"]').fill(targetUser);
+        await page.locator('input[type="password"]').fill('Password123!');
+        await page.getByRole('button', { name: /Login|Logging in/i }).click();
+        await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
 
-        // Button should revert back to Follow
-        await expect(followerPage.locator('button:has-text("Follow")')).toBeVisible();
+        await page.goto(`${BASE_URL}/settings`);
+        await page.waitForSelector('text=Private Account');
+        await page.locator('button', { has: page.locator('span.bg-white') }).click();
+        await expect(page.locator('text=/Account is now Private/i')).toBeVisible({ timeout: 5000 });
 
-        await followerCtx.close();
+        // Switch to User A
+        await page.evaluate(() => localStorage.clear());
+        await page.goto(`${BASE_URL}/login`);
+        await page.locator('input[placeholder="johndoe"]').fill(currentUser);
+        await page.locator('input[type="password"]').fill('Password123!');
+        await page.getByRole('button', { name: /Login|Logging in/i }).click();
+        await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
+
+        // User A visits User B
+        await page.goto(`${BASE_URL}/profile/${targetUser}`);
+        await expect(page.locator('text=/This account is private/i')).toBeVisible();
+
+        // There might not be a "Requested" state, but we can verify the text is present when private
+        // and following state behavior if supported. The frontend shows simple follow/unfollow per Profile.jsx
+        await expect(page.getByRole('button', { name: /^Follow$/i })).toBeVisible();
     });
 });

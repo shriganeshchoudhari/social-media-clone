@@ -1,7 +1,5 @@
 package com.example.social.user;
 
-import com.example.social.post.Post;
-import com.example.social.post.PostImage;
 import com.example.social.user.dto.ProfileResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,8 +18,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final com.example.social.file.FileStorageService fileStorageService;
     private final com.example.social.post.PostRepository postRepository;
-    private final com.example.social.like.PostLikeRepository postLikeRepository;
-    private final com.example.social.comment.CommentRepository commentRepository;
     private final com.example.social.follow.FollowRepository followRepository;
     private final BlockRepository blockRepository;
     private final UserInterestRepository userInterestRepository;
@@ -35,8 +31,6 @@ public class UserService {
             PasswordEncoder passwordEncoder,
             com.example.social.file.FileStorageService fileStorageService,
             com.example.social.post.PostRepository postRepository,
-            com.example.social.like.PostLikeRepository postLikeRepository,
-            com.example.social.comment.CommentRepository commentRepository,
             com.example.social.follow.FollowRepository followRepository,
             BlockRepository blockRepository,
             UserInterestRepository userInterestRepository,
@@ -48,8 +42,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.fileStorageService = fileStorageService;
         this.postRepository = postRepository;
-        this.postLikeRepository = postLikeRepository;
-        this.commentRepository = commentRepository;
         this.followRepository = followRepository;
         this.blockRepository = blockRepository;
         this.userInterestRepository = userInterestRepository;
@@ -92,34 +84,23 @@ public class UserService {
     public void deleteAccount(String username) {
         User user = getUserByUsername(username);
 
-        // 1. Delete all likes made by this user
-        postLikeRepository.deleteByUser(user);
+        // Soft delete / anonymize user to preserve referential integrity
+        user.setUsername("deleted_" + user.getId() + "_" + java.util.UUID.randomUUID().toString().substring(0, 8));
+        user.setEmail("deleted_" + user.getId() + "@example.com");
+        user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+        user.setProfileImageUrl(null);
+        user.setBio(null);
+        user.setBannerImage(null);
+        user.setPrivate(true);
+        user.setWebsite(null);
+        user.setVerified(false);
+        userRepository.save(user);
 
-        // 2. Delete all comments made by this user
-        commentRepository.deleteByAuthor(user);
+        // Also clean up tokens/active sessions by invalidating
+        user.setTokenVersion(user.getTokenVersion() + 1);
 
-        // 3. Delete all follows (follower and following)
-        followRepository.deleteByFollower(user);
-        followRepository.deleteByFollowing(user);
-
-        // 4. Delete posts (and associated images/likes/comments)
-        List<Post> posts = postRepository.findAllByAuthor(user);
-        for (Post post : posts) {
-            // Delete likes on this post
-            postLikeRepository.deleteByPost(post);
-
-            // Delete comments on this post
-            commentRepository.deleteByPost(post);
-
-            // Delete images files from storage
-            for (PostImage img : post.getImages()) {
-                fileStorageService.deleteFile(img.getUrl());
-            }
-        }
-
-        postRepository.deleteAll(posts);
-
-        userRepository.delete(user);
+        // Remove from search index
+        // userSearchRepository.delete(user);
     }
 
     @Transactional

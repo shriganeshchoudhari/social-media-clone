@@ -62,6 +62,7 @@ export default function StoryViewer({ stories, onClose, currentUser }) {
         if (progress >= 100) {
             handleNext();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [progress]);
 
     const handleNext = () => {

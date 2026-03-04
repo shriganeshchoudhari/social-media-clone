@@ -1,38 +1,76 @@
 
-Running 1 test using 1 worker
+Running 2 tests using 1 worker
 
-[1A[2K[1/1] [chromium] › tests\personalization.spec.js:7:5 › Personalization Features › user can add interest and see personalized content
-[1A[2K  1) [chromium] › tests\personalization.spec.js:7:5 › Personalization Features › user can add interest and see personalized content 
+[1A[2K[1/2] [chromium] › tests\account-management.spec.js:6:5 › Account Management & Privacy › privacy toggle and enforcement
+[1A[2K  1) [chromium] › tests\account-management.spec.js:6:5 › Account Management & Privacy › privacy toggle and enforcement 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Create Post")')[22m
+
+
+      19 |
+      20 |         // 2. Create a post as User A (to verify visibility later)
+    > 21 |         await page.click('button:has-text("Create Post")');
+         |                    ^
+      22 |         await page.fill('textarea[placeholder*="mind"]', 'Secret Post content');
+      23 |         await page.click('button:has-text("Post")');
+      24 |         await expect(page.locator('text=Secret Post content')).toBeVisible();
+        at F:\DEVOPS\social-media-clone\social-ui\tests\account-management.spec.js:21:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\account-management-Account-0637e-vacy-toggle-and-enforcement-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\account-management-Account-0637e-vacy-toggle-and-enforcement-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\account-management-Account-0637e-vacy-toggle-and-enforcement-chromium\error-context.md
+
+
+[1A[2K[2/2] [chromium] › tests\account-management.spec.js:72:5 › Account Management & Privacy › account deletion
+[1A[2K  2) [chromium] › tests\account-management.spec.js:72:5 › Account Management & Privacy › account deletion 
 
     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
 
-    Locator: getByRole('button', { name: /Register|Creating/i })
+    Locator: locator('text=Invalid credentials')
     Expected: visible
     Timeout: 5000ms
     Error: element(s) not found
 
     Call log:
     [2m  - Expect "toBeVisible" with timeout 5000ms[22m
-    [2m  - waiting for getByRole('button', { name: /Register|Creating/i })[22m
+    [2m  - waiting for locator('text=Invalid credentials')[22m
+    [2m    - waiting for" http://localhost:5173/login" navigation to finish...[22m
+    [2m    - navigated to "http://localhost:5173/login"[22m
 
 
-      17 |
-      18 |         await authorPage.goto(`${BASE_URL}/register`);
-    > 19 |         await expect(authorPage.getByRole('button', { name: /Register|Creating/i })).toBeVisible();
-         |                                                                                      ^
-      20 |         await authorPage.getByPlaceholder('johndoe').fill(authorUser.username);
-      21 |         await authorPage.getByPlaceholder('john@example.com').fill(authorUser.email);
-      22 |         await authorPage.getByPlaceholder('••••••••').fill(authorUser.password);
-        at F:\DEVOPS\social-media-clone\social-ui\tests\personalization.spec.js:19:86
+      110 |         // 7. Verify Login Fails
+      111 |         // Check for UI error message
+    > 112 |         await expect(page.locator('text=Invalid credentials')).toBeVisible({ timeout: 5000 });
+          |                                                                ^
+      113 |
+      114 |         expect(page.url()).toContain('/login');
+      115 |     });
+        at F:\DEVOPS\social-media-clone\social-ui\tests\account-management.spec.js:112:64
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\personalization-Personaliz-68571-nd-see-personalized-content-chromium\test-failed-1.png
+    test-results\account-management-Account-129de-nt-Privacy-account-deletion-chromium\test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\account-management-Account-129de-nt-Privacy-account-deletion-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
 
-[1A[2K  1 failed
-    [chromium] › tests\personalization.spec.js:7:5 › Personalization Features › user can add interest and see personalized content 
+    Error Context: test-results\account-management-Account-129de-nt-Privacy-account-deletion-chromium\error-context.md
 
-[36m  Serving HTML report at http://localhost:22877. Press Ctrl+C to quit.[39m
-Terminate batch job (Y/N)? 
-^C
+
+[1A[2K  2 failed
+    [chromium] › tests\account-management.spec.js:6:5 › Account Management & Privacy › privacy toggle and enforcement 
+    [chromium] › tests\account-management.spec.js:72:5 › Account Management & Privacy › account deletion 
+
+[36m  Serving HTML report at http://localhost:9323. Press Ctrl+C to quit.[39m
+^C^C

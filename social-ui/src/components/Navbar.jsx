@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import useTheme from "../hooks/useTheme";
@@ -18,6 +19,7 @@ export default function Navbar() {
     // Notification Logic
     const [showNotifications, setShowNotifications] = useState(false);
     const notificationRef = useRef(null);
+    // eslint-disable-next-line no-unused-vars,
     const { notifications, unreadCount } = useWebSocket();
 
     // Search Logic

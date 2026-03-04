@@ -2,7 +2,6 @@ package com.example.social.post;
 
 import com.example.social.user.User;
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

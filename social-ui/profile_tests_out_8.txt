@@ -1,0 +1,26 @@
+﻿
+SyntaxError: F:\DEVOPS\social-media-clone\social-ui\tests\profile.spec.js: Unexpected token, expected "," (25:52)
+
+[0m [90m 23 |[39m
+ [90m 24 |[39m         [90m// Let User B create a post so it can appear in feed later[39m
+[31m[1m>[22m[39m[90m 25 |[39m         [36mawait[39m page[33m.[39mlocator([32m"textarea[placeholder=\\"[39m[33mWhat[39m[32m's on your mind?\\"]").fill(`Profile test post from ${targetUser}`);[39m
+ [90m    |[39m                                                     [31m[1m^[22m[39m
+ [90m 26 |[39m         [36mawait[39m page[33m.[39mgetByRole([32m'button'[39m[33m,[39m { name[33m:[39m [32m'Post'[39m })[33m.[39mclick()[33m;[39m
+ [90m 27 |[39m         [36mawait[39m expect(page[33m.[39mgetByText([32m`Profile test post from ${targetUser}`[39m)[33m.[39mfirst())[33m.[39mtoBeVisible({ timeout[33m:[39m [35m10000[39m })[33m;[39m
+ [90m 28 |[39m[0m
+
+   at profile.spec.js:25
+
+  23 |
+  24 |         // Let User B create a post so it can appear in feed later
+> 25 |         await page.locator("textarea[placeholder=\\"What's on your mind?\\"]").fill(`Profile test post from ${targetUser}`);
+     |                                                    ^
+  26 |         await page.getByRole('button', { name: 'Post' }).click();
+  27 |         await expect(page.getByText(`Profile test post from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
+  28 |
+
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+

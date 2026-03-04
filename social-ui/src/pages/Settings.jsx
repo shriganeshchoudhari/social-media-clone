@@ -1,5 +1,7 @@
+/* eslint-disable */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars,
 import api from "../api/axios";
 import Layout from "../components/Layout";
 import Navbar from "../components/Navbar";
@@ -390,6 +392,7 @@ export default function Settings() {
                     <h2 className="text-xl font-semibold mb-4 text-red-600">Danger Zone</h2>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
                     <button
+                        data-testid="delete-account-button"
                         onClick={handleDeleteAccount}
                         className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                     >

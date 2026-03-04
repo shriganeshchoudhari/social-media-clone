@@ -1,0 +1,7 @@
+
+F:\DEVOPS\social-media-clone\social-ui\cypress.config.js
+  6:25  error  'on' is defined but never used      no-unused-vars
+  6:29  error  'config' is defined but never used  no-unused-vars
+
+✖ 2 problems (2 errors, 0 warnings)
+

@@ -40,5 +40,6 @@ export default function useNotificationSocket(userId, onMessage) {
                 stompClient.deactivate();
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId]);
 }

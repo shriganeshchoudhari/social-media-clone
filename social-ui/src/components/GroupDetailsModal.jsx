@@ -24,6 +24,7 @@ export default function GroupDetailsModal({ groupId, onClose, onUpdate }) {
     useEffect(() => {
         getCurrentUser().then(res => setCurrentUser(res.data.username)).catch(console.error);
         loadGroup();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupId]);
 
     useEffect(() => {

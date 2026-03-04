@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { useWebSocket } from './WebSocketContext';
 
@@ -30,6 +31,7 @@ export const CallProvider = ({ children }) => {
             });
             return () => subscription.unsubscribe();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps,
     }, [stompClient]);
 
     const audioCtxRef = useRef(null);

@@ -1,6 +1,5 @@
 package com.example.social.group.event;
 
-import com.example.social.group.Group;
 import com.example.social.user.User;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

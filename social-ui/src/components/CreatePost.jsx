@@ -9,6 +9,7 @@ export default function CreatePost({ onPost, extraData = {} }) {
     const [showPoll, setShowPoll] = useState(false);
     const [pollQuestion, setPollQuestion] = useState("");
     const [pollOptions, setPollOptions] = useState(["", ""]);
+    // eslint-disable-next-line no-unused-vars
     const [pollDuration, setPollDuration] = useState(1);
 
     const submit = async (e) => {

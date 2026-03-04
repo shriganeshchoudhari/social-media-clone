@@ -1,0 +1,29 @@
+﻿SyntaxError: F:\DEVOPS\social-media-clone\social-ui\tests\settings.spec.js: Missing semicolon. (110:18)
+
+[0m [90m 108 |[39m             [36mawait[39m expect(page[33m.[39mlocator([32m'text=/Password changed successfully/i'[39m))[33m.[39mtoBeVisible({ timeout[33m:[39m [35m5000[39m })[33m;[39m
+ [90m 109 |[39m
+[31m[1m>[22m[39m[90m 110 |[39m             verify login [36mwith[39m [36mnew[39m password works
+ [90m     |[39m                   [31m[1m^[22m[39m
+ [90m 111 |[39m             [36mawait[39m page[33m.[39mevaluate(() [33m=>[39m localStorage[33m.[39mclear())[33m;[39m
+ [90m 112 |[39m             [36mawait[39m page[33m.[39mgoto([32m`${BASE_URL}/login`[39m)[33m;[39m
+ [90m 113 |[39m             [36mawait[39m page[33m.[39mlocator([32m'input[placeholder="johndoe"]'[39m)[33m.[39mfill(validUser[33m.[39musername)[33m;[39m[0m
+
+   at settings.spec.js:110
+
+  108 |             await expect(page.locator('text=/Password changed successfully/i')).toBeVisible({ timeout: 5000 });
+  109 |
+> 110 |             verify login with new password works
+      |                  ^
+  111 |             await page.evaluate(() => localStorage.clear());
+  112 |             await page.goto(`${BASE_URL}/login`);
+  113 |             await page.locator('input[placeholder="johndoe"]').fill(validUser.username);
+
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+[1A[2K
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

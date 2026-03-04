@@ -242,9 +242,6 @@ public class ChatService {
                         ChatGroup group = chatGroupRepository.findById(groupId)
                                         .orElseThrow(() -> new java.util.NoSuchElementException(
                                                         "Group not found: " + groupId));
-                        User sender = userRepository.findByUsername(senderUsername)
-                                        .orElseThrow(() -> new java.util.NoSuchElementException(
-                                                        "User not found: " + senderUsername));
 
                         com.example.social.chat.dto.SocketEvent event = new com.example.social.chat.dto.SocketEvent(
                                         com.example.social.chat.dto.SocketEventType.TYPING,

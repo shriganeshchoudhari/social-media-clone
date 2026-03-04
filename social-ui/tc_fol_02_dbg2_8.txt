@@ -1,0 +1,271 @@
+﻿
+Running 1 test using 1 worker
+
+node.exe : [2m[WebServer] 
+[22m[2m11:05:00 pm[22m 
+[31m[1m[vite][22m[39m 
+[31mws proxy socket 
+error:[39m
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: ([2  
+  m[WebServer]...ket err   
+ or:[39m:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+[2m[WebServer] 
+[22mError: write 
+ECONNABORTED
+[2m[WebServer] [22m    
+at afterWriteDispatched (no
+de:internal/stream_base_com
+mons:159:15)
+[2m[WebServer] [22m    
+at writeGeneric (node:inter
+nal/stream_base_commons:150
+:3)
+[2m[WebServer] [22m    
+at Socket._writeGeneric 
+(node:net:966:11)
+[2m[WebServer] [22m    
+at Socket._write 
+(node:net:978:8)
+[2m[WebServer] [22m    
+at writeOrBuffer (node:inte
+rnal/streams/writable:572:1
+2)
+[2m[WebServer] [22m    
+at _write (node:internal/st
+reams/writable:501:10)
+[2m[WebServer] [22m    
+at Writable.write (node:int
+ernal/streams/writable:510:
+10)
+[2m[WebServer] [22m    
+at Socket.ondata (node:inte
+rnal/streams/readable:1009:
+22)
+[2m[WebServer] [22m    
+at Socket.emit 
+(node:events:519:28)
+[2m[WebServer] [22m    
+at addChunk (node:internal/
+streams/readable:561:12)
+[2m[WebServer] [22m    
+at readableAddChunkPushByte
+Mode (node:internal/streams
+/readable:512:3)
+[2m[WebServer] [22m    
+at Readable.push (node:inte
+rnal/streams/readable:392:5
+)
+[2m[WebServer] [22m    
+at TCP.onStreamRead (node:i
+nternal/stream_base_commons
+:189:23)
+[TEST-API] GET FEED 200 - http://localhost:5173/api/posts/feed/personal?page=0&size=10&_t=1772559301257
+[TEST-API] FEED BODY: {"content":[],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"sorted":false,"unsorted":true,"empty":true},"offset":0,"unpaged":false,"paged":true},"totalElements":0,"totalPages":0,"last":true,"first":true,"size":10,"number":0,"sort":{"sorted":false,"unsorted":true,"empty":true},"numberOfElements":0,"empty":true}
+[TEST-API] GET FEED 200 - http://localhost:5173/api/posts/feed/personal?page=0&size=10&_t=1772559301258
+[TEST-API] FEED BODY: {"content":[],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"sorted":false,"unsorted":true,"empty":true},"offset":0,"unpaged":false,"paged":true},"totalElements":0,"totalPages":0,"last":true,"first":true,"size":10,"number":0,"sort":{"sorted":false,"unsorted":true,"empty":true},"numberOfElements":0,"empty":true}
+[BODY-TEXT] 
+  window.global = window;
+  Social≡ƒöÑUAdd StoryAdd ImageAdd VideoPostNo posts yet.FeedExploreGroupsInboxNotifications
+  
+
+
+...
+  Γ£ÿ  1 [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed (17.3s)
+[TEST-API] GET FEED 200 - http://localhost:5173/api/posts/feed/personal?page=0&size=10&_t=1772559319073
+[TEST-API] GET FEED 200 - http://localhost:5173/api/posts/feed/personal?page=0&size=10&_t=1772559319072
+  Γ£ÿ  2 [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed (retry #1) (4.6s)
+[2m[WebServer] 
+[22m[2m11:05:25 pm[22m 
+[31m[1m[vite][22m[39m 
+[31mws proxy socket 
+error:[39m
+[2m[WebServer] 
+[22mError: write 
+ECONNABORTED
+[2m[WebServer] [22m    
+at afterWriteDispatched (no
+de:internal/stream_base_com
+mons:159:15)
+[2m[WebServer] [22m    
+at writeGeneric (node:inter
+nal/stream_base_commons:150
+:3)
+[2m[WebServer] [22m    
+at Socket._writeGeneric 
+(node:net:966:11)
+[2m[WebServer] [22m    
+at Socket._write 
+(node:net:978:8)
+[2m[WebServer] [22m    
+at writeOrBuffer (node:inte
+rnal/streams/writable:572:1
+2)
+[2m[WebServer] [22m    
+at _write (node:internal/st
+reams/writable:501:10)
+[2m[WebServer] [22m    
+at Writable.write (node:int
+ernal/streams/writable:510:
+10)
+[2m[WebServer] [22m    
+at Socket.ondata (node:inte
+rnal/streams/readable:1009:
+22)
+[2m[WebServer] [22m    
+at Socket.emit 
+(node:events:519:28)
+[2m[WebServer] [22m    
+at addChunk (node:internal/
+streams/readable:561:12)
+[2m[WebServer] [22m    
+at readableAddChunkPushByte
+Mode (node:internal/streams
+/readable:512:3)
+[2m[WebServer] [22m    
+at Readable.push (node:inte
+rnal/streams/readable:392:5
+)
+[2m[WebServer] [22m    
+at TCP.onStreamRead (node:i
+nternal/stream_base_commons
+:189:23)
+[TEST-API] GET FEED 200 - http://localhost:5173/api/posts/feed/personal?page=0&size=10&_t=1772559325861
+[TEST-API] FEED BODY: {"content":[],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"sorted":false,"unsorted":true,"empty":true},"offset":0,"unpaged":false,"paged":true},"totalElements":0,"totalPages":0,"last":true,"first":true,"size":10,"number":0,"sort":{"sorted":false,"unsorted":true,"empty":true},"numberOfElements":0,"empty":true}
+[TEST-API] GET FEED 200 - http://localhost:5173/api/posts/feed/personal?page=0&size=10&_t=1772559325861
+[TEST-API] FEED BODY: {"content":[],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"sorted":false,"unsorted":true,"empty":true},"offset":0,"unpaged":false,"paged":true},"totalElements":0,"totalPages":0,"last":true,"first":true,"size":10,"number":0,"sort":{"sorted":false,"unsorted":true,"empty":true},"numberOfElements":0,"empty":true}
+[BODY-TEXT] 
+  window.global = window;
+  Social≡ƒöÑUAdd StoryAdd ImageAdd VideoPostNo posts yet.FeedExploreGroupsInboxNotifications
+  
+
+
+...
+  Γ£ÿ  3 [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed (retry #2) (16.9s)
+
+
+  1) [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('Hello from userB_1772559296492').first()
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByText('Hello from userB_1772559296492').first()[22m
+
+
+      88 |         console.log(`[BODY-TEXT] ${bodyText.substring(0, 1000)}...`);
+      89 |
+    > 90 |         await expect(page.getByText(`Hello from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
+         |                                                                          ^
+      91 |         await expect(page.getByText(`Hello from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
+      92 |     });
+      93 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:90:74
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\error-context.md
+
+    Retry #1 ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error: response.text: Protocol error (Network.getResponseBody): No resource with given identifier found
+
+      67 |                 console.log(`[TEST-API] GET FEED ${response.status()} - ${response.url()}`);
+      68 |                 if (response.ok()) {
+    > 69 |                     const text = await response.text();
+         |                                                 ^
+      70 |                     console.log(`[TEST-API] FEED BODY: ${text}`);
+      71 |                 }
+      72 |             } else if (response.url().includes('/follow')) {
+        at Page.<anonymous> (F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:69:49)
+
+    Error: locator.click: Test ended.
+    Call log:
+    [2m  - waiting for getByRole('button', { name: /^Follow$/i })[22m
+
+
+      77 |         // Follow target
+      78 |         await page.goto(`${BASE_URL}/profile/${targetUser}`);
+    > 79 |         await page.getByRole('button', { name: /^Follow$/i }).click();
+         |                                                               ^
+      80 |         await expect(page.getByRole('button', { name: /Following/i })).toBeVisible({ timeout: 5000 });
+      81 |
+      82 |         // Go home
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:79:63
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry1\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry1\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry1\error-context.md
+
+    attachment #4: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry1\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry1\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Retry #2 ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('Hello from userB_1772559321508').first()
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByText('Hello from userB_1772559321508').first()[22m
+
+
+      88 |         console.log(`[BODY-TEXT] ${bodyText.substring(0, 1000)}...`);
+      89 |
+    > 90 |         await expect(page.getByText(`Hello from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
+         |                                                                          ^
+      91 |         await expect(page.getByText(`Hello from ${targetUser}`).first()).toBeVisible({ timeout: 10000 });
+      92 |     });
+      93 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:90:74
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry2\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry2\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium-retry2\error-context.md
+
+  1 failed
+    [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed 

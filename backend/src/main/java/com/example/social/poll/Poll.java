@@ -31,6 +31,7 @@ public class Poll {
     private Post post;
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<PollOption> options = new ArrayList<>();
 
     private LocalDateTime expiryDateTime;

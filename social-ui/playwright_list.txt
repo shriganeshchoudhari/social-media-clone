@@ -1,0 +1,63 @@
+Listing tests:
+  [chromium] › account-management.spec.js:6:5 › Account Management & Privacy › privacy toggle and enforcement
+  [chromium] › account-management.spec.js:71:5 › Account Management & Privacy › account deletion
+  [chromium] › advanced-features.spec.js:3:1 › edit and delete post
+  [chromium] › advanced-features.spec.js:68:1 › send image in chat
+  [chromium] › advanced-moderation.spec.js:41:5 › Advanced Moderation Features › admin can warn a user
+  [chromium] › advanced-moderation.spec.js:67:5 › Advanced Moderation Features › admin can suspend and unsuspend a user
+  [chromium] › bookmark.spec.js:22:5 › Bookmark / Save Posts › bookmark post and verify in Saved tab on profile
+  [chromium] › bookmark.spec.js:59:5 › Bookmark / Save Posts › unbookmark removes post from Saved tab
+  [chromium] › chat.spec.js:3:1 › chat flow between two users
+  [chromium] › explore-search.spec.js:23:5 › Explore Search › search for a user in the global search bar and navigate to search results
+  [chromium] › explore-search.spec.js:43:5 › Explore Search › explore search — People tab shows matching users
+  [chromium] › explore-search.spec.js:76:5 › Explore Search › explore search — Posts tab shows matching posts
+  [chromium] › explore-search.spec.js:114:5 › Explore Search › navigate to explore page and see recommended posts
+  [chromium] › explore-search.spec.js:134:5 › Explore Search › explore search bar filters within explore page
+  [chromium] › follow-unfollow.spec.js:23:5 › Follow / Unfollow › follow button toggles to Unfollow and follower count increases
+  [chromium] › follow-unfollow.spec.js:66:5 › Follow / Unfollow › followed user posts appear in home feed
+  [chromium] › follow-unfollow.spec.js:106:5 › Follow / Unfollow › unfollow reverts button and removes posts from feed
+  [chromium] › groups_and_chat.spec.js:3:1 › Verify Community Group and Chat Group creation
+  [chromium] › message-reactions.spec.js:24:5 › Message Reactions › can add emoji reaction to a received message
+  [chromium] › message-reactions.spec.js:93:5 › Message Reactions › reaction appears on sender side after receiver reacts
+  [chromium] › multi-image.spec.js:4:1 › create post with multiple images
+  [chromium] › multi-image.spec.js:80:1 › remove image from preview before posting
+  [chromium] › notifications.spec.js:24:5 › Notifications › like notification appears in receiver inbox
+  [chromium] › notifications.spec.js:76:5 › Notifications › follow notification appears after being followed
+  [chromium] › notifications.spec.js:127:5 › Notifications › mark all read clears notification badge
+  [chromium] › personalization.spec.js:7:5 › Personalization Features › user can add interest and see personalized content
+  [chromium] › post_upload.spec.js:4:1 › create post with image
+  [chromium] › production-pack.spec.js:21:9 › Production Pack - RBAC & Admin Moderation › Part 1: RBAC Enforcement › should create normal user and verify no admin access
+  [chromium] › production-pack.spec.js:43:9 › Production Pack - RBAC & Admin Moderation › Part 1: RBAC Enforcement › should allow admin user to access admin dashboard
+  [chromium] › production-pack.spec.js:62:9 › Production Pack - RBAC & Admin Moderation › Part 1: RBAC Enforcement › should show admin user role in authorities
+  [chromium] › production-pack.spec.js:92:9 › Production Pack - RBAC & Admin Moderation › Part 2: Admin Moderation - Ban/Unban › should ban a user from admin dashboard
+  [chromium] › production-pack.spec.js:128:9 › Production Pack - RBAC & Admin Moderation › Part 2: Admin Moderation - Ban/Unban › should unban a banned user
+  [chromium] › production-pack.spec.js:184:9 › Production Pack - RBAC & Admin Moderation › Part 2: Admin Moderation - Post & Report Management › should delete post from admin dashboard
+  [chromium] › production-pack.spec.js:213:9 › Production Pack - RBAC & Admin Moderation › Part 2: Admin Moderation - Post & Report Management › should clear individual report
+  [chromium] › production-pack.spec.js:288:9 › Production Pack - RBAC & Admin Moderation › Part 3: Personalization - Blocked Users Filter › should not show blocked users in explore feed
+  [chromium] › production-pack.spec.js:321:9 › Production Pack - RBAC & Admin Moderation › Integration: Full Admin Workflow › complete admin moderation workflow
+  [chromium] › settings.spec.js:17:5 › User Settings › update profile bio
+  [chromium] › settings.spec.js:45:5 › User Settings › change password successfully
+  [chromium] › settings.spec.js:84:5 › User Settings › fail password change with wrong old password
+  [chromium] › settings.spec.js:116:5 › User Settings › fail to change password too short
+  [chromium] › social-platform.spec.js:37:9 › Social Media Platform - Complete Test Suite › Authentication › should register a new user
+  [chromium] › social-platform.spec.js:47:9 › Social Media Platform - Complete Test Suite › Authentication › should login with existing user
+  [chromium] › social-platform.spec.js:52:9 › Social Media Platform - Complete Test Suite › Authentication › should show error on invalid credentials
+  [chromium] › social-platform.spec.js:72:9 › Social Media Platform - Complete Test Suite › Post Management › should create a new text post
+  [chromium] › social-platform.spec.js:80:9 › Social Media Platform - Complete Test Suite › Post Management › should like a post
+  [chromium] › social-platform.spec.js:95:9 › Social Media Platform - Complete Test Suite › Post Management › should comment on a post
+  [chromium] › social-platform.spec.js:117:9 › Social Media Platform - Complete Test Suite › Profile & Social Features › should view own profile
+  [chromium] › social-platform.spec.js:123:9 › Social Media Platform - Complete Test Suite › Profile & Social Features › should search for users
+  [chromium] › social-platform.spec.js:131:9 › Social Media Platform - Complete Test Suite › Profile & Social Features › should update profile settings
+  [chromium] › social-platform.spec.js:155:9 › Social Media Platform - Complete Test Suite › Explore Page › should navigate to explore page
+  [chromium] › social-platform.spec.js:162:9 › Social Media Platform - Complete Test Suite › Explore Page › should display explore content
+  [chromium] › social-platform.spec.js:176:9 › Social Media Platform - Complete Test Suite › Admin Dashboard › should allow admin to access dashboard
+  [chromium] › social-platform.spec.js:198:9 › Social Media Platform - Complete Test Suite › Messaging › should access inbox page
+  [chromium] › social-platform.spec.js:216:9 › Social Media Platform - Complete Test Suite › Notifications › should open notifications dropdown
+  [chromium] › social-platform.spec.js:232:9 › Social Media Platform - Complete Test Suite › User Blocking › should block another user
+  [chromium] › social-platform.spec.js:265:9 › Social Media Platform - Complete Test Suite › Theme Toggle › should toggle dark/light theme
+  [chromium] › social-platform.spec.js:289:9 › Social Media Platform - Complete Test Suite › Content Moderation › should report a post
+  [chromium] › social-platform.spec.js:311:9 › Social Media Platform - Complete Test Suite › Logout › should logout successfully
+  [chromium] › stories.spec.js:24:5 › Stories › upload a story via Add Story button
+  [chromium] › stories.spec.js:71:5 › Stories › another user can see your story on their feed
+  [chromium] › stories.spec.js:126:5 › Stories › story viewer opens when clicking a story bubble
+Total: 61 tests in 17 files

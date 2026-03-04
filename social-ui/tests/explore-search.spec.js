@@ -2,153 +2,211 @@ import { test, expect } from '@playwright/test';
 
 const BASE_URL = 'http://localhost:5173';
 
-/**
- * Explore Search Module Tests
- * - Search bar on explore page filters results
- * - People tab shows user results
- * - Posts tab shows post results
- * - Communities tab shows group results
- */
-test.describe('Explore Search', () => {
+test.describe('Explore & Search Module', () => {
 
-    const register = async (page, username, password = 'password123') => {
+    const register = async (page, username, password = 'Password123!') => {
         await page.goto(`${BASE_URL}/register`);
         await page.getByPlaceholder('johndoe').fill(username);
-        await page.getByPlaceholder('john@example.com').fill(`${username}@test.com`);
-        await page.getByPlaceholder('••••••••').fill(password);
+        await page.locator('input[type="email"]').fill(`${username}@examplenet.com`);
+        await page.locator('input[type="password"]').fill(password);
         await page.getByRole('button', { name: /Register|Creating/i }).click();
-        await page.waitForURL(`${BASE_URL}/feed`);
+        await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
     };
 
-    test('search for a user in the global search bar and navigate to search results', async ({ page }) => {
+    test('TC_EXP_01 - Type a username in the search bar and navigate to /search', async ({ page }) => {
         const ts = Date.now().toString().slice(-7);
-        const username = `search_explorer_${ts}`;
+        const searchableUser = `searchable_${ts}`;
 
-        await register(page, username);
+        // Use an alternate context to create the user to ensure no session overlap
+        await register(page, searchableUser);
+        await page.evaluate(() => localStorage.clear());
 
-        // Use the top nav search bar
+        // Create main user
+        const searcherUser = `searcher1_${ts}`;
+        await register(page, searcherUser);
+
+        // Search for searchableUser
         const searchInput = page.locator('input[placeholder*="Search"]').first();
-        await searchInput.click();
-        await searchInput.fill(username);
+        await searchInput.fill(searchableUser);
         await searchInput.press('Enter');
 
-        // Should navigate to /search page
-        await page.waitForURL(/\/search/, { timeout: 5000 });
-        await page.waitForTimeout(1000);
+        await page.waitForURL(/\/search/);
 
-        // Should see search results page
-        await expect(page.locator(`text=/Results for/i`)).toBeVisible();
+        // Should default to People tab or just show it in results
+        await expect(page.locator(`text=${searchableUser}`).first()).toBeVisible({ timeout: 5000 });
     });
 
-    test('explore search — People tab shows matching users', async ({ browser }) => {
+    test('TC_EXP_02 - Switch to Posts tab in search results', async ({ page }) => {
         const ts = Date.now().toString().slice(-7);
-        const searchable = `findme_${ts}`;
-        const searcher = `searcher_${ts}`;
+        const uniqueKeyword = `BazingaKeyword${ts}`;
 
-        // Register searchable user
-        const ctx1 = await browser.newContext();
-        const page1 = await ctx1.newPage();
-        await register(page1, searchable);
-        await ctx1.close();
+        await register(page, `postCreator_${ts}`);
+        // Create post
+        await page.getByPlaceholder("What's on your mind?").fill(`This is a test post with ${uniqueKeyword}`);
+        await page.getByRole('button', { name: 'Post' }).click();
+        await expect(page.getByText(`This is a test post with ${uniqueKeyword}`).first()).toBeVisible({ timeout: 10000 });
 
-        // Register searcher and search for searchable
-        const ctx2 = await browser.newContext();
-        const page2 = await ctx2.newPage();
-        await register(page2, searcher);
+        await page.evaluate(() => localStorage.clear());
 
-        // Navigate to search with query
-        await page2.goto(`${BASE_URL}/search?q=${searchable}`);
-        await page2.waitForTimeout(1500);
+        await register(page, `postSearcher_${ts}`);
 
-        // Click on "People" tab
-        const peopleTab = page2.locator('[role="tab"]:has-text("People"), button:has-text("People")');
-        if (await peopleTab.isVisible()) {
-            await peopleTab.click();
-        }
-        await page2.waitForTimeout(1000);
-
-        // Searchable user should appear
-        await expect(page2.locator(`text=${searchable}`)).toBeVisible();
-
-        await ctx2.close();
-    });
-
-    test('explore search — Posts tab shows matching posts', async ({ browser }) => {
-        const ts = Date.now().toString().slice(-7);
-        const postAuthor = `post_author_${ts}`;
-        const searchKeyword = `uniqueKeyword${ts}`;
-
-        // Create author and post with keyword
-        const authorCtx = await browser.newContext();
-        const authorPage = await authorCtx.newPage();
-        await register(authorPage, postAuthor);
-
-        const postContent = `${searchKeyword} — test post for search`;
-        await authorPage.getByPlaceholder("What's on your mind?").fill(postContent);
-        await authorPage.getByRole('button', { name: 'Post' }).click();
-        await expect(authorPage.locator(`text=${postContent}`)).toBeVisible();
-        await authorCtx.close();
-
-        // Register searcher
-        const searcherCtx = await browser.newContext();
-        const searcherPage = await searcherCtx.newPage();
-        await register(searcherPage, `searcher2_${ts}`);
-
-        // Search for the keyword
-        await searcherPage.goto(`${BASE_URL}/search?q=${searchKeyword}`);
-        await searcherPage.waitForTimeout(1500);
+        const searchInput = page.locator('input[placeholder*="Search"]').first();
+        await searchInput.fill(uniqueKeyword);
+        await searchInput.press('Enter');
+        await page.waitForURL(/\/search/);
 
         // Click Posts tab
-        const postsTab = searcherPage.locator('[role="tab"]:has-text("Posts"), button:has-text("Posts")');
+        const postsTab = page.getByRole('tab', { name: /Posts/i }).or(page.locator('button:has-text("Posts")'));
         if (await postsTab.isVisible()) {
             await postsTab.click();
         }
-        await searcherPage.waitForTimeout(1000);
 
-        // Post with keyword should appear
-        await expect(searcherPage.locator(`text=${postContent}`)).toBeVisible();
-
-        await searcherCtx.close();
+        await expect(page.getByText(`This is a test post with ${uniqueKeyword}`).first()).toBeVisible({ timeout: 5000 });
     });
 
-    test('navigate to explore page and see recommended posts', async ({ page }) => {
+    test('TC_EXP_03 - Click a user result in search', async ({ page }) => {
         const ts = Date.now().toString().slice(-7);
-        const username = `explorer_${ts}`;
+        const targetUser = `click_target_${ts}`;
 
-        await register(page, username);
+        await register(page, targetUser);
+        await page.evaluate(() => localStorage.clear());
 
-        // Navigate to explore
-        await page.goto(`${BASE_URL}/explore`);
-        await page.waitForTimeout(2000);
+        await register(page, `click_searcher_${ts}`);
 
-        // Should load the explore page
-        await expect(page.locator('text=/Explore|Trending|Recommended/i')).toBeVisible();
+        const searchInput = page.locator('input[placeholder*="Search"]').first();
+        await searchInput.fill(targetUser);
+        await searchInput.press('Enter');
+        await page.waitForURL(/\/search/);
 
-        // Page should have some content (posts or "no posts" message)
-        const content = page.locator('div').filter({ hasText: /post|trending|recommended/i }).first();
-        await expect(content).toBeVisible();
+        // Click the user link
+        await page.locator(`text=${targetUser}`).first().click();
 
-        console.log('✅ Explore page loaded successfully');
+        await page.waitForURL(/\/profile/);
+        await expect(page.locator(`text=${targetUser}`).first()).toBeVisible();
     });
 
-    test('explore search bar filters within explore page', async ({ page }) => {
+    test('TC_EXP_04 - Search with an empty query string', async ({ page }) => {
         const ts = Date.now().toString().slice(-7);
-        const username = `explore_searcher_${ts}`;
+        await register(page, `empty_searcher_${ts}`);
 
-        await register(page, username);
-        await page.goto(`${BASE_URL}/explore`);
-        await page.waitForTimeout(1500);
+        // Submit empty search
+        const searchInput = page.locator('input[placeholder*="Search"]').first();
+        await searchInput.click();
+        await searchInput.press('Enter');
 
-        // Find the search input within explore page
-        const exploreSearch = page.locator('input[placeholder*="Search"]').first();
-        if (await exploreSearch.isVisible()) {
-            await exploreSearch.fill('tech');
-            await exploreSearch.press('Enter');
-            await page.waitForTimeout(1500);
-            // Page should update (filter or navigate)
-            console.log('✅ Explore search interaction successful');
+        // Verify either it blocks navigation or shows "enter a search term" or "no users found"
+        // Wait briefly
+        await page.waitForTimeout(1000);
+        // We either stay on feed or go to search and see no results. 
+        // We'll assert that we don't crash and we see some kind of empty state if we moved
+        if (page.url().includes('/search')) {
+            await expect(page.locator('text=/No results|enter a search term|No users found/i')).toBeVisible();
         } else {
-            console.log('No inline search found on explore — using nav search');
+            // Stayed on feed, acceptable behavior for empty search
+            await expect(page.locator('input[placeholder*="Search"]').first()).toBeVisible();
         }
     });
+
+    test('TC_EXP_05 - Search for a non-existent username', async ({ page }) => {
+        const ts = Date.now().toString().slice(-7);
+        await register(page, `nonexist_searcher_${ts}`);
+
+        const searchInput = page.locator('input[placeholder*="Search"]').first();
+        await searchInput.fill(`nobody_${Date.now()}`);
+        await searchInput.press('Enter');
+        await page.waitForURL(/\/search/);
+
+        await expect(page.locator('text=/No users found|No results/i').first()).toBeVisible({ timeout: 5000 });
+    });
+
+    test('TC_EXP_06 - Search for a keyword that matches no posts', async ({ page }) => {
+        const ts = Date.now().toString().slice(-7);
+        await register(page, `nopost_searcher_${ts}`);
+
+        const searchInput = page.locator('input[placeholder*="Search"]').first();
+        await searchInput.fill(`NoPostWithThisRandomString${Date.now()}`);
+        await searchInput.press('Enter');
+        await page.waitForURL(/\/search/);
+
+        const postsTab = page.getByRole('tab', { name: /Posts/i }).or(page.locator('button:has-text("Posts")'));
+        if (await postsTab.isVisible()) {
+            await postsTab.click();
+        }
+
+        await expect(page.locator('text=/No posts found|No results/i').first()).toBeVisible({ timeout: 5000 });
+    });
+
+    test('TC_EXP_07 - Navigate to /explore - recommended posts load', async ({ page }) => {
+        const ts = Date.now().toString().slice(-7);
+        await register(page, `explore_user_${ts}`);
+
+        await page.goto(`${BASE_URL}/explore`);
+
+        await expect(page.locator('text=/Explore|Recommended|Trending/i').first()).toBeVisible({ timeout: 5000 });
+    });
+
+    test('TC_EXP_08 - User with interests set sees interest-relevant posts in explore', async ({ page }) => {
+        const ts = Date.now().toString().slice(-7);
+        const intUser = `interest_user_${ts}`;
+        await register(page, intUser);
+
+        await page.goto(`${BASE_URL}/settings`);
+        // Add interest "JavaScript"
+        const intInput = page.locator('input[placeholder*="Add interests"]');
+        if (await intInput.isVisible()) {
+            await intInput.fill('JavaScript');
+            await intInput.press('Enter');
+            await page.getByRole('button', { name: /Save Profile/i }).click();
+            await expect(page.locator('text=/Profile updated/i')).toBeVisible();
+        }
+
+        await page.goto(`${BASE_URL}/explore`);
+        await expect(page.locator('text=/Explore|Recommended/i').first()).toBeVisible();
+    });
+
+    test('TC_EXP_09 - Trending sidebar shows current trending topics', async ({ page }) => {
+        const ts = Date.now().toString().slice(-7);
+        await register(page, `trend_user_${ts}`);
+
+        await page.goto(`${BASE_URL}/explore`);
+
+        // Look for trending sidebar
+        const trendingZone = page.locator('text=/Trending|#|topics/i').first();
+        await expect(trendingZone).toBeVisible({ timeout: 5000 });
+    });
+
+    test('TC_EXP_10 - Blocked users posts do not appear in explore', async ({ page }) => {
+        const ts = Date.now().toString().slice(-7);
+        const badUser = `bad_user_${ts}`;
+        await register(page, badUser);
+
+        // create post
+        const badPostText = `Bad post text ${ts}`;
+        await page.getByPlaceholder("What's on your mind?").fill(badPostText);
+        await page.getByRole('button', { name: 'Post' }).click();
+        await expect(page.getByText(badPostText).first()).toBeVisible({ timeout: 10000 });
+        await page.evaluate(() => localStorage.clear());
+
+        await register(page, `good_user_${ts}`);
+        // block the bad user
+        await page.goto(`${BASE_URL}/profile/${badUser}`);
+        await expect(page.getByText(badPostText).first()).toBeVisible();
+
+        await page.getByRole('button', { name: /Block/i }).first().click().catch(async () => {
+            await page.locator('button[aria-label="More options"]').click();
+            await page.getByRole('menuitem', { name: /Block/i }).click();
+        });
+
+        const confirmBlock = page.getByRole('button', { name: /Confirm|Yes|Block/i });
+        if (await confirmBlock.isVisible()) {
+            await confirmBlock.click();
+        }
+        await expect(page.locator('text=/Blocked/i')).toBeVisible({ timeout: 5000 });
+
+        // Go to explore
+        await page.goto(`${BASE_URL}/explore`);
+        await page.reload(); // clear cache
+        await expect(page.getByText(badPostText)).toBeHidden();
+    });
+
 });

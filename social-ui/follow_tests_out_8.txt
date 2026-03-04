@@ -1,0 +1,75 @@
+﻿
+Running 6 tests using 1 worker
+node.exe : [2m[WebServer] 
+[22m[2m11:09:23 pm[22m 
+[31m[1m[vite][22m[39m 
+[31mws proxy socket 
+error:[39m
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: ([2  
+  m[WebServer]...ket err   
+ or:[39m:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+[2m[WebServer] 
+[22mError: write 
+ECONNABORTED
+[2m[WebServer] [22m    
+at afterWriteDispatched (no
+de:internal/stream_base_com
+mons:159:15)
+[2m[WebServer] [22m    
+at writeGeneric (node:inter
+nal/stream_base_commons:150
+:3)
+[2m[WebServer] [22m    
+at Socket._writeGeneric 
+(node:net:966:11)
+[2m[WebServer] [22m    
+at Socket._write 
+(node:net:978:8)
+[2m[WebServer] [22m    
+at writeOrBuffer (node:inte
+rnal/streams/writable:572:1
+2)
+[2m[WebServer] [22m    
+at _write (node:internal/st
+reams/writable:501:10)
+[2m[WebServer] [22m    
+at Writable.write (node:int
+ernal/streams/writable:510:
+10)
+[2m[WebServer] [22m    
+at Socket.ondata (node:inte
+rnal/streams/readable:1009:
+22)
+[2m[WebServer] [22m    
+at Socket.emit 
+(node:events:519:28)
+[2m[WebServer] [22m    
+at addChunk (node:internal/
+streams/readable:561:12)
+[2m[WebServer] [22m    
+at readableAddChunkPushByte
+Mode (node:internal/streams
+/readable:512:3)
+[2m[WebServer] [22m    
+at Readable.push (node:inte
+rnal/streams/readable:392:5
+)
+[2m[WebServer] [22m    
+at TCP.onStreamRead (node:i
+nternal/stream_base_commons
+:189:23)
+┬╖┬╖┬╖┬╖┬╖┬╖
+  6 passed (34.8s)

@@ -1,0 +1,136 @@
+﻿
+Running 21 tests using 1 worker
+
+  Γ£ô   1 [chromium] ΓÇ║ tests\auth.spec.js:32:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_01 - Register with valid username, email, and password (1.1s)
+  Γ£ô   2 [chromium] ΓÇ║ tests\auth.spec.js:39:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_02 - Register then immediately login with same credentials (2.1s)
+  Γ£ô   3 [chromium] ΓÇ║ tests\auth.spec.js:63:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_03 - Register with a duplicate username (6.1s)
+  Γ£ô   4 [chromium] ΓÇ║ tests\auth.spec.js:71:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_04 - Register with a duplicate email (1.0s)
+  Γ£ô   5 [chromium] ΓÇ║ tests\auth.spec.js:77:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_05 - Register leaving all fields empty and submit (786ms)
+  Γ£ô   6 [chromium] ΓÇ║ tests\auth.spec.js:82:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_06 - Register with an invalid email format (843ms)
+  Γ£ô   7 [chromium] ΓÇ║ tests\auth.spec.js:95:9 ΓÇ║ Authentication Module ΓÇ║ 2.1 Register ΓÇ║ TC_AUTH_07 - Register with a blank username only (849ms)
+  Γ£ô   8 [chromium] ΓÇ║ tests\auth.spec.js:107:9 ΓÇ║ Authentication Module ΓÇ║ 2.2 Login ΓÇ║ TC_AUTH_08 - Login with correct username and password (1.7s)
+  Γ£ô   9 [chromium] ΓÇ║ tests\auth.spec.js:125:9 ΓÇ║ Authentication Module ΓÇ║ 2.2 Login ΓÇ║ TC_AUTH_09 - Login shows loading state while submitting (881ms)
+  Γ£ô  10 [chromium] ΓÇ║ tests\auth.spec.js:133:9 ΓÇ║ Authentication Module ΓÇ║ 2.2 Login ΓÇ║ TC_AUTH_10 - Login with wrong password (1.2s)
+  Γ£ô  11 [chromium] ΓÇ║ tests\auth.spec.js:140:9 ΓÇ║ Authentication Module ΓÇ║ 2.2 Login ΓÇ║ TC_AUTH_11 - Login with non-existent username (957ms)
+  Γ£ô  12 [chromium] ΓÇ║ tests\auth.spec.js:146:9 ΓÇ║ Authentication Module ΓÇ║ 2.2 Login ΓÇ║ TC_AUTH_12 - Submit login form with empty username and password (798ms)
+  Γ£ô  13 [chromium] ΓÇ║ tests\auth.spec.js:151:9 ΓÇ║ Authentication Module ΓÇ║ 2.2 Login ΓÇ║ TC_AUTH_13 - Banned user attempts login (1.0s)
+  Γ£ô  14 [chromium] ΓÇ║ tests\auth.spec.js:159:9 ΓÇ║ Authentication Module ΓÇ║ 2.3 Logout ΓÇ║ TC_AUTH_14 - Logged-in user clicks logout from user menu (1.6s)
+  Γ£ô  15 [chromium] ΓÇ║ tests\auth.spec.js:179:9 ΓÇ║ Authentication Module ΓÇ║ 2.3 Logout ΓÇ║ TC_AUTH_15 - After logout, accessing /feed directly redirects to /login (727ms)
+  Γ£ÿ  16 [chromium] ΓÇ║ tests\auth.spec.js:187:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_16 - Enter registered email on Forgot Password page (788ms)
+  Γ£ÿ  17 [chromium] ΓÇ║ tests\auth.spec.js:187:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_16 - Enter registered email on Forgot Password page (retry #1) (988ms)
+  Γ£ÿ  18 [chromium] ΓÇ║ tests\auth.spec.js:187:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_16 - Enter registered email on Forgot Password page (retry #2) (989ms)
+  Γ£ô  19 [chromium] ΓÇ║ tests\auth.spec.js:195:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_18 - Enter unregistered email on Forgot Password page (1.1s)
+  Γ£ô  20 [chromium] ΓÇ║ tests\auth.spec.js:202:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_19 - Submit Forgot Password with empty email field (955ms)
+  Γ£ô  21 [chromium] ΓÇ║ tests\auth.spec.js:210:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_20 - Submit Reset Password with incorrect OTP (1.1s)
+  Γ£ô  22 [chromium] ΓÇ║ tests\auth.spec.js:220:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_21 - Submit Reset Password with mismatched new passwords (1.0s)
+  -  23 [chromium] ΓÇ║ tests\auth.spec.js:231:14 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_17 - Use valid OTP to reset password (Skipped due to live OTP)
+
+
+  1) [chromium] ΓÇ║ tests\auth.spec.js:187:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_16 - Enter registered email on Forgot Password page 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: .p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i >> nth=0
+    Expected: visible
+    Error: Unexpected token "=" while parsing css selector ".p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i". Did you mean to CSS.escape it?
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for .p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i >> nth=0[22m
+
+
+      190 |             // Submit button
+      191 |             await page.getByRole('button', { name: /Send|OTP/i }).click();
+    > 192 |             await expect(page.locator('.p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i').first()).toBeVisible({ timeout: 5000 });
+          |                                                                                                      ^
+      193 |         });
+      194 |
+      195 |         test('TC_AUTH_18 - Enter unregistered email on Forgot Password page', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:192:102
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium\error-context.md
+
+    Retry #1 ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: .p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i >> nth=0
+    Expected: visible
+    Error: Unexpected token "=" while parsing css selector ".p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i". Did you mean to CSS.escape it?
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for .p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i >> nth=0[22m
+
+
+      190 |             // Submit button
+      191 |             await page.getByRole('button', { name: /Send|OTP/i }).click();
+    > 192 |             await expect(page.locator('.p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i').first()).toBeVisible({ timeout: 5000 });
+          |                                                                                                      ^
+      193 |         });
+      194 |
+      195 |         test('TC_AUTH_18 - Enter unregistered email on Forgot Password page', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:192:102
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry1\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry1\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry1\error-context.md
+
+    attachment #4: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry1\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry1\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Retry #2 ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: .p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i >> nth=0
+    Expected: visible
+    Error: Unexpected token "=" while parsing css selector ".p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i". Did you mean to CSS.escape it?
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for .p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i >> nth=0[22m
+
+
+      190 |             // Submit button
+      191 |             await page.getByRole('button', { name: /Send|OTP/i }).click();
+    > 192 |             await expect(page.locator('.p-3.rounded.mb-4.text-sm, text=/OTP sent|Failed/i').first()).toBeVisible({ timeout: 5000 });
+          |                                                                                                      ^
+      193 |         });
+      194 |
+      195 |         test('TC_AUTH_18 - Enter unregistered email on Forgot Password page', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:192:102
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry2\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry2\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium-retry2\error-context.md
+
+  1 failed
+    [chromium] ΓÇ║ tests\auth.spec.js:187:9 ΓÇ║ Authentication Module ΓÇ║ 2.4 Forgot Password & Reset Password ΓÇ║ TC_AUTH_16 - Enter registered email on Forgot Password page 
+  1 skipped
+  19 passed (37.2s)

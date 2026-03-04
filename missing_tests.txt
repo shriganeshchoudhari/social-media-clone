@@ -1,0 +1,144 @@
+TC_AUTH_01 - Register with valid username, email, and password
+TC_AUTH_02 - Register then immediately login with same credentials
+TC_AUTH_03 - Register with a duplicate username
+TC_AUTH_04 - Register with a duplicate email
+TC_AUTH_05 - Register leaving all fields empty and submit
+TC_AUTH_06 - Register with an invalid email format (e.g. `notanemail`)
+TC_AUTH_07 - Register with a blank username only
+TC_AUTH_08 - Login with correct username and password
+TC_AUTH_09 - Login shows loading state while submitting
+TC_AUTH_11 - Login with non-existent username
+TC_AUTH_12 - Submit login form with empty username and password
+TC_AUTH_13 - Banned user attempts login
+TC_AUTH_14 - Logged-in user clicks logout from user menu
+TC_AUTH_15 - After logout, accessing `/feed` directly redirects to `/login`
+TC_AUTH_16 - Enter registered email on Forgot Password page
+TC_AUTH_17 - Use valid OTP to reset password on Reset Password page
+TC_AUTH_18 - Enter unregistered email on Forgot Password page
+TC_AUTH_19 - Submit Forgot Password with empty email field
+TC_AUTH_20 - Submit Reset Password with incorrect OTP
+TC_AUTH_21 - Submit Reset Password with mismatched new passwords
+TC_SET_01 - Update bio with valid text and save
+TC_SET_02 - Update website URL and save
+TC_SET_03 - Upload a profile avatar image and save
+TC_SET_04 - Upload a banner image and save
+TC_SET_05 - Add a new interest tag and save profile
+TC_SET_06 - Remove an existing interest tag and save
+TC_SET_07 - Add duplicate interest tag
+TC_SET_08 - Submit profile update when backend is unreachable
+TC_SET_09 - Change password with correct current password and matching new passwords
+TC_SET_11 - New password and confirm password don't match
+TC_SET_12 - Leave all password fields empty and submit
+TC_SET_13 - Toggle account from Public to Private
+TC_SET_14 - Toggle account from Private back to Public
+TC_SET_15 - Click Delete Account, confirm in dialog
+TC_SET_16 - Click Delete Account but cancel the confirmation dialog
+TC_POST_01 - Create a text-only post with valid content
+TC_POST_03 - Create a post with multiple images (up to limit)
+TC_POST_04 - Create a post with a poll (question + options + duration)
+TC_POST_05 - Share/repost another user's existing post
+TC_POST_06 - Submit Create Post form with empty content
+TC_POST_07 - Attach a file exceeding 10MB image size limit
+TC_POST_08 - Create post while unauthenticated (token removed)
+TC_POST_09 - Edit own post via three-dot menu → updated content visible in feed
+TC_POST_10 - Delete own post via three-dot menu → post removed from feed
+TC_POST_11 - Edit/delete menu not visible on another user's post
+TC_POST_12 - Click like on a post → like count increments and button becomes active
+TC_POST_13 - Click like again on an already-liked post → like count decrements
+TC_POST_14 - Add a comment to a post
+TC_POST_15 - Add a reply comment (nested) to an existing comment
+TC_POST_16 - Submit empty comment
+TC_POST_17 - Bookmark a post via save icon
+TC_POST_19 - Report a post via three-dot menu
+TC_POST_20 - Report own post (if blocked by UI)
+TC_POST_21 - Vote on a poll option in a post
+TC_POST_22 - Vote again on same poll (backend should prevent duplicate votes)
+TC_STORY_02 - Follower sees the story bubble in their feed story bar
+TC_STORY_04 - Story is marked as viewed after opening
+TC_STORY_05 - Story owner can view the list of viewers
+TC_STORY_06 - Create a story with a poll question and options
+TC_STORY_07 - Vote on a story poll
+TC_STORY_08 - Upload a story with no file selected
+TC_STORY_09 - Story disappears after 24 hours (expiry)
+TC_FOL_01 - Click "Follow" on another user's profile
+TC_FOL_03 - Click "Unfollow" on a followed user's profile
+TC_FOL_04 - Follow generates a follow notification for target user
+TC_FOL_05 - Attempt to follow yourself
+TC_FOL_06 - Follow a private user → request pending until approved
+TC_EXP_02 - Switch to "Posts" tab in search results
+TC_EXP_04 - Search with an empty query string
+TC_EXP_05 - Search for a non-existent username
+TC_EXP_06 - Search for a keyword that matches no posts
+TC_EXP_08 - User with interests set sees interest-relevant posts in explore
+TC_EXP_09 - Trending sidebar shows current trending topics
+TC_EXP_10 - Blocked user's posts do not appear in explore
+TC_NOTIF_01 - Like another user's post → notification appears for post owner
+TC_NOTIF_02 - Follow a user → follow notification created for that user
+TC_NOTIF_03 - Comment on a post → notification created for post owner
+TC_NOTIF_04 - Unread notification badge count is correct
+TC_NOTIF_05 - Click "Mark all read" → badge clears and all notifications show as read
+TC_NOTIF_06 - Click individual notification → marks it as read
+TC_NOTIF_07 - Notification links navigate to the relevant post/profile
+TC_NOTIF_08 - New notification appears in real-time without page refresh (WebSocket)
+TC_CHAT_01 - User A sends a text message to User B
+TC_CHAT_02 - User B receives the message in real-time without refresh
+TC_CHAT_03 - User B replies → both sides see full conversation thread
+TC_CHAT_04 - Inbox page (`/inbox`) lists all conversations
+TC_CHAT_06 - Paginated loading of older messages (scroll up)
+TC_CHAT_07 - Send an empty message
+TC_CHAT_08 - Send a message to a blocked user
+TC_CHAT_09 - Access `/chat/nonexistentuser`
+TC_REACT_01 - Hover over a message → emoji reaction picker appears
+TC_REACT_02 - Click an emoji reaction → reaction icon appears on message
+TC_REACT_03 - Sender sees the receiver's reaction in real-time (WebSocket)
+TC_REACT_04 - React to a message that no longer exists
+TC_CGRP_01 - Create a chat group with a name and participants from inbox
+TC_CGRP_02 - Send a message in a chat group → all members see it
+TC_CGRP_03 - Search for a public chat group and join it
+TC_CGRP_04 - Group admin adds a new member
+TC_CGRP_05 - Group admin removes a member
+TC_CGRP_06 - User leaves a chat group
+TC_CGRP_07 - Group admin updates group name/description/image
+TC_CGRP_08 - Non-admin tries to remove a member
+TC_CGRP_09 - Send a message in a group the user has left
+TC_GRP_01 - Create a community group with name, description, and rules
+TC_GRP_02 - Group detail page shows member count, description, and rules
+TC_GRP_03 - Non-member joins a public group
+TC_GRP_04 - Member leaves a group
+TC_GRP_05 - Post content inside a group
+TC_GRP_06 - Group admin pins a post in the group
+TC_GRP_07 - Group admin uploads a cover image
+TC_GRP_08 - Group admin promotes a member to admin role
+TC_GRP_09 - Search for groups by keyword
+TC_GRP_10 - Group admin removes a member from community group
+TC_GRP_11 - Group admin deletes the group
+TC_GRP_12 - Regular member tries to delete the group
+TC_GRP_13 - Regular member tries to pin a post
+TC_GRP_14 - Search groups with empty query
+TC_PROF_01 - Navigate to own profile `/profile/:username`
+TC_PROF_02 - Navigate to another user's public profile
+TC_PROF_03 - Saved posts tab on own profile shows bookmarked posts
+TC_PROF_04 - Block a user from their profile
+TC_PROF_05 - Navigate to profile of a private account as non-follower
+TC_PROF_06 - Navigate to a non-existent user profile
+TC_AM_01 - Private account hides posts from non-followers
+TC_AM_02 - Follower can see private account posts after following
+TC_AM_03 - Account deletion logs user out and prevents re-login
+TC_AM_04 - Unauthenticated user redirected from any protected route
+TC_AM_05 - JWT token manually removed from localStorage mid-session
+TC_ADMIN_01 - Admin user navigates to `/admin` → dashboard loads with Reports and Users tabs
+TC_ADMIN_02 - Admin sees Audit Logs tab (ADMIN role only)
+TC_ADMIN_03 - Admin clicks "Warn" on a user → alert confirms warning sent
+TC_ADMIN_04 - Admin clicks "Suspend 7d" on a user → suspended user cannot login
+TC_ADMIN_05 - Admin clicks "Unsuspend" → user can login again
+TC_ADMIN_06 - Admin clicks "Ban" on a user and confirms
+TC_ADMIN_08 - Admin deletes a reported post from Reports tab
+TC_ADMIN_10 - Admin verifies a user → verification badge appears on profile
+TC_ADMIN_11 - Audit log tab records admin actions
+TC_ADMIN_12 - Non-admin (MODERATOR) user navigates to `/admin`
+TC_ADMIN_13 - Regular user navigates to `/admin`
+TC_ADMIN_14 - Admin tries to ban a user who is already banned
+TC_ADMIN_15 - Admin tries to delete a post that no longer exists
+TC_PERS_01 - Add "tech" as an interest in Settings → tech-tagged posts appear in Explore
+TC_PERS_02 - Remove all interests → generic explore feed with no personalization
+TC_PERS_03 - Add an interest with only whitespace

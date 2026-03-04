@@ -1,0 +1,76 @@
+TC_FOL_01 - Click Follow on another user profile: 
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('p').filter({ hasText: 'Hello from userB_1772391891524' }).first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 5000ms[22m
+[2m  - waiting for locator('p').filter({ hasText: 'Hello from userB_1772391891524' }).first()[22m
+
+
+TC_FOL_02 - Followed users posts now appear in home feed: 
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('p').filter({ hasText: 'Hello from userB_1772391900856' }).first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 5000ms[22m
+[2m  - waiting for locator('p').filter({ hasText: 'Hello from userB_1772391900856' }).first()[22m
+
+
+TC_FOL_03 - Click Unfollow on a followed user profile: 
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('p').filter({ hasText: 'Hello from userB_1772391923982' }).first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 5000ms[22m
+[2m  - waiting for locator('p').filter({ hasText: 'Hello from userB_1772391923982' }).first()[22m
+
+
+TC_FOL_04 - Follow generates a follow notification for target user: 
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('p').filter({ hasText: 'Hello from userB_1772391957945' }).first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 5000ms[22m
+[2m  - waiting for locator('p').filter({ hasText: 'Hello from userB_1772391957945' }).first()[22m
+
+
+TC_FOL_05 - Attempt to follow yourself: 
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('p').filter({ hasText: 'Hello from userB_1772391991869' }).first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 5000ms[22m
+[2m  - waiting for locator('p').filter({ hasText: 'Hello from userB_1772391991869' }).first()[22m
+
+
+TC_FOL_06 - Follow a private user: 
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('p').filter({ hasText: 'Hello from userB_1772392025126' }).first()
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 5000ms[22m
+[2m  - waiting for locator('p').filter({ hasText: 'Hello from userB_1772392025126' }).first()[22m

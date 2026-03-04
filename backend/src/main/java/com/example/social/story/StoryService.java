@@ -20,7 +20,6 @@ public class StoryService {
     private final UserRepository userRepository;
     private final StoryViewRepository storyViewRepository;
     private final StoryPollVoteRepository storyPollVoteRepository;
-    private final StoryPollRepository storyPollRepository;
 
     @Transactional
     public Story createStory(User user, MultipartFile file) {

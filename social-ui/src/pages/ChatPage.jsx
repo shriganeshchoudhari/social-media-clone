@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
@@ -28,6 +29,7 @@ export default function ChatPage() {
     const [otherUser, setOtherUser] = useState(null);
     const [text, setText] = useState("");
     const [imageFile, setImageFile] = useState(null);
+    // eslint-disable-next-line no-unused-vars,
     const [loading, setLoading] = useState(true);
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState(null);

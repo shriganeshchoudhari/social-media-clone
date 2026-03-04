@@ -42,7 +42,7 @@ export default function PostList({ endpoint, queryKey, canCreate = false, create
         try {
             // Check if endpoint already has query params
             const separator = endpoint.includes('?') ? '&' : '?';
-            const url = `${endpoint}${separator}page=${pageNum}&size=10`;
+            const url = `${endpoint}${separator}page=${pageNum}&size=10&_t=${Date.now()}`;
             const res = await api.get(url);
 
             if (isReset) {
@@ -72,6 +72,7 @@ export default function PostList({ endpoint, queryKey, canCreate = false, create
         });
 
         if (node) observer.current.observe(node);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading, hasMore, page]);
 
     const handlePostCreated = () => {

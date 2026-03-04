@@ -1,0 +1,117 @@
+﻿
+Running 2 tests using 1 worker
+
+node.exe : 
+[2m[WebServer] 
+[22m[2m10:26:15 
+pm[22m [31m[1m[vite]
+[22m[39m [31mhttp 
+proxy error: 
+/api/auth/register[39m
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: ([2m[WebServe   
+ r]...h/register[3    
+9m:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+[2m[WebServer] 
+[22mAggregateError 
+[ECONNREFUSED]: 
+[2m[WebServer] [22m  
+  at internalConnectMul
+tiple 
+(node:net:1134:18)
+[2m[WebServer] [22m  
+  at 
+afterConnectMultiple 
+(node:net:1715:7)
+  Γ£ÿ  1 [chromium] ΓÇ║ tests\follow-unfollow.spec.js:46:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_01 - Click Follow on another user profile (12.1s)
+[2m[WebServer] 
+[22m[2m10:26:28 
+pm[22m [31m[1m[vite]
+[22m[39m [31mhttp 
+proxy error: 
+/api/auth/register[39m
+[2m[WebServer] 
+[22mAggregateError 
+[ECONNREFUSED]: 
+[2m[WebServer] [22m  
+  at internalConnectMul
+tiple 
+(node:net:1134:18)
+[2m[WebServer] [22m  
+  at 
+afterConnectMultiple 
+(node:net:1715:7)
+  Γ£ÿ  2 [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed (11.5s)
+
+
+  1) [chromium] ΓÇ║ tests\follow-unfollow.spec.js:46:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_01 - Click Follow on another user profile 
+
+    TimeoutError: page.waitForURL: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://localhost:5173/feed" until "load"
+    ============================================================
+
+      20 |         await page.locator('input[type="password"]').fill('Password123!');
+      21 |         await page.getByRole('button', { name: /Register|Creating Account/i }).click();
+    > 22 |         await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
+         |                    ^
+      23 |
+      24 |         // Let User B create a post so it can appear in feed later
+      25 |         await page.locator('textarea[placeholder="What\'s on your mind?"]').fill(`Hello from ${targetUser}`);
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:22:20
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-b66ba-low-on-another-user-profile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-b66ba-low-on-another-user-profile-chromium\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-b66ba-low-on-another-user-profile-chromium\error-context.md
+
+  2) [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed 
+
+    TimeoutError: page.waitForURL: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://localhost:5173/feed" until "load"
+    ============================================================
+
+      20 |         await page.locator('input[type="password"]').fill('Password123!');
+      21 |         await page.getByRole('button', { name: /Register|Creating Account/i }).click();
+    > 22 |         await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
+         |                    ^
+      23 |
+      24 |         // Let User B create a post so it can appear in feed later
+      25 |         await page.locator('textarea[placeholder="What\'s on your mind?"]').fill(`Hello from ${targetUser}`);
+        at F:\DEVOPS\social-media-clone\social-ui\tests\follow-unfollow.spec.js:22:20
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    attachment #2: video (video/webm) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\video.webm
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\follow-unfollow-Follow-Unf-86281-sts-now-appear-in-home-feed-chromium\error-context.md
+
+  2 failed
+    [chromium] ΓÇ║ tests\follow-unfollow.spec.js:46:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_01 - Click Follow on another user profile 
+    [chromium] ΓÇ║ tests\follow-unfollow.spec.js:64:5 ΓÇ║ Follow / Unfollow System ΓÇ║ TC_FOL_02 - Followed users posts now appear in home feed 

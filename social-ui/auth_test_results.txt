@@ -1,0 +1,319 @@
+
+Running 21 tests using 1 worker
+
+[1A[2K[1/21] [chromium] › tests\auth.spec.js:32:9 › Authentication Module › 2.1 Register › TC_AUTH_01 - Register with valid username, email, and password
+[1A[2K[2/21] [chromium] › tests\auth.spec.js:39:9 › Authentication Module › 2.1 Register › TC_AUTH_02 - Register then immediately login with same credentials
+[1A[2K[3/21] [chromium] › tests\auth.spec.js:63:9 › Authentication Module › 2.1 Register › TC_AUTH_03 - Register with a duplicate username
+[1A[2K[4/21] [chromium] › tests\auth.spec.js:71:9 › Authentication Module › 2.1 Register › TC_AUTH_04 - Register with a duplicate email
+[1A[2K  1) [chromium] › tests\auth.spec.js:71:9 › Authentication Module › 2.1 Register › TC_AUTH_04 - Register with a duplicate email 
+
+    [31mTest timeout of 10000ms exceeded.[39m
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=/already in use|different email/i')
+    Expected: visible
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=/already in use|different email/i')[22m
+
+
+      73 |             await page.getByRole('button', { name: /Register|Creating Account/i }).click();
+      74 |             await expect(page.locator('text=Email is already in use')).toBeVisible({ timeout: 5000 }).catch(async () => {
+    > 75 |                 await expect(page.locator('text=/already in use|different email/i')).toBeVisible({ timeout: 5000 });
+         |                                                                                      ^
+      76 |             });
+      77 |         });
+      78 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:75:86
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:74:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-fec72-ster-with-a-duplicate-email-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-fec72-ster-with-a-duplicate-email-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-fec72-ster-with-a-duplicate-email-chromium\error-context.md
+
+
+[1A[2K[5/21] [chromium] › tests\auth.spec.js:79:9 › Authentication Module › 2.1 Register › TC_AUTH_05 - Register leaving all fields empty and submit
+[1A[2K[6/21] [chromium] › tests\auth.spec.js:84:9 › Authentication Module › 2.1 Register › TC_AUTH_06 - Register with an invalid email format
+[1A[2K[7/21] [chromium] › tests\auth.spec.js:92:9 › Authentication Module › 2.1 Register › TC_AUTH_07 - Register with a blank username only
+[1A[2K[8/21] [chromium] › tests\auth.spec.js:104:9 › Authentication Module › 2.2 Login › TC_AUTH_08 - Login with correct username and password
+[1A[2K  2) [chromium] › tests\auth.spec.js:104:9 › Authentication Module › 2.2 Login › TC_AUTH_08 - Login with correct username and password 
+
+    [31mTest timeout of 10000ms exceeded.[39m
+
+    Error: page.waitForURL: Test timeout of 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://localhost:5173/feed" until "load"
+    ============================================================
+
+      105 |             await fillLogin(page, validUser.username, validUser.password);
+      106 |             await page.getByRole('button', { name: /Login|Logging in/i }).click();
+    > 107 |             await page.waitForURL(`${BASE_URL}/feed`, { timeout: 10000 });
+          |                        ^
+      108 |             await expect(page).toHaveURL(/.*\/feed/);
+      109 |         });
+      110 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:107:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-8ec49-rrect-username-and-password-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-8ec49-rrect-username-and-password-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-8ec49-rrect-username-and-password-chromium\error-context.md
+
+
+[1A[2K[9/21] [chromium] › tests\auth.spec.js:111:9 › Authentication Module › 2.2 Login › TC_AUTH_09 - Login shows loading state while submitting
+[1A[2K[10/21] [chromium] › tests\auth.spec.js:120:9 › Authentication Module › 2.2 Login › TC_AUTH_10 - Login with wrong password
+[1A[2K[11/21] [chromium] › tests\auth.spec.js:127:9 › Authentication Module › 2.2 Login › TC_AUTH_11 - Login with non-existent username
+[1A[2K[12/21] [chromium] › tests\auth.spec.js:133:9 › Authentication Module › 2.2 Login › TC_AUTH_12 - Submit login form with empty username and password
+[1A[2K  3) [chromium] › tests\auth.spec.js:133:9 › Authentication Module › 2.2 Login › TC_AUTH_12 - Submit login form with empty username and password 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      137 |             const isUserInvalid = await usernameInput.evaluate(node => !node.validity.valid);
+      138 |             const isPassInvalid = await passwordInput.evaluate(node => !node.validity.valid);
+    > 139 |             expect(isUserInvalid || isPassInvalid).toBeTruthy();
+          |                                                    ^
+      140 |         });
+      141 |
+      142 |         test('TC_AUTH_13 - Banned user attempts login', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:139:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-8e0c7-empty-username-and-password-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-8e0c7-empty-username-and-password-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-8e0c7-empty-username-and-password-chromium\error-context.md
+
+
+[1A[2K[13/21] [chromium] › tests\auth.spec.js:142:9 › Authentication Module › 2.2 Login › TC_AUTH_13 - Banned user attempts login
+[1A[2K  4) [chromium] › tests\auth.spec.js:142:9 › Authentication Module › 2.2 Login › TC_AUTH_13 - Banned user attempts login 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=/banned|suspended/i')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=/banned|suspended/i')[22m
+
+
+      143 |             await fillLogin(page, 'user5', 'password'); // 'user5' is seeded as BANNED
+      144 |             await page.getByRole('button', { name: /Login|Logging in/i }).click();
+    > 145 |             await expect(page.locator('text=/banned|suspended/i')).toBeVisible({ timeout: 5000 });
+          |                                                                    ^
+      146 |         });
+      147 |     });
+      148 |
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:145:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-657e9--Banned-user-attempts-login-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-657e9--Banned-user-attempts-login-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-657e9--Banned-user-attempts-login-chromium\error-context.md
+
+
+[1A[2K[14/21] [chromium] › tests\auth.spec.js:150:9 › Authentication Module › 2.3 Logout › TC_AUTH_14 - Logged-in user clicks logout from user menu
+[1A[2K  5) [chromium] › tests\auth.spec.js:150:9 › Authentication Module › 2.3 Logout › TC_AUTH_14 - Logged-in user clicks logout from user menu 
+
+    [31mTest timeout of 10000ms exceeded.[39m
+
+    Error: page.waitForURL: Test timeout of 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://localhost:5173/feed" until "load"
+    ============================================================
+
+      152 |             await fillLogin(page, validUser.username, validUser.password);
+      153 |             await page.getByRole('button', { name: /Login|Logging in/i }).click();
+    > 154 |             await page.waitForURL(`${BASE_URL}/feed`);
+          |                        ^
+      155 |
+      156 |             await page.locator('[data-testid="user-menu-button"], button[aria-label*="User menu"], button[aria-label*="user menu"]').click().catch(async () => {
+      157 |                 await page.locator(`text=${validUser.username}`).first().click();
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:154:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-1e648-licks-logout-from-user-menu-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-1e648-licks-logout-from-user-menu-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-1e648-licks-logout-from-user-menu-chromium\error-context.md
+
+
+[1A[2K[15/21] [chromium] › tests\auth.spec.js:168:9 › Authentication Module › 2.3 Logout › TC_AUTH_15 - After logout, accessing /feed directly redirects to /login
+[1A[2K[16/21] [chromium] › tests\auth.spec.js:176:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_16 - Enter registered email on Forgot Password page
+[1A[2K  6) [chromium] › tests\auth.spec.js:176:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_16 - Enter registered email on Forgot Password page 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=/OTP sent|Instructions sent/i')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=/OTP sent|Instructions sent/i')[22m
+
+
+      178 |             await page.locator('input[type="email"]').fill(validUser.email);
+      179 |             await page.getByRole('button', { name: /Send|Submit/i }).click();
+    > 180 |             await expect(page.locator('text=/OTP sent|Instructions sent/i')).toBeVisible({ timeout: 5000 });
+          |                                                                              ^
+      181 |         });
+      182 |
+      183 |         test('TC_AUTH_18 - Enter unregistered email on Forgot Password page', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:180:78
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-b9fae-ail-on-Forgot-Password-page-chromium\error-context.md
+
+
+[1A[2K[17/21] [chromium] › tests\auth.spec.js:183:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_18 - Enter unregistered email on Forgot Password page
+[1A[2K  7) [chromium] › tests\auth.spec.js:183:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_18 - Enter unregistered email on Forgot Password page 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=/not found|not registered/i')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=/not found|not registered/i')[22m
+
+
+      185 |             await page.locator('input[type="email"]').fill('unregistered_abc123@example.com');
+      186 |             await page.getByRole('button', { name: /Send|Submit/i }).click();
+    > 187 |             await expect(page.locator('text=/not found|not registered/i')).toBeVisible({ timeout: 5000 });
+          |                                                                            ^
+      188 |         });
+      189 |
+      190 |         test('TC_AUTH_19 - Submit Forgot Password with empty email field', async ({ page }) => {
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:187:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-84463-ail-on-Forgot-Password-page-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-84463-ail-on-Forgot-Password-page-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-84463-ail-on-Forgot-Password-page-chromium\error-context.md
+
+
+[1A[2K[18/21] [chromium] › tests\auth.spec.js:190:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_19 - Submit Forgot Password with empty email field
+[1A[2K[19/21] [chromium] › tests\auth.spec.js:198:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_20 - Submit Reset Password with incorrect OTP
+[1A[2K  8) [chromium] › tests\auth.spec.js:198:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_20 - Submit Reset Password with incorrect OTP 
+
+    [31mTest timeout of 10000ms exceeded.[39m
+
+    Error: locator.fill: Test timeout of 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[placeholder="Enter 6-digit OTP"]')[22m
+
+
+      199 |             await page.goto(`${BASE_URL}/reset-password`);
+      200 |             await page.locator('input[placeholder="Enter your email"]').fill(validUser.email);
+    > 201 |             await page.locator('input[placeholder="Enter 6-digit OTP"]').fill('000000');
+          |                                                                          ^
+      202 |             await page.locator('input[placeholder="Enter new password"]').fill('NewPassword123!');
+      203 |             await page.getByRole('button', { name: /Reset Password/i }).click();
+      204 |             await expect(page.locator('text=/Invalid OTP/i')).toBeVisible({ timeout: 5000 });
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:201:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-8e5a6-Password-with-incorrect-OTP-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-8e5a6-Password-with-incorrect-OTP-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-8e5a6-Password-with-incorrect-OTP-chromium\error-context.md
+
+
+[1A[2K[20/21] [chromium] › tests\auth.spec.js:207:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_21 - Submit Reset Password with mismatched new passwords
+[1A[2K  9) [chromium] › tests\auth.spec.js:207:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_21 - Submit Reset Password with mismatched new passwords 
+
+    [31mTest timeout of 10000ms exceeded.[39m
+
+    Error: locator.fill: Test timeout of 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[placeholder="Enter 6-digit OTP"]')[22m
+
+
+      209 |             await page.goto(`${BASE_URL}/reset-password`);
+      210 |             await page.locator('input[placeholder="Enter your email"]').fill(validUser.email);
+    > 211 |             await page.locator('input[placeholder="Enter 6-digit OTP"]').fill('123456');
+          |                                                                          ^
+      212 |             await page.locator('input[placeholder="Enter new password"]').fill('NewPassword123!');
+      213 |             // If there's a confirm password field
+      214 |             const confirmInput = page.locator('input[placeholder="Confirm new password"]');
+        at F:\DEVOPS\social-media-clone\social-ui\tests\auth.spec.js:211:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-2050e-th-mismatched-new-passwords-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\auth-Authentication-Module-2050e-th-mismatched-new-passwords-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-Authentication-Module-2050e-th-mismatched-new-passwords-chromium\error-context.md
+
+
+[1A[2K[21/21] [chromium] › tests\auth.spec.js:226:14 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_17 - Use valid OTP to reset password (Skipped due to live OTP)
+[1A[2K  9 failed
+    [chromium] › tests\auth.spec.js:71:9 › Authentication Module › 2.1 Register › TC_AUTH_04 - Register with a duplicate email 
+    [chromium] › tests\auth.spec.js:104:9 › Authentication Module › 2.2 Login › TC_AUTH_08 - Login with correct username and password 
+    [chromium] › tests\auth.spec.js:133:9 › Authentication Module › 2.2 Login › TC_AUTH_12 - Submit login form with empty username and password 
+    [chromium] › tests\auth.spec.js:142:9 › Authentication Module › 2.2 Login › TC_AUTH_13 - Banned user attempts login 
+    [chromium] › tests\auth.spec.js:150:9 › Authentication Module › 2.3 Logout › TC_AUTH_14 - Logged-in user clicks logout from user menu 
+    [chromium] › tests\auth.spec.js:176:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_16 - Enter registered email on Forgot Password page 
+    [chromium] › tests\auth.spec.js:183:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_18 - Enter unregistered email on Forgot Password page 
+    [chromium] › tests\auth.spec.js:198:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_20 - Submit Reset Password with incorrect OTP 
+    [chromium] › tests\auth.spec.js:207:9 › Authentication Module › 2.4 Forgot Password & Reset Password › TC_AUTH_21 - Submit Reset Password with mismatched new passwords 
+  1 skipped
+  11 passed (2.0m)
+
+[36m  Serving HTML report at http://localhost:7291. Press Ctrl+C to quit.[39m
+Terminate batch job (Y/N)? 
