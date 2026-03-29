@@ -1,0 +1,2126 @@
+{
+    "info": {
+        "_postman_id": "social-media-clone-collection",
+        "name": "Social Media Clone API",
+        "description": "Full API automation collection with pre-request scripts and test assertions. Import the matching environment file before running.\n\n## Setup\n1. Import this file and `Social_Media_Clone_ENV.postman_environment.json`\n2. Activate the environment\n3. Run the **Auth** folder first (it populates `USER_TOKEN`, `USERNAME`, `EMAIL`)\n4. Optionally run **Admin** login to populate `ADMIN_TOKEN`\n5. Run other folders in any order, or use Collection Runner for full regression",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Global pre-request: attach Bearer token if available",
+                    "const token = pm.environment.get('USER_TOKEN');",
+                    "if (token) {",
+                    "  pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' + token });",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "01 - Auth",
+            "description": "User registration, login, logout flows. Automatically populates USER_TOKEN, USERNAME, EMAIL.",
+            "item": [
+                {
+                    "name": "Register new user",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Generate a unique test user on every run",
+                                    "const ts = Date.now();",
+                                    "pm.environment.set('USERNAME', 'testuser_' + ts);",
+                                    "pm.environment.set('EMAIL',    'testuser_' + ts + '@test.com');",
+                                    "pm.environment.set('PASSWORD', 'TestPass@123');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                                    "pm.test('Response has username', () => {",
+                                    "  const json = pm.response.json();",
+                                    "  pm.expect(json).to.have.property('username');",
+                                    "  pm.expect(json.username).to.equal(pm.environment.get('USERNAME'));",
+                                    "});",
+                                    "pm.test('Password not exposed', () => {",
+                                    "  const body = pm.response.text();",
+                                    "  pm.expect(body).to.not.include('password');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/register",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Register - duplicate username (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                                    "pm.test('Error message present', () => {",
+                                    "  const json = pm.response.json();",
+                                    "  pm.expect(json).to.have.property('message');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"another_{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/register",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Register - invalid email (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 400 for invalid email', () => pm.response.to.have.status(400));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"newuser999\",\n  \"email\": \"not-an-email\",\n  \"password\": \"TestPass@123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/register",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login - valid credentials",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                                    "pm.test('JWT token returned', () => {",
+                                    "  const json = pm.response.json();",
+                                    "  pm.expect(json).to.have.property('token');",
+                                    "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+                                    "  pm.environment.set('USER_TOKEN', json.token);",
+                                    "  pm.environment.set('USERNAME', json.username);",
+                                    "});",
+                                    "pm.test('Role present', () => {",
+                                    "  pm.expect(pm.response.json()).to.have.property('role');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login - wrong password (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"wrongpassword\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login - non-existent user (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401 for unknown user', () => pm.response.to.have.status(401));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"ghost@nowhere.com\",\n  \"password\": \"TestPass@123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Admin Login (populates ADMIN_TOKEN)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "  const json = pm.response.json();",
+                                    "  pm.environment.set('ADMIN_TOKEN', json.token);",
+                                    "  pm.test('Admin token saved', () => pm.expect(json.token).to.not.be.empty);",
+                                    "} else {",
+                                    "  pm.test('Admin login skipped (404/401 - admin not seeded)', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{ADMIN_EMAIL}}\",\n  \"password\": \"{{ADMIN_PASSWORD}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "02 - Users & Profile",
+            "description": "Profile retrieval, update, search, follow, block.",
+            "item": [
+                {
+                    "name": "Get my profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Profile fields present', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('username');",
+                                    "  pm.expect(j).to.have.property('followersCount');",
+                                    "  pm.expect(j).to.have.property('followingCount');",
+                                    "  pm.expect(j).to.have.property('postCount');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/me",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get profile - unauthenticated (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401 without token', () => pm.response.to.have.status(401));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/me",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get user by username",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Username matches', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j.username).to.equal(pm.environment.get('USERNAME'));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/{{USERNAME}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{USERNAME}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get user - non-existent (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/ghost_user_that_does_not_exist_xyz123",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "ghost_user_that_does_not_exist_xyz123"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search users",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/search?q=test",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "test"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Bio updated', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j.bio).to.equal('Automated test bio');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "bio",
+                                    "value": "Automated test bio",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "website",
+                                    "value": "https://example.com",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/me",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get followers",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/{{USERNAME}}/followers",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{USERNAME}}",
+                                "followers"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get following",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/{{USERNAME}}/following",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{USERNAME}}",
+                                "following"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Follow self (negative)",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Target is self — should fail with 400",
+                                    "pm.environment.set('TARGET_USER', pm.environment.get('USERNAME'));"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 400 – cannot follow self', () => pm.response.to.have.status(400));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/{{USERNAME}}/follow",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{USERNAME}}",
+                                "follow"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Block self (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 400 – cannot block self', () => pm.response.to.have.status(400));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/{{USERNAME}}/block",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{USERNAME}}",
+                                "block"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "03 - Posts",
+            "description": "Create, read, delete posts; like/unlike; comments; feed.",
+            "item": [
+                {
+                    "name": "Create post",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.environment.set('POST_CONTENT', 'Automated post at ' + new Date().toISOString());"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                                    "pm.test('Post id returned', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('id');",
+                                    "  pm.environment.set('POST_ID', j.id);",
+                                    "});",
+                                    "pm.test('Content matches', () => {",
+                                    "  pm.expect(pm.response.json().content).to.equal(pm.environment.get('POST_CONTENT'));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "content",
+                                    "value": "{{POST_CONTENT}}",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create post - empty content (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 400 for empty content', () => pm.response.to.have.status(400));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "content",
+                                    "value": "",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get feed",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Content is paginated', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('content');",
+                                    "  pm.expect(j.content).to.be.an('array');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts/feed?page=0&size=10",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts",
+                                "feed"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Like / Unlike post (toggle)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 on like toggle', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts/{{POST_ID}}/like",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts",
+                                "{{POST_ID}}",
+                                "like"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add comment to post",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                                    "pm.test('Comment id returned', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('id');",
+                                    "  pm.environment.set('COMMENT_ID', j.id);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \"content\": \"Automated comment on post {{POST_ID}}\" }"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts/{{POST_ID}}/comments",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts",
+                                "{{POST_ID}}",
+                                "comments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get comments for post",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Comments is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts/{{POST_ID}}/comments",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts",
+                                "{{POST_ID}}",
+                                "comments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get trending topics",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/trending",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "trending"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete post (own)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts/{{POST_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts",
+                                "{{POST_ID}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete non-existent post (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 403 or 404', () => {",
+                                    "  pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/posts/999999999",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "posts",
+                                "999999999"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "04 - Stories",
+            "description": "Story create and feed. Requires multipart/form-data file upload.",
+            "item": [
+                {
+                    "name": "Get story feed",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/stories/feed",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "stories",
+                                "feed"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get story feed - unauthenticated (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/stories/feed",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "stories",
+                                "feed"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "05 - Notifications",
+            "description": "Notification listing and mark-as-read.",
+            "item": [
+                {
+                    "name": "Get notifications",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/notifications",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "notifications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mark all notifications as read",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/notifications/read-all",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "read-all"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Notifications - unauthenticated (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/notifications",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "notifications"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "06 - Groups",
+            "description": "Community group CRUD, membership, and moderation.",
+            "item": [
+                {
+                    "name": "Get all groups",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/groups",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "groups"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create group",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.environment.set('GROUP_NAME', 'AutoGroup_' + Date.now());"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                                    "pm.test('Group id returned', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('id');",
+                                    "  pm.environment.set('GROUP_ID', j.id);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"{{GROUP_NAME}}\",\n  \"description\": \"Automation test group\",\n  \"isPrivate\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/groups",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "groups"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get group members",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('At least creator present', () => {",
+                                    "  pm.expect(pm.response.json()).to.be.an('array').with.length.greaterThan(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/groups/{{GROUP_ID}}/members",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "groups",
+                                "{{GROUP_ID}}",
+                                "members"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Join / Leave group (toggle)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/groups/{{GROUP_ID}}/join",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "groups",
+                                "{{GROUP_ID}}",
+                                "join"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "07 - Chat (DM)",
+            "description": "Direct messages, inbox, message reactions.",
+            "item": [
+                {
+                    "name": "Get inbox",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/inbox",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "inbox"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Send DM to user",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// TARGET_USER must be set to a different user's username",
+                                    "// For self-DM testing, use same username (server may reject with 400)",
+                                    "if (!pm.environment.get('TARGET_USER')) {",
+                                    "  pm.environment.set('TARGET_USER', pm.environment.get('USERNAME'));",
+                                    "}"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 or 201', () => {",
+                                    "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \"content\": \"Hello from Postman automation!\" }"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/send/{{TARGET_USER}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "send",
+                                "{{TARGET_USER}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get conversation history",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/messages/{{TARGET_USER}}?page=0&size=20",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "messages",
+                                "{{TARGET_USER}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "20"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create group chat",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 or 201', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+                                    "pm.test('Chat group id returned', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('id');",
+                                    "  pm.environment.set('CHAT_GROUP_ID', j.id);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"AutoChatGroup_{{$timestamp}}\",\n  \"participantUsernames\": []\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/group/create",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "group",
+                                "create"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Send group chat message",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 or 201', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \"content\": \"Group message from Postman!\" }"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/group/{{CHAT_GROUP_ID}}/send",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "group",
+                                "{{CHAT_GROUP_ID}}",
+                                "send"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get group chat messages",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/group/{{CHAT_GROUP_ID}}/messages?page=0&size=20",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "group",
+                                "{{CHAT_GROUP_ID}}",
+                                "messages"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "20"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Inbox - unauthenticated (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/chat/inbox",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "inbox"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "08 - Events",
+            "description": "Group event creation, RSVP, and listing.",
+            "item": [
+                {
+                    "name": "Create event",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                                    "pm.test('Event id returned', () => {",
+                                    "  const j = pm.response.json();",
+                                    "  pm.expect(j).to.have.property('id');",
+                                    "  pm.environment.set('EVENT_ID', j.id);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Postman Auto Event\",\n  \"description\": \"Created by automation\",\n  \"startTime\": \"2027-12-01T10:00:00\",\n  \"groupId\": {{CHAT_GROUP_ID}}\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/events",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "events"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Join event (RSVP)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/events/{{EVENT_ID}}/join",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "events",
+                                "{{EVENT_ID}}",
+                                "join"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get events for group",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/events/group/{{CHAT_GROUP_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "events",
+                                "group",
+                                "{{CHAT_GROUP_ID}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "09 - Reports & Moderation",
+            "description": "Report a post or user for moderation.",
+            "item": [
+                {
+                    "name": "Report a post",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Re-create a fresh post to report",
+                                    "const postId = pm.environment.get('POST_ID');",
+                                    "if (!postId) {",
+                                    "  console.warn('POST_ID not set – run 03-Posts first');",
+                                    "}"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 or 201', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"reason\": \"SPAM\",\n  \"targetType\": \"POST\",\n  \"targetId\": {{POST_ID}}\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/reports",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "reports"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "10 - Admin",
+            "description": "Admin-only endpoints. Requires ADMIN_TOKEN. Run Admin Login first.",
+            "item": [
+                {
+                    "name": "List all users (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.environment.get('ADMIN_TOKEN')) {",
+                                    "  pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "  pm.test('Paginated content', () => pm.expect(pm.response.json()).to.have.property('content'));",
+                                    "} else {",
+                                    "  pm.test('ADMIN_TOKEN not set – skip', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/users?page=0&size=10",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Admin - access with user token (negative)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 403 for non-admin', () => pm.response.to.have.status(403));"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{USER_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/users",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "users"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Warn user (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.environment.get('ADMIN_TOKEN')) {",
+                                    "  pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "} else {",
+                                    "  pm.test('ADMIN_TOKEN not set – skip', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/warn/{{USERNAME}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "warn",
+                                "{{USERNAME}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Suspend user (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.environment.get('ADMIN_TOKEN')) {",
+                                    "  pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "} else {",
+                                    "  pm.test('ADMIN_TOKEN not set – skip', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/suspend/{{USERNAME}}?days=1",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "suspend",
+                                "{{USERNAME}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "days",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Unsuspend user (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.environment.get('ADMIN_TOKEN')) {",
+                                    "  pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "} else {",
+                                    "  pm.test('ADMIN_TOKEN not set – skip', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/unsuspend/{{USERNAME}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "unsuspend",
+                                "{{USERNAME}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Verify user (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.environment.get('ADMIN_TOKEN')) {",
+                                    "  pm.test('Status 200', () => pm.response.to.have.status(200));",
+                                    "} else {",
+                                    "  pm.test('ADMIN_TOKEN not set – skip', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/verify/{{USERNAME}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "verify",
+                                "{{USERNAME}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete post (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.environment.get('ADMIN_TOKEN')) {",
+                                    "  pm.test('Status 204 or 404', () => pm.expect(pm.response.code).to.be.oneOf([204, 404]));",
+                                    "} else {",
+                                    "  pm.test('ADMIN_TOKEN not set – skip', () => true);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/posts/{{POST_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "posts",
+                                "{{POST_ID}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
